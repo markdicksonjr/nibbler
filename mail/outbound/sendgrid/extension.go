@@ -39,9 +39,17 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) SendMail(from *outbound.Email, subject string, to *outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
+func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
 	if !s.initialized {
 		return nil, errors.New("send grid extension used for sending without initialization")
+	}
+
+	if from == nil || len((*from).Address) == 0 {
+		return nil, errors.New("send grid extension requires 'from' field")
+	}
+
+	if len(to) == 0 || to[0] == nil || len((*to[0]).Address) == 0 {
+		return nil, errors.New("send grid extension requires at least one recipient")
 	}
 
 	fromSg := mail.Email{
@@ -50,11 +58,27 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to *outbound.
 	}
 
 	toSg := mail.Email{
-		Name: (*to).Name,
-		Address: (*to).Address,
+		Name: (*to[0]).Name,
+		Address: (*to[0]).Address,
+	}
+
+	var toList []*mail.Email
+	for i, v := range to {
+		if i > 0 {
+			toList = append(toList, &mail.Email{
+				Name: (*v).Name,
+				Address: (*v).Address,
+			})
+		}
 	}
 
 	message := mail.NewSingleEmail(&fromSg, subject, &toSg, plainTextContent, htmlContent)
+
+	if len(to) > 1 {
+		message.Personalizations = append(message.Personalizations, &mail.Personalization{
+			To: toList,
+		})
+	}
 	client := sendgrid.NewSendClient(s.apiKey)
 	res, err := client.Send(message)
 

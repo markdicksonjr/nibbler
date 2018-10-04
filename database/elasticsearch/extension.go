@@ -1,9 +1,9 @@
 package elasticsearch
 
 import (
+	"errors"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/olivere/elastic"
-	"github.com/pkg/errors"
 )
 
 type Extension struct {

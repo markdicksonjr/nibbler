@@ -35,10 +35,13 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	var toList []*outbound.Email
+	toList = append(toList, &outbound.Email{Address: "mark@example.com", Name: "MD"})
+
 	response, err := sparkpostExtension.SendMail(
 		&outbound.Email{Address: "test@example.com", Name: "Example User"},
 		"test email",
-		&outbound.Email{Address: "markdicksonjr@gmail.com", Name: "MD"},
+		toList,
 		"test plain",
 		"<strong>test</strong> plain",
 	)

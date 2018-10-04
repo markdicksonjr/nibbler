@@ -1,11 +1,11 @@
 package sql
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
 	"strings"
-	"github.com/pkg/errors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"

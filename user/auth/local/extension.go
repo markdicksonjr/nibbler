@@ -208,18 +208,19 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 
 	go func() {
 
-		// send email
+		// build the recipient list
 		emailVal := *userValue.Email
+		var toList []*outbound.Email
+		toList = append(toList, &outbound.Email{Address: emailVal, Name: name})
+
+		// send the email
 		_, err = s.Sender.SendMail(
 			&outbound.Email{
 				Name: s.PasswordResetFromName,
 				Address: s.PasswordResetFromEmail,
 			},
 			"Password Reset", // TODO: make configurable
-			&outbound.Email{
-				Name: name,
-				Address: emailVal,
-			},
+			toList,
 			"Please go to " + link + " to reset your password",
 			"Please go to <a href=\"" + link + "\">" + link + "</a> to reset your password",
 		)

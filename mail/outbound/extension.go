@@ -1,7 +1,7 @@
 package outbound
 
 type Sender interface {
-	SendMail(from *Email, subject string, to *Email, plainTextContent string, htmlContent string) (*Response, error)
+	SendMail(from *Email, subject string, to []*Email, plainTextContent string, htmlContent string) (*Response, error)
 }
 
 type Email struct {

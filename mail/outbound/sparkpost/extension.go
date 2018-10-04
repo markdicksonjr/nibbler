@@ -38,7 +38,7 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) SendMail(from *outbound.Email, subject string, to *outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
+func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
 	if !s.initialized {
 		return nil, errors.New("sparkpost grid extension used for sending without initialization")
 	}
@@ -61,9 +61,14 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to *outbound.
 		HTML:    htmlContent,
 	}
 
+	var toList []string
+	for _, v := range to {
+		toList = append(toList, (*v).Address) // TODO: apply name
+	}
+
 	tx := &gosparkpost.Transmission{
 		Content:    content,
-		Recipients: []string{to.Address}, // TODO: apply name
+		Recipients: toList,
 	}
 	_, res, err := sp.Send(tx)
 

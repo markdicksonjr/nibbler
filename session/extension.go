@@ -2,9 +2,9 @@ package session
 
 import (
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"github.com/gorilla/sessions"
-	"github.com/pkg/errors"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/user"
 )

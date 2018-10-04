@@ -1,4 +1,4 @@
-package extension
+package main
 
 import (
 	"log"
@@ -35,10 +35,13 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	var toList []*outbound.Email
+	toList = append(toList, &outbound.Email{Address: "mark@example.com", Name: "MD"})
+
 	response, err := sendgridExtension.SendMail(
 		&outbound.Email{Address: "test@example.com", Name: "Example User"},
 		"test email",
-		&outbound.Email{Address: "mark@example.com", Name: "MD"},
+		toList,
 		"test plain",
 		"<strong>test</strong> plain",
 	)
