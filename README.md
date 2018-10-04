@@ -1,5 +1,7 @@
 # Nibbler
 
+[![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
+
 An extensible group of modules designed to take a lot of the boilerplate out of the code for a top-notch
 Go web server.  These modules require Go v1.9+.  
 
