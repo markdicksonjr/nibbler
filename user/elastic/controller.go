@@ -2,7 +2,7 @@ package sql
 
 import (
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/elasticsearch"
+	"github.com/markdicksonjr/nibbler/database/elasticsearch"
 	"github.com/markdicksonjr/nibbler/user"
 	"context"
 	"strconv"

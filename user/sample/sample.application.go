@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	//"github.com/markdicksonjr/nibbler/elasticsearch"
-	"github.com/markdicksonjr/nibbler/sql"
+	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
 	//NibUserElastic "github.com/markdicksonjr/nibbler/user/elastic"

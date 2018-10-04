@@ -6,7 +6,7 @@ import (
 	"github.com/markdicksonjr/nibbler"
 	NibSendGrid "github.com/markdicksonjr/nibbler/mail/sendgrid"
 	NibSession "github.com/markdicksonjr/nibbler/session"
-	NibSql "github.com/markdicksonjr/nibbler/sql"
+	NibSql "github.com/markdicksonjr/nibbler/database/sql"
 	NibUser "github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/sql"
+	"github.com/markdicksonjr/nibbler/database/sql"
 )
 
 func main() {

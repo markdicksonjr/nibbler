@@ -8,7 +8,7 @@ import (
 	_ "github.com/michaeljs1990/sqlitestore"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/session"
-	"github.com/markdicksonjr/nibbler/sql"
+	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
 )
