@@ -1,10 +1,11 @@
-package extension
+package main
 
 import (
 	"log"
+	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/markdicksonjr/nibbler"
-	NibSendGrid "github.com/markdicksonjr/nibbler/mail/sendgrid"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/markdicksonjr/nibbler/storage/s3"
 )
 
 func main() {
@@ -19,12 +20,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// allocate the sendgrid extension
-	sendgridExtension := NibSendGrid.Extension{}
+	// allocate the S3 extension
+	s3Extension := s3.Extension{}
 
 	// prepare extensions for initialization
 	extensions := []nibbler.Extension{
-		&sendgridExtension,
+		&s3Extension,
 	}
 
 	// create and initialize the application
@@ -35,18 +36,17 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	response, err := sendgridExtension.SendMail(
-		mail.NewEmail("Example User", "test@example.com"),
-		"test email",
-		mail.NewEmail("MD", "markdicksonjr@gmail.com"),
-		"test plain",
-		"<strong>test</strong> plain",
-	)
-
-	log.Println(response)
-
+	// list the buckets for the S3 connection we've made
+	result, err := s3Extension.S3.ListBuckets(nil)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("Unable to list buckets, %v", err)
+	}
+
+	// print buckets to the console, with creation time
+	fmt.Println("Buckets:")
+	for _, b := range result.Buckets {
+		fmt.Printf("* %s created on %s\n",
+			aws.StringValue(b.Name), aws.TimeValue(b.CreationDate))
 	}
 
 	// start the app
