@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/database/elasticsearchticsearch"
+	"github.com/markdicksonjr/nibbler/database/elasticsearch"
 )
 
 func main() {
