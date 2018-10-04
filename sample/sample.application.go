@@ -25,7 +25,7 @@ func (s *SampleExtension) Destroy(context *nibbler.Application) error {
 	return nil
 }
 
-func OkResultHandler(w http.ResponseWriter, r *http.Request) {
+func OkResultHandler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"result": "OK"}`))

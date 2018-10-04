@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 	"github.com/markdicksonjr/nibbler"
-	NibSendGrid "github.com/markdicksonjr/nibbler/mail/sendgrid"
-	NibSession "github.com/markdicksonjr/nibbler/session"
-	NibSql "github.com/markdicksonjr/nibbler/database/sql"
+	"github.com/markdicksonjr/nibbler/mail/outbound/sendgrid"
+	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/database/sql"
 	NibUser "github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
@@ -52,7 +52,7 @@ func main() {
 	models = append(models, NibUser.User{})
 
 	// allocate the sql extension, with all models
-	sqlExtension := NibSql.Extension{
+	sqlExtension := sql.Extension{
 		Models: models,
 	}
 
@@ -64,19 +64,19 @@ func main() {
 	}
 
 	// allocate session extension
-	sessionExtension := NibSession.Extension{
+	sessionExtension := session.Extension{
 		Secret:      "dumbsecret",
 		SessionName: "dumbcookie",
 	}
 
 	// allocate the sendgrid extension
-	sendgridExtension := NibSendGrid.Extension{}
+	sendgridExtension := sendgrid.Extension{}
 
 	// allocate user local auth extension
 	userLocalAuthExtension := NibUserLocalAuth.Extension{
 		SessionExtension:       &sessionExtension,
 		UserExtension:          &userExtension,
-		SendGridExtension:      &sendgridExtension,
+		Sender:     			&sendgridExtension,
 		PasswordResetEnabled:   true,
 		PasswordResetFromName:  "Test",
 		PasswordResetFromEmail: "test@example.com",

@@ -3,28 +3,23 @@ package local
 import (
 	"errors"
 	"net/http"
-	"github.com/markdicksonjr/nibbler"
-	NibUser "github.com/markdicksonjr/nibbler/user"
-	NibSendGrid "github.com/markdicksonjr/nibbler/mail/sendgrid"
-	NibSession "github.com/markdicksonjr/nibbler/session"
-	"github.com/google/uuid"
-	"time"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"strings"
-	_ "github.com/lib/pq" // TODO: does this go here?  doubtful
+	"time"
+	"github.com/google/uuid"
+	"github.com/markdicksonjr/nibbler"
+	"github.com/markdicksonjr/nibbler/user"
+	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/mail/outbound"
 )
 
 type Extension struct {
-	SessionExtension *NibSession.Extension
-	UserExtension *NibUser.Extension
+	SessionExtension *session.Extension
+	UserExtension *user.Extension
 
 	// for emailing
-	SendGridExtension *NibSendGrid.Extension
+	Sender outbound.Sender
 
-	// for passwo
-	//[[constraint]]
-	//  revision = "bb90f23ce7de089adeda8ef6586a25b38ffbfaa2"
-	//  name = "github.com/markdicksonjr/nibble"rd reset
+	// for password reset
 	PasswordResetEnabled   bool
 	PasswordResetFromName  string
 	PasswordResetFromEmail string
@@ -45,8 +40,8 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 	// if password reset is enabled, check prerequisites
 	if s.PasswordResetEnabled {
-		if s.SendGridExtension == nil {
-			return errors.New("sendgrid extension was not provided to user local auth extension, but features using it are enabled")
+		if s.Sender == nil {
+			return errors.New("sender extension was not provided to user local auth extension, but features using it are enabled")
 		}
 
 		if s.PasswordResetFromName == "" {
@@ -78,7 +73,7 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	user, err := s.Login(email, password)
+	userValue, err := s.Login(email, password)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -87,14 +82,14 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if user == nil {
+	if userValue == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"result": "please try again"}`))
 		return
 	}
 
-	s.SessionExtension.SetCaller(w, r, user)
+	s.SessionExtension.SetCaller(w, r, userValue)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
@@ -109,7 +104,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"result": "ok"}`))
 }
 
-func (s *Extension) Login(email string, password string) (*NibUser.User, error) {
+func (s *Extension) Login(email string, password string) (*user.User, error) {
 	u, err := s.UserExtension.GetUserByEmail(email);
 
 	if err != nil {
@@ -144,13 +139,13 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	email := r.FormValue("email")
 	username := r.FormValue("username")
 
-	var user *NibUser.User
+	var userValue *user.User
 	var err error
 
 	if email != "" {
-		user, err = s.UserExtension.GetUserByEmail(email);
+		userValue, err = s.UserExtension.GetUserByEmail(email);
 	} else if username != "" {
-		user, err = s.UserExtension.GetUserByUsername(email);
+		userValue, err = s.UserExtension.GetUserByUsername(email);
 	} else {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
@@ -166,7 +161,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// user not found, but we want to respond with OK to not give away too much info (i.e. our user list could be brute-forced)
-	if user == nil {
+	if userValue == nil {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"result": "ok"}`))
@@ -174,7 +169,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	// in the event we looked up the user by anything but email, check that there is an email
-	if user.Email == nil {
+	if userValue.Email == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"result": "no email on record"}`))
@@ -184,10 +179,10 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	// generate reset token with expiration (one day - TODO: make configurable)
 	uuidInstance := uuid.New().String()
 	expiration := time.Now().AddDate(0, 0, 1)
-	user.PasswordResetToken = &uuidInstance
-	user.PasswordResetExpiration = &expiration
+	userValue.PasswordResetToken = &uuidInstance
+	userValue.PasswordResetExpiration = &expiration
 
-	errUpdate := s.UserExtension.Update(user)
+	errUpdate := s.UserExtension.Update(userValue)
 
 	if errUpdate != nil {
 		// TODO: log error message
@@ -198,27 +193,33 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	}
 
 	name := ""
-	if user.FirstName != nil && user.LastName != nil {
-		name = *user.FirstName + " " + *user.LastName
+	if userValue.FirstName != nil && userValue.LastName != nil {
+		name = *userValue.FirstName + " " + *userValue.LastName
 	}
 
 	// generate the link for the email
 	var link = s.PasswordResetRedirect
 	useAmpersand := strings.Contains(s.PasswordResetRedirect, "?")
 	if useAmpersand {
-		link += "&token=" + *user.PasswordResetToken
+		link += "&token=" + *userValue.PasswordResetToken
 	} else {
-		link += "?token=" + *user.PasswordResetToken
+		link += "?token=" + *userValue.PasswordResetToken
 	}
 
 	go func() {
 
 		// send email
-		emailVal := *user.Email
-		_, err = s.SendGridExtension.SendMail(
-			mail.NewEmail(s.PasswordResetFromName, s.PasswordResetFromEmail),
+		emailVal := *userValue.Email
+		_, err = s.Sender.SendMail(
+			&outbound.Email{
+				Name: s.PasswordResetFromName,
+				Address: s.PasswordResetFromEmail,
+			},
 			"Password Reset", // TODO: make configurable
-			mail.NewEmail(name, emailVal),
+			&outbound.Email{
+				Name: name,
+				Address: emailVal,
+			},
 			"Please go to " + link + " to reset your password",
 			"Please go to <a href=\"" + link + "\">" + link + "</a> to reset your password",
 		)
@@ -238,7 +239,7 @@ func (s *Extension) ResetPasswordTokenVerifyHandler(w http.ResponseWriter, r *ht
 	}
 
 	token := r.FormValue("token")
-	user, err := s.getUserByValidToken(token)
+	userValue, err := s.getUserByValidToken(token)
 
 	if err != nil {
 		// TODO: log err?
@@ -248,7 +249,7 @@ func (s *Extension) ResetPasswordTokenVerifyHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if user == nil {
+	if userValue == nil {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"result": false}`))
@@ -264,7 +265,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	password := r.FormValue("password")
 	token := r.FormValue("token")
 
-	user, err := s.getUserByValidToken(token)
+	userValue, err := s.getUserByValidToken(token)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -273,7 +274,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if user == nil {
+	if userValue == nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"result": "please try again"}`))
@@ -284,8 +285,8 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 
 	// TODO: check password complexity...
 
-	*user.Password = GeneratePasswordHash(password)
-	err = s.UserExtension.UpdatePassword(user)
+	*userValue.Password = GeneratePasswordHash(password)
+	err = s.UserExtension.UpdatePassword(userValue)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -299,26 +300,26 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	w.Write([]byte(`{"result": "ok"}`))
 }
 
-func (s *Extension) getUserByValidToken(token string) (*NibUser.User, error) {
+func (s *Extension) getUserByValidToken(token string) (*user.User, error) {
 	if !s.PasswordResetEnabled {
 		return nil, nil
 	}
 
-	user, err := s.UserExtension.GetUserByPasswordResetToken(token)
+	userValue, err := s.UserExtension.GetUserByPasswordResetToken(token)
 
-	if err != nil || user == nil{
+	if err != nil || userValue == nil{
 		return nil, nil
 	}
 
-	if user.PasswordResetExpiration == nil {
+	if userValue.PasswordResetExpiration == nil {
 		return nil, nil
 	}
 
-	if !(*user.PasswordResetExpiration).After(time.Now()) {
+	if !(*userValue.PasswordResetExpiration).After(time.Now()) {
 		return nil, nil
 	}
 
-	return user, nil
+	return userValue, nil
 }
 
 // TODO: endpoint for setting the new password - re-confirm the token before allowing

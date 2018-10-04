@@ -2,13 +2,14 @@ package sendgrid
 
 import (
 	"errors"
-	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/markdicksonjr/nibbler"
+	"github.com/markdicksonjr/nibbler/mail/outbound"
 )
 
 type Extension struct {
+	outbound.Sender
 	apiKey string
 	initialized bool
 }
@@ -38,12 +39,32 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) SendMail(from *mail.Email, subject string, to *mail.Email, plainTextContent string, htmlContent string) (*rest.Response, error) {
+func (s *Extension) SendMail(from *outbound.Email, subject string, to *outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
 	if !s.initialized {
 		return nil, errors.New("send grid extension used for sending without initialization")
 	}
 
-	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	fromSg := mail.Email{
+		Name: (*from).Name,
+		Address: (*from).Address,
+	}
+
+	toSg := mail.Email{
+		Name: (*to).Name,
+		Address: (*to).Address,
+	}
+
+	message := mail.NewSingleEmail(&fromSg, subject, &toSg, plainTextContent, htmlContent)
 	client := sendgrid.NewSendClient(s.apiKey)
-	return client.Send(message)
+	res, err := client.Send(message)
+
+	if res != nil {
+		return &outbound.Response{
+			Body: res.Body,
+			Headers: res.Headers,
+			StatusCode: res.StatusCode,
+		}, err
+	}
+
+	return nil, err
 }

@@ -1,7 +1,10 @@
 # Nibbler
 
 An extensible group of modules designed to take a lot of the boilerplate out of the code for a top-notch
-Go web server.  These modules require Go v1.9+.
+Go web server.  These modules require Go v1.9+.  
+
+At first glance, Nibbler's code-base seems to be quite monolithic, but by leveraging the capabilities of Go's import 
+mechanisms, your web app can easily get and import only what is needed.
 
 ## Running the included sample apps
 

@@ -3,8 +3,8 @@ package extension
 import (
 	"log"
 	"github.com/markdicksonjr/nibbler"
-	NibSendGrid "github.com/markdicksonjr/nibbler/mail/sendgrid"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	NibSendGrid "github.com/markdicksonjr/nibbler/mail/outbound/sendgrid"
+	"github.com/markdicksonjr/nibbler/mail/outbound"
 )
 
 func main() {
@@ -36,9 +36,9 @@ func main() {
 	}
 
 	response, err := sendgridExtension.SendMail(
-		mail.NewEmail("Example User", "test@example.com"),
+		&outbound.Email{Address: "test@example.com", Name: "Example User"},
 		"test email",
-		mail.NewEmail("MD", "markdicksonjr@gmail.com"),
+		&outbound.Email{Address: "mark@example.com", Name: "MD"},
 		"test plain",
 		"<strong>test</strong> plain",
 	)
