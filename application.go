@@ -5,11 +5,16 @@ import (
 	"strconv"
 	"github.com/gorilla/mux"
 	"github.com/micro/go-config"
+	"os"
+	"os/signal"
+	"syscall"
+	"context"
 )
 
 type Extension interface {
 	Init(app *Application) error
 	AddRoutes(app *Application) error
+	Destroy(app *Application) error
 }
 
 type Logger interface {
@@ -90,17 +95,65 @@ func (ac *Application) Run() error {
 	configValue := *ac.config
 	loggerValue := *ac.logger
 
-	// log that we're listening and state the port
-	loggerValue.Info("Listening on " + strconv.Itoa(configValue.Port))
+	// allocate a server
+	h := &http.Server{Addr: ":" + strconv.Itoa(configValue.Port), Handler: nil}
 
-	// listen (this blocks)
-	err := http.ListenAndServe(":" + strconv.Itoa(configValue.Port), nil)
+	// allocate and prep signal channel
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	// log an error if it happened
-	if err != nil {
-		loggerValue.Error("Failed to initialize server: " + err.Error());
+	// run our server listener in a goroutine
+	go func() error {
+
+		// log that we're listening and state the port
+		loggerValue.Info("Listening on " + strconv.Itoa(configValue.Port))
+
+		// listen (this blocks)
+		err := h.ListenAndServe()
+
+		// log an error if it happened
+		if err != nil {
+			loggerValue.Error("Failed to initialize server: " + err.Error());
+		}
+
+		return err
+	}()
+
+	// wait for a signal
+	<-signals
+
+	// shut down the server
+	loggerValue.Info("Shutting down the server...")
+	errShutdown := h.Shutdown(context.Background())
+
+	// log a shutdown error (factor into return value later)
+	if errShutdown != nil {
+		loggerValue.Error(errShutdown.Error())
+	} else {
+		loggerValue.Info("Server gracefully stopped")
 	}
 
+	// dereference parameters for ease-of-use
+	extensionValue := *ac.extensions
+
+	// destroy extensions in reverse order
+	var err error
+	var destroyError error
+	for i, _ := range extensionValue {
+		x := extensionValue[len(extensionValue) - i - 1]
+		destroyError = x.Destroy(ac)
+
+		if destroyError != nil {
+			err = destroyError
+		}
+	}
+
+	// return a shutdown error if it occurred
+	if errShutdown != nil {
+		return errShutdown
+	}
+
+	// return any (the latest, which could be an improvement we could make) extension destroy error
 	return err
 }
 

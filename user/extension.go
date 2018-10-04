@@ -35,6 +35,10 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) Destroy(app *nibbler.Application) error {
+	return nil
+}
+
 func (s *Extension) GetSafeUser(user User) User {
 	safeUser := user
 	safeUser.Password = nil

@@ -48,6 +48,10 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) Destroy(app *nibbler.Application) error {
+	return nil
+}
+
 func (s *Extension) GetAttribute(r *http.Request, attribute string) (interface{}, error) {
 	session, err := (*s.store).Get(r, s.SessionName)
 

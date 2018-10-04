@@ -78,6 +78,12 @@
   version = "v0.3.6"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jameskeane/bcrypt"
+  packages = ["."]
+  revision = "c3cd44c1e20fec46baad45b108a45be93394dc8d"
+
+[[projects]]
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
@@ -164,6 +170,21 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/sendgrid/rest"
+  packages = ["."]
+  revision = "306b9bef57dc36f3435ccfcc08fe6ae2c6920344"
+  version = "v2.4.1"
+
+[[projects]]
+  name = "github.com/sendgrid/sendgrid-go"
+  packages = [
+    ".",
+    "helpers/mail"
+  ]
+  revision = "8caf17aa96b4a98bae8bd216878dd50ff12897b5"
+  version = "v3.4.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/wader/gormstore"
   packages = ["."]
@@ -184,6 +205,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7428d4119cb16b6d778521fdcf130d326a9346085cf10801aeb754a1c5b99ea4"
+  inputs-digest = "3abcf8e4a955afe5695f4f758f9a099f51a68740563931a035b729225100394d"
   solver-name = "gps-cdcl"
   solver-version = 1

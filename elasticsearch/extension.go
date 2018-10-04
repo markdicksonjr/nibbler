@@ -30,6 +30,11 @@ func (s *Extension) Init(app *nibbler.Application) error {
 }
 
 func (s *Extension) AddRoutes(app *nibbler.Application) error {
+	// TODO
+	return nil
+}
+
+func (s *Extension) Destroy(context *nibbler.Application) error {
 	return nil
 }
 

@@ -70,6 +70,15 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) Destroy(app *nibbler.Application) error {
+	if s.Db != nil {
+		err := s.Db.Close()
+		s.Db = nil
+		return err
+	}
+	return nil
+}
+
 func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
 	var urlParsed *url.URL = nil
 	var parseError error = nil

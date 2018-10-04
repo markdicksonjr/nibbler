@@ -21,6 +21,10 @@ func (s *SampleExtension) AddRoutes(context *nibbler.Application) error {
 	return nil
 }
 
+func (s *SampleExtension) Destroy(context *nibbler.Application) error {
+	return nil
+}
+
 func OkResultHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

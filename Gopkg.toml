@@ -36,3 +36,11 @@
 [[constraint]]
   name = "github.com/pkg/errors"
   version = "0.8.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jameskeane/bcrypt"
+
+[[constraint]]
+  name = "github.com/sendgrid/sendgrid-go"
+  version = "3.4.1"
