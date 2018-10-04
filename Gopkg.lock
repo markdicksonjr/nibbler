@@ -8,6 +8,15 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/SparkPost/gosparkpost"
+  packages = [
+    ".",
+    "events"
+  ]
+  revision = "4c6d2a3be65810be883c869868a74e677df2881b"
+  version = "0.1.0"
+
+[[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -254,6 +263,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b843085407606ebb62a88e529e2255bfe972a5eb88f1b5fa1a59ff19ec96127f"
+  inputs-digest = "50b3880eeb52e75d2479551417c5be8389784392e9fe86978f186c39ad6f0032"
   solver-name = "gps-cdcl"
   solver-version = 1
