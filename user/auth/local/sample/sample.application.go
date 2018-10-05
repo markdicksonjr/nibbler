@@ -13,19 +13,12 @@ import (
 )
 
 type SampleExtension struct {
+	nibbler.NoOpExtension
 	AuthExtension *NibUserLocalAuth.Extension
-}
-
-func (s *SampleExtension) Init(app *nibbler.Application) error {
-	return nil
 }
 
 func (s *SampleExtension) AddRoutes(app *nibbler.Application) error {
 	app.GetRouter().HandleFunc("/api/test", s.AuthExtension.EnforceLoggedIn(s.ProtectedRoute)).Methods("POST")
-	return nil
-}
-
-func (s *SampleExtension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 

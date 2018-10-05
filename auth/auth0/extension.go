@@ -2,8 +2,6 @@ package auth0
 
 // TODO: expose requiresRole?
 
-// https://auth0.com/docs/quickstart/webapp/golang/01-login
-
 import (
 	"context"
 	"crypto/rand"
@@ -114,7 +112,7 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Getting now the userInfo
+	// get the userInfo
 	client := conf.Client(context.TODO(), token)
 	resp, err := client.Get("https://" + domain + "/userinfo")
 	if err != nil {

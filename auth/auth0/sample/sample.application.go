@@ -1,26 +1,19 @@
 package main
 
 import (
+	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/auth/auth0"
 	"github.com/markdicksonjr/nibbler/session"
-	"net/http"
 )
 
 type SampleExtension struct {
+	nibbler.NoOpExtension
 	Auth0Extension *auth0.Extension
-}
-
-func (s *SampleExtension) Init(app *nibbler.Application) error {
-	return nil
 }
 
 func (s *SampleExtension) AddRoutes(app *nibbler.Application) error {
 	app.GetRouter().HandleFunc("/test", s.Auth0Extension.EnforceLoggedIn(s.ProtectedRoute)).Methods("GET")
-	return nil
-}
-
-func (s *SampleExtension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
