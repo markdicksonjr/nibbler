@@ -8,6 +8,18 @@ Go web server.  These modules require Go v1.9+.
 At first glance, Nibbler's code-base seems to be quite monolithic, but by leveraging the capabilities of Go's import 
 mechanisms, your web app can easily get and import only what is needed.
 
+## Module Categories
+
+Modules in Nibbler are organized by functional category, with the main Nibbler structures at the root level.  These are the 
+module categories below the root level:
+
+- Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
+- Database - connect to databases and expose mechanisms to create, query, etc.
+- Mail - both inbound and outbound email/sms/etc
+- Session - session storage and retreival
+- Storage - block/blob storage
+- User - the Nibbler user model, and various integrations that can operate with it.  These will tend to be auth integrations.
+
 ## Running the included sample apps
 
 Sample apps have been provided to show how Nibbler and some extensions are used.  They'll be helpful as I fill in documentation gaps.

@@ -1,0 +1,16 @@
+# Nibbler-Auth0
+
+## Configuration
+
+AUTH0_CLIENT_ID [REQUIRED]
+AUTH0_CLIENT_SECRET [REQUIRED]
+AUTH0_CALLBACK_URL
+AUTH0_DOMAIN [REQUIRED]
+AUTH0_AUDIENCE 
+
+## TODO
+
+No timeout
+
+No "is authed" function
+
