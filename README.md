@@ -2,8 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
-An extensible group of modules designed to take a lot of the boilerplate out of making a top-notch
-Go web server.  These modules require Go v1.9+.  
+An extension-oriented app-building module designed to take a lot of the boilerplate out of making a top-notch
+Go web server or service worker.  These modules require Go v1.9+.  
 
 ## Module Categories
 
