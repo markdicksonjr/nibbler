@@ -1,4 +1,4 @@
-package sql
+package elastic
 
 import (
 	"github.com/markdicksonjr/nibbler"

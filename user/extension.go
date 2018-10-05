@@ -21,7 +21,7 @@ type PersistenceController interface {
 
 type Extension struct {
 	nibbler.Extension
-	
+
 	PersistenceController PersistenceController
 }
 

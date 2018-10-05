@@ -9,7 +9,7 @@ import (
 	"github.com/markdicksonjr/nibbler/database/sql"
 	NibUser "github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
 )
 
 type SampleExtension struct {

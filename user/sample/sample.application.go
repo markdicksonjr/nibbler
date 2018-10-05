@@ -5,7 +5,7 @@ import (
 	//"github.com/markdicksonjr/nibbler/elasticsearch"
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
 	//NibUserElastic "github.com/markdicksonjr/nibbler/user/elastic"
 	"github.com/markdicksonjr/nibbler"
 )

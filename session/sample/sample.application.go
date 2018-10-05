@@ -10,7 +10,7 @@ import (
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/sql"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
 )
 
 type SqlMemoryStoreConnector struct {
