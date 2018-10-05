@@ -39,7 +39,7 @@ func main() {
 	// list the buckets for the S3 connection we've made
 	result, err := s3Extension.S3.ListBuckets(nil)
 	if err != nil {
-		log.Fatal("Unable to list buckets, %v", err)
+		log.Fatal("Unable to list buckets, " + err.Error())
 	}
 
 	// print buckets to the console, with creation time

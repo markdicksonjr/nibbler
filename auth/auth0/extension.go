@@ -32,6 +32,9 @@ type Extension struct {
 	RoutePathAuth0Logout *string
 
 	config *nibbler.Configuration
+
+	OnLoginComplete func(s *Extension, w http.ResponseWriter, r *http.Request) (allowRedirect bool, err error)
+	OnLogoutComplete func(s *Extension, w http.ResponseWriter, r *http.Request) error
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -132,12 +135,12 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenErr := s.SessionExtension.SetAttribute(w, r, "id_token", token.Extra("id_token"))
-
-	if tokenErr != nil {
-		http.Error(w, tokenErr.Error(), http.StatusInternalServerError)
-		return
-	}
+	//tokenErr := s.SessionExtension.SetAttribute(w, r, "id_token", token.Extra("id_token"))
+	//
+	//if tokenErr != nil {
+	//	http.Error(w, tokenErr.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 
 	accessTokenErr := s.SessionExtension.SetAttribute(w, r, "access_token", token.AccessToken)
 
@@ -146,6 +149,8 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	delete(profile, "picture")
+	delete(profile, "updated_at")
 	profileErr := s.SessionExtension.SetAttribute(w, r, "profile", profile)
 
 	if profileErr != nil {
@@ -153,7 +158,22 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, s.LoggedInRedirectUrl, http.StatusSeeOther)
+	if s.OnLoginComplete == nil {
+		http.Redirect(w, r, s.LoggedInRedirectUrl, http.StatusSeeOther)
+		return
+	}
+
+	allowRedirect, err := s.OnLoginComplete(s, w, r)
+
+	// if allowRedirect is false, we assume the caller handled the error
+	if allowRedirect {
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, s.LoggedInRedirectUrl, http.StatusSeeOther)
+	}
 }
 
 func (s *Extension) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -196,6 +216,17 @@ func (s *Extension) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	s.SessionExtension.SetAttribute(w, r, "profile", nil)
+
+	if s.OnLogoutComplete != nil {
+		err := s.OnLogoutComplete(s, w, r)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			return
+		}
+	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

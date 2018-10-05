@@ -98,7 +98,20 @@ func (s *Extension) SetCaller(w http.ResponseWriter, r *http.Request, userValue 
 		return s.SetAttribute(w, r, "user", nil)
 	}
 
+	// wipe values for stringification
+	password := userValue.Password
+	resetToken := userValue.PasswordResetToken
+	resetExpiration := userValue.PasswordResetExpiration
+	userValue.Password = nil
+	userValue.PasswordResetToken = nil
+	userValue.PasswordResetExpiration = nil
+
 	userJson, err := user.ToJson(userValue)
+
+	// restore password and reset token
+	userValue.Password = password
+	userValue.PasswordResetToken = resetToken
+	userValue.PasswordResetExpiration = resetExpiration
 
 	if err != nil {
 		return err
