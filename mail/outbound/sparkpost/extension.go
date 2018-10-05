@@ -8,7 +8,9 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
 	outbound.Sender
+
 	apiKey string
 	initialized bool
 }

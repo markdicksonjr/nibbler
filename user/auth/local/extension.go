@@ -13,6 +13,8 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	SessionExtension *session.Extension
 	UserExtension *user.Extension
 

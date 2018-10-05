@@ -11,6 +11,8 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	S3 *s3.S3
 }
 

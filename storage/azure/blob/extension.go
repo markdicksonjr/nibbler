@@ -10,6 +10,8 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	accountName string
 	accountKey string
 	credential *azblob.SharedKeyCredential

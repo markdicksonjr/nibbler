@@ -14,6 +14,8 @@ type SessionStoreConnector interface {
 }
 
 type Extension struct {
+	nibbler.Extension
+
 	Secret         string
 	SessionName    string
 	StoreConnector *SessionStoreConnector	// creates cookie store if not provided

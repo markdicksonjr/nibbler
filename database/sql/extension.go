@@ -14,6 +14,8 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	Models []interface{}
 	Db *gorm.DB
 }

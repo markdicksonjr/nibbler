@@ -7,6 +7,8 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	Client *elastic.Client
 }
 

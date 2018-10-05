@@ -15,7 +15,11 @@ import (
 )
 
 type Extension struct {
+	nibbler.Extension
+
 	SessionExtension *session.Extension
+
+	// required redirect URL
 	LoggedInRedirectUrl string
 
 	// optional override for callback endpoint from auth0
