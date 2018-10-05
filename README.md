@@ -43,8 +43,6 @@ as a reference for the full dependency list).
 
 ## Configuration
 
-For specific configuration values for a given extension, look at the relevant module README.md.
-
 The app configuration can be created with this method:
 
 ```go
@@ -81,6 +79,8 @@ The core properties (all optional) are:
 - NIBBLER_AC_ALLOW_ORIGIN = nibbler.ac.allow.origin in JSON, etc
 - NIBBLER_AC_ALLOW_HEADERS = nibbler.ac.allow.headers in JSON, etc
 - NIBBLER_AC_ALLOW_METHODS = nibbler.ac.allow.methods in JSON, etc
+
+For specific configuration values for a given extension, look at the relevant module README.md.
 
 By default, Nibbler will only pay attention to environment variables, but the sample application that ships with
 Nibbler shows how one might apply both environment variables and files.
