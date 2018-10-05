@@ -78,6 +78,7 @@ password to it in the Init() method.  For example:
 
 The core properties (all optional) are:
 
+- NIBBLER_MODE = nibbler.mode in JSON, etc, defaults to "web", but can also be "worker"
 - NIBBLER_PORT (or just PORT) = nibbler.port in JSON, etc
 - NIBBLER_DIRECTORY_STATIC = nibbler.directory.static in JSON, etc
 - NIBBLER_AC_ALLOW_ORIGIN = nibbler.ac.allow.origin in JSON, etc

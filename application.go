@@ -1,14 +1,15 @@
 package nibbler
 
 import (
+	"context"
+	"errors"
 	"net/http"
-	"strconv"
-	"github.com/gorilla/mux"
-	"github.com/micro/go-config"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
-	"context"
+	"github.com/gorilla/mux"
+	"github.com/micro/go-config"
 )
 
 type Extension interface {
@@ -92,46 +93,47 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 func (ac *Application) Run() error {
 
 	// dereference parameters for ease-of-use
-	configValue := *ac.config
 	loggerValue := *ac.logger
 
-	// allocate a server
-	h := &http.Server{Addr: ":" + strconv.Itoa(configValue.Port), Handler: nil}
+	// get the configured app mode, accounting for the default value
+	mode := (*ac.config.Raw).Get("nibbler", "mode").String("web")
 
 	// allocate and prep signal channel
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
 
-	// run our server listener in a goroutine
-	go func() error {
+	// prepare a variable to be used for something going wrong during shutdown, regardless of mode
+	var shutdownError error
 
-		// log that we're listening and state the port
-		loggerValue.Info("Listening on " + strconv.Itoa(configValue.Port))
+	if mode == "web" {
 
-		// listen (this blocks)
-		err := h.ListenAndServe()
+		// allocate a server
+		h := &http.Server{Addr: ":" + strconv.Itoa(ac.config.Port), Handler: nil}
 
-		// log an error if it happened
-		if err != nil {
-			loggerValue.Error("Failed to initialize server: " + err.Error());
+		// run our server listener in a goroutine
+		go startServer(h, ac)
+
+		// wait for a signal
+		<-signals
+
+		// shut down the server
+		loggerValue.Info("shutting down the server")
+		shutdownError = h.Shutdown(context.Background())
+
+		// log a shutdown error (factor into return value later)
+		if shutdownError != nil {
+			loggerValue.Error(shutdownError.Error())
 		}
+	} else if mode == "worker" {
 
-		return err
-	}()
+		// wait for a signal
+		<-signals
 
-	// wait for a signal
-	<-signals
-
-	// shut down the server
-	loggerValue.Info("Shutting down the server...")
-	errShutdown := h.Shutdown(context.Background())
-
-	// log a shutdown error (factor into return value later)
-	if errShutdown != nil {
-		loggerValue.Error(errShutdown.Error())
 	} else {
-		loggerValue.Info("Server gracefully stopped")
+		return errors.New("unknown nibbler mode detected: " + mode)
 	}
+
+	loggerValue.Info("shutting down the application")
 
 	// dereference parameters for ease-of-use
 	extensionValue := *ac.extensions
@@ -139,7 +141,7 @@ func (ac *Application) Run() error {
 	// destroy extensions in reverse order
 	var err error
 	var destroyError error
-	for i, _ := range extensionValue {
+	for i := range extensionValue {
 		x := extensionValue[len(extensionValue) - i - 1]
 		destroyError = x.Destroy(ac)
 
@@ -149,11 +151,30 @@ func (ac *Application) Run() error {
 	}
 
 	// return a shutdown error if it occurred
-	if errShutdown != nil {
-		return errShutdown
+	if shutdownError != nil {
+		return shutdownError
 	}
 
 	// return any (the latest, which could be an improvement we could make) extension destroy error
+	return err
+}
+
+func startServer(h *http.Server, ac *Application) error {
+
+	// dereference parameters for ease-of-use
+	loggerValue := *ac.logger
+
+	// log that we're listening and state the port
+	loggerValue.Info("Listening on " + strconv.Itoa((*ac.config).Port))
+
+	// listen (this blocks)
+	err := h.ListenAndServe()
+
+	// log an error if it happened
+	if err != nil {
+		loggerValue.Error("Failed to initialize server: " + err.Error())
+	}
+
 	return err
 }
 
