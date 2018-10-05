@@ -2,11 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
-An extensible group of modules designed to take a lot of the boilerplate out of the code for a top-notch
+An extensible group of modules designed to take a lot of the boilerplate out of making a top-notch
 Go web server.  These modules require Go v1.9+.  
-
-At first glance, Nibbler's code-base seems to be quite monolithic, but by leveraging the capabilities of Go's import 
-mechanisms, your web app can easily get and import only what is needed.
 
 ## Module Categories
 
@@ -22,7 +19,7 @@ module categories below the root level:
 
 ## Running the included sample apps
 
-Sample apps have been provided to show how Nibbler and some extensions are used.  They'll be helpful as I fill in documentation gaps.
+Sample apps have been provided to show how Nibbler and some extensions are used.  They'll be helpful as I fill in many documentation gaps.
 
 First, grab dependencies.  If using dep, it will be with something like
 
@@ -30,19 +27,19 @@ First, grab dependencies.  If using dep, it will be with something like
 
 or you could use something like
 
-`go get`
+`go get -v -t -d ./...`
 
-then, build the sample app (from the correct directory):
+then, build the sample app you're interested in using (from the correct directory):
 
 `go build`
 
-finally, run the app (from ./sample) with
+finally, run the app (from the correct directory) with
 
 `go run sample.application`
 
 Note that using dep this way could pull in more vendor dependencies than your app might need (e.g. elasticsearch-related
-dependencies when you're using only SQL).  To avoid this, use go get (perhaps with the Gopkg.toml as a reference for the full
-dependency list).
+dependencies when you're using only SQL).  To avoid this, use go get without the flags above (perhaps with the Gopkg.toml
+as a reference for the full dependency list).
 
 ## Configuration
 
@@ -85,7 +82,7 @@ The core properties (all optional) are:
 - NIBBLER_AC_ALLOW_HEADERS = nibbler.ac.allow.headers in JSON, etc
 - NIBBLER_AC_ALLOW_METHODS = nibbler.ac.allow.methods in JSON, etc
 
-By default, nibbler will only pay attention to environment variables, but the sample application that ships with
+By default, Nibbler will only pay attention to environment variables, but the sample application that ships with
 Nibbler shows how one might apply both environment variables and files.
 
 A sample config example is provided "sample.config.json".  There are a few things to notice:
