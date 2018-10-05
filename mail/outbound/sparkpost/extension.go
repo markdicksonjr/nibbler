@@ -8,7 +8,7 @@ import (
 )
 
 type Extension struct {
-	nibbler.Extension
+	nibbler.NoOpExtension
 	outbound.Sender
 
 	apiKey string
@@ -29,14 +29,6 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	}
 
 	s.initialized = true
-	return nil
-}
-
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	return nil
-}
-
-func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 

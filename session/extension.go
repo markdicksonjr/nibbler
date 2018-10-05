@@ -14,7 +14,7 @@ type SessionStoreConnector interface {
 }
 
 type Extension struct {
-	nibbler.Extension
+	nibbler.NoOpExtension
 
 	Secret         string
 	SessionName    string
@@ -43,14 +43,6 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	var store sessions.Store = sessions.NewCookieStore([]byte(s.Secret))
 	s.store = &store
 
-	return nil
-}
-
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	return nil
-}
-
-func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 

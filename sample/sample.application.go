@@ -1,8 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 	"github.com/micro/go-config/source"
 	"github.com/micro/go-config/source/env"
 	"github.com/micro/go-config/source/file"
@@ -10,25 +10,16 @@ import (
 )
 
 type SampleExtension struct {
-}
-
-func (s *SampleExtension) Init(context *nibbler.Application) error {
-	return nil
+	nibbler.NoOpExtension
 }
 
 func (s *SampleExtension) AddRoutes(context *nibbler.Application) error {
-	context.GetRouter().HandleFunc("/api/ok", OkResultHandler).Methods("GET")
+	context.GetRouter().HandleFunc("/api/ok", func (w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"result": "OK"}`))
+	}).Methods("GET")
 	return nil
-}
-
-func (s *SampleExtension) Destroy(context *nibbler.Application) error {
-	return nil
-}
-
-func OkResultHandler(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"result": "OK"}`))
 }
 
 func main() {
