@@ -27,7 +27,7 @@ type Extension struct {
 
 func (s *Extension) Init(app *nibbler.Application) error {
 	if s.PersistenceExtension == nil {
-		return errors.New("no persistence extension was not provided to user extension")
+		return errors.New("no persistence extension was provided to user extension")
 	}
 
 	return nil
