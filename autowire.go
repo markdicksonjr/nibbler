@@ -22,7 +22,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 	// get the type of Extension, as it will be checked against often
 	extensionInterfaceType := reflect.TypeOf(new(Extension)).Elem()
 
-	// dereference entensions for ease of use
+	// dereference extensions for ease of use
 	extensionValues := *extensions
 
 	// build a map of type name -> node
@@ -84,7 +84,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 
 							// the extension is assignable to the field
 							compareExtensionType := reflect.TypeOf(compareExt)
-							if compareExtensionType.Implements(fieldValue.Type().Elem()) {
+							if fieldValue.Kind() == reflect.Interface &&  compareExtensionType.Implements(fieldValue.Type().Elem()) {
 
 								(*logger).Debug("autowiring instance of " + compareExtensionType.String() +
 									" as " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
