@@ -48,7 +48,7 @@ func main() {
 	models = append(models, user.User{})
 
 	// allocate an SQL controller, providing an sql extension
-	sqlController := NibUserSql.SqlPersistenceController{
+	sqlController := NibUserSql.SqlExtension{
 		SqlExtension: &sql.Extension{
 			Models: models,
 		},

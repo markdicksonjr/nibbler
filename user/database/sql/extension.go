@@ -6,16 +6,17 @@ import (
 	"github.com/markdicksonjr/nibbler/user"
 )
 
-type SqlPersistenceController struct {
+type SqlExtension struct {
+	nibbler.NoOpExtension
 	SqlExtension *sql.Extension
 }
 
-func (s *SqlPersistenceController) Init(app *nibbler.Application) error {
+func (s *SqlExtension) Init(app *nibbler.Application) error {
 	// sql extension AutoMigrates models
 	return nil
 }
 
-func (s *SqlPersistenceController) GetUserById(id uint) (*user.User, error) {
+func (s *SqlExtension) GetUserById(id uint) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -28,7 +29,7 @@ func (s *SqlPersistenceController) GetUserById(id uint) (*user.User, error) {
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) GetUserByEmail(email string) (*user.User, error) {
+func (s *SqlExtension) GetUserByEmail(email string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -41,7 +42,7 @@ func (s *SqlPersistenceController) GetUserByEmail(email string) (*user.User, err
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) GetUserByUsername(username string) (*user.User, error) {
+func (s *SqlExtension) GetUserByUsername(username string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -55,7 +56,7 @@ func (s *SqlPersistenceController) GetUserByUsername(username string) (*user.Use
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) GetUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *SqlExtension) GetUserByPasswordResetToken(token string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -68,14 +69,14 @@ func (s *SqlPersistenceController) GetUserByPasswordResetToken(token string) (*u
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) Create(user *user.User) (*user.User, error) {
+func (s *SqlExtension) Create(user *user.User) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Create(user)
 	// TODO: nil, return code?, db error code?
 	return user, s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) Update(userValue *user.User) error {
+func (s *SqlExtension) Update(userValue *user.User) error {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
@@ -87,7 +88,7 @@ func (s *SqlPersistenceController) Update(userValue *user.User) error {
 	return s.SqlExtension.Db.Error
 }
 
-func (s *SqlPersistenceController) UpdatePassword(userValue *user.User) (error) {
+func (s *SqlExtension) UpdatePassword(userValue *user.User) (error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,

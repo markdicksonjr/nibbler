@@ -3,11 +3,13 @@ package main
 import (
 	"log"
 	//"github.com/markdicksonjr/nibbler/elasticsearch"
-	"github.com/markdicksonjr/nibbler/database/sql"
+	//"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
-	//NibUserElastic "github.com/markdicksonjr/nibbler/user/elastic"
+	//NibUserElastic "github.com/markdicksonjr/nibbler/user/database/elastic"
 	"github.com/markdicksonjr/nibbler"
+	//"github.com/markdicksonjr/nibbler/database/elasticsearch"
+	"github.com/markdicksonjr/nibbler/database/sql"
 )
 
 func main() {
@@ -20,26 +22,26 @@ func main() {
 	var models []interface{}
 	models = append(models, user.User{})
 
-	// allocate an SQL controller, providing a sql extension
-	sqlController := NibUserSql.SqlPersistenceController{
+	// allocate an user SQL extension, providing a base sql extension
+	userSqlExtension := NibUserSql.SqlExtension{
 		SqlExtension: &sql.Extension{
 			Models: models,
 		},
 	}
 
 	// allocate an ES controller, providing an ES extension
-	//elasticController := NibUserElastic.ElasticPersistenceController{
+	//elasticController := NibUserElastic.Extension{
 	//	ElasticExtension: &elasticsearch.Extension{},
 	//}
 
 	// allocate our user extension, providing the SQL controller
 	userExtension := user.Extension{
-		PersistenceController:  &sqlController, // &elasticController,
+		PersistenceExtension: &userSqlExtension, // &elasticController,
 	}
 
 	// prepare extension(s) for initialization
 	extensions := []nibbler.Extension{
-		sqlController.SqlExtension,
+		userSqlExtension.SqlExtension,
 		//elasticController.ElasticExtension,
 		&userExtension,
 	}

@@ -9,11 +9,12 @@ import (
 	"encoding/json"
 )
 
-type ElasticPersistenceController struct {
+type Extension struct {
+	nibbler.NoOpExtension
 	ElasticExtension *elasticsearch.Extension
 }
 
-func (s *ElasticPersistenceController) Init(app *nibbler.Application) error {
+func (s *Extension) Init(app *nibbler.Application) error {
 	ctx := context.Background()
 	exists, err := s.ElasticExtension.Client.IndexExists("user").Do(ctx)
 
@@ -36,7 +37,7 @@ func (s *ElasticPersistenceController) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *ElasticPersistenceController) GetUserById(id uint) (*user.User, error) {
+func (s *Extension) GetUserById(id uint) (*user.User, error) {
 	ctx := context.Background()
 	result, err := s.ElasticExtension.Client.Get().Index("user").Id(strconv.Itoa(int(id))).Do(ctx)
 
@@ -49,7 +50,7 @@ func (s *ElasticPersistenceController) GetUserById(id uint) (*user.User, error) 
 	return &userValue, err
 }
 
-func (s *ElasticPersistenceController) GetUserByEmail(email string) (*user.User, error) {
+func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
 	ctx := context.Background()
 
 	matchQuery := s.ElasticExtension.NewMatchQuery("email", email)
@@ -68,7 +69,7 @@ func (s *ElasticPersistenceController) GetUserByEmail(email string) (*user.User,
 	return &userValue, err
 }
 
-func (s *ElasticPersistenceController) GetUserByUsername(username string) (*user.User, error) {
+func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("username", username)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
@@ -86,7 +87,7 @@ func (s *ElasticPersistenceController) GetUserByUsername(username string) (*user
 	return &userValue, err
 }
 
-func (s *ElasticPersistenceController) GetUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("passwordResetExpiration", token)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
@@ -104,7 +105,7 @@ func (s *ElasticPersistenceController) GetUserByPasswordResetToken(token string)
 	return &userValue, err
 }
 
-func (s *ElasticPersistenceController) Create(userValue *user.User) (*user.User, error) {
+func (s *Extension) Create(userValue *user.User) (*user.User, error) {
 	ctx := context.Background()
 
 	// TODO
@@ -112,7 +113,7 @@ func (s *ElasticPersistenceController) Create(userValue *user.User) (*user.User,
 	return nil, err
 }
 
-func (s *ElasticPersistenceController) Update(userValue *user.User) error {
+func (s *Extension) Update(userValue *user.User) error {
 	ctx := context.Background()
 
 	// TODO
@@ -121,7 +122,7 @@ func (s *ElasticPersistenceController) Update(userValue *user.User) error {
 	return err
 }
 
-func (s *ElasticPersistenceController) UpdatePassword(userValue *user.User) (error) {
+func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 	ctx := context.Background()
 
 	// TODO: password...

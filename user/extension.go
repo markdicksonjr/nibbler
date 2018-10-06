@@ -8,8 +8,8 @@ import (
 
 const noExtensionErrorMessage = "no extension found"
 
-type PersistenceController interface {
-	Init(app *nibbler.Application) error
+type PersistenceExtension interface {
+	nibbler.Extension
 	GetUserById(id uint) (*User, error)
 	GetUserByEmail(email string) (*User, error)
 	GetUserByUsername(username string) (*User, error)
@@ -22,12 +22,12 @@ type PersistenceController interface {
 type Extension struct {
 	nibbler.Extension
 
-	PersistenceController PersistenceController
+	PersistenceExtension PersistenceExtension
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	if s.PersistenceController == nil {
-		return errors.New("persistence controller was not provided to user extension")
+	if s.PersistenceExtension == nil {
+		return errors.New("no persistence extension was not provided to user extension")
 	}
 
 	return nil
@@ -50,51 +50,51 @@ func (s *Extension) GetSafeUser(user User) User {
 }
 
 func (s *Extension) GetUserById(id uint) (*User, error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.GetUserById(id)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.GetUserById(id)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) GetUserByEmail(email string) (*User, error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.GetUserByEmail(email)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.GetUserByEmail(email)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) GetUserByPasswordResetToken(token string) (*User, error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.GetUserByPasswordResetToken(token)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.GetUserByPasswordResetToken(token)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) GetUserByUsername(username string) (*User, error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.GetUserByUsername(username)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.GetUserByUsername(username)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) Create(user *User) (*User, error) {
-	if s.PersistenceController != nil {
+	if s.PersistenceExtension != nil {
 		user.ID = uuid.New().String()
-		return s.PersistenceController.Create(user)
+		return s.PersistenceExtension.Create(user)
 	}
 	return user, errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) Update(user *User) (error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.Update(user)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.Update(user)
 	}
 	return errors.New(noExtensionErrorMessage)
 }
 
 func (s *Extension) UpdatePassword(user *User) (error) {
-	if s.PersistenceController != nil {
-		return s.PersistenceController.UpdatePassword(user)
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.UpdatePassword(user)
 	}
 	return errors.New(noExtensionErrorMessage)
 }
