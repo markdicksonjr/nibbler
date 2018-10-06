@@ -19,3 +19,17 @@ func (logger DefaultLogger) Info(message string) {
 func (logger DefaultLogger) Debug(message string) {
 	log.Println(message)
 }
+
+type SilentLogger struct {}
+
+func (logger SilentLogger) Error(message string) {
+}
+
+func (logger SilentLogger) Warn(message string) {
+}
+
+func (logger SilentLogger) Info(message string) {
+}
+
+func (logger SilentLogger) Debug(message string) {
+}

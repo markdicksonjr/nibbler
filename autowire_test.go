@@ -1,48 +1,49 @@
-package autowire
+package nibbler
 
 import (
 	"testing"
-	"github.com/markdicksonjr/nibbler"
 	"reflect"
 	"log"
 )
 
 type A struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 }
 
 type B struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 }
 
 type C struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 }
 
 type A1 struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 	A *A
 }
 
 type B1 struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 	B *B
 }
 
 type AB struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 	A *A
 	B *B
 }
 
 type BC struct {
-	nibbler.NoOpExtension
+	NoOpExtension
 	B *B
 	C *C
 }
 
-func TestAutoWire(t *testing.T) {
-	exts := []nibbler.Extension{
+func TestAutoWireExtensions(t *testing.T) {
+	var logger Logger = DefaultLogger{}
+
+	exts := []Extension{
 		&A{},
 		&A1{},
 		&B1{},
@@ -51,7 +52,7 @@ func TestAutoWire(t *testing.T) {
 		&C{},
 		&BC{},
 	}
-	exts, err := AutoWire(&exts, nibbler.DefaultLogger{})
+	exts, err := AutoWireExtensions(&exts, &logger)
 
 	if err != nil {
 		t.Fail()
@@ -61,9 +62,9 @@ func TestAutoWire(t *testing.T) {
 		log.Println(reflect.TypeOf(v).String())
 	}
 
-	aIndex := IndexOfType(exts, "*autowire.A")
-	a1Index := IndexOfType(exts, "*autowire.A1")
-	abIndex := IndexOfType(exts, "*autowire.AB")
+	aIndex := IndexOfType(exts, "*nibbler.A")
+	a1Index := IndexOfType(exts, "*nibbler.A1")
+	abIndex := IndexOfType(exts, "*nibbler.AB")
 
 	if aIndex == -1 || a1Index == -1 || aIndex > a1Index {
 		t.Fatal("A at index", aIndex, "is not in correct index relative to A1 at index", a1Index)
@@ -74,7 +75,7 @@ func TestAutoWire(t *testing.T) {
 	}
 }
 
-func IndexOfType(exts []nibbler.Extension, typeName string) int {
+func IndexOfType(exts []Extension, typeName string) int {
 	return SliceIndex(len(exts), func(i int) bool {
 		return reflect.TypeOf(exts[i]).String() == typeName
 	})

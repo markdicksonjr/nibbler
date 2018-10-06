@@ -1,29 +1,28 @@
-package autowire
+package nibbler
 
 import (
 	"reflect"
 	"errors"
 	"unsafe"
-	"github.com/markdicksonjr/nibbler"
 	"sort"
 )
 
-type Dependency struct {
-	Parents		[]*Dependency
-	Extension	*nibbler.Extension
+type dependency struct {
+	Parents		[]*dependency
+	Extension	*Extension
 }
 
 // TODO: this will blow up if there's a cycle
-func AutoWire(extensions *[]nibbler.Extension, logger nibbler.Logger) ([]nibbler.Extension, error) {
-	treeMap := make(map[string]*Dependency)
+func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, error) {
+	treeMap := make(map[string]*dependency)
 
-	extensionInterfaceType := reflect.TypeOf(new(nibbler.Extension)).Elem()
+	extensionInterfaceType := reflect.TypeOf(new(Extension)).Elem()
 	exts := *extensions
 
 	// build a map of type name -> node
 	for _, e := range exts {
 		thisExt := e
-		treeMap[reflect.TypeOf(e).String()] = &Dependency{Extension: &thisExt}
+		treeMap[reflect.TypeOf(e).String()] = &dependency{Extension: &thisExt}
 	}
 
 	// go through the list again to assign fields and attach dependents to extensions
@@ -38,7 +37,7 @@ func AutoWire(extensions *[]nibbler.Extension, logger nibbler.Logger) ([]nibbler
 			fieldValue := extensionValue.Field(i)
 
 			if fieldValue.Kind() == reflect.Ptr && fieldValue.Type().Implements(extensionInterfaceType) {
-				logger.Debug("autowiring " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
+				(*logger).Debug("autowiring " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
 					" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
 
 				mapExt := treeMap[fieldTypeAssignable.Type.String()]
@@ -64,10 +63,10 @@ func AutoWire(extensions *[]nibbler.Extension, logger nibbler.Logger) ([]nibbler
 }
 
 // reorder extensions based on dependencies
-func orderExtensions(treeMap map[string]*Dependency) []nibbler.Extension {
+func orderExtensions(treeMap map[string]*dependency) []Extension {
 
 	// convert treemap to a slice of dependencies
-	var dependencyList []*Dependency
+	var dependencyList []*dependency
 	for _, v := range treeMap {
 		dependencyList = append(dependencyList, v)
 	}
@@ -81,7 +80,7 @@ func orderExtensions(treeMap map[string]*Dependency) []nibbler.Extension {
 	})
 
 	// convert the slice of dependencies to a slice of extensions
-	var sortedExtensions []nibbler.Extension
+	var sortedExtensions []Extension
 	for _, v := range dependencyList {
 		sortedExtensions = append(sortedExtensions, *v.Extension)
 	}
@@ -89,7 +88,7 @@ func orderExtensions(treeMap map[string]*Dependency) []nibbler.Extension {
 	return sortedExtensions
 }
 
-func isDescendant(candidateChild *Dependency, candidateAncestor *Dependency) bool {
+func isDescendant(candidateChild *dependency, candidateAncestor *dependency) bool {
 
 	// the base case is that no parents are left
 	if candidateChild.Parents == nil || len(candidateChild.Parents) == 0 {
