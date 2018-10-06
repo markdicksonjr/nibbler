@@ -3,7 +3,6 @@ package nibbler
 import (
 	"testing"
 	"reflect"
-	"log"
 )
 
 type A struct {
@@ -40,6 +39,19 @@ type BC struct {
 	C *C
 }
 
+type D interface {
+	Extension
+}
+
+type D0 struct {
+	NoOpExtension
+}
+
+type E struct {
+	NoOpExtension
+	D *D
+}
+
 func TestAutoWireExtensions(t *testing.T) {
 	var logger Logger = DefaultLogger{}
 
@@ -58,10 +70,6 @@ func TestAutoWireExtensions(t *testing.T) {
 		t.Fail()
 	}
 
-	for _, v := range exts {
-		log.Println(reflect.TypeOf(v).String())
-	}
-
 	aIndex := IndexOfType(exts, "*nibbler.A")
 	a1Index := IndexOfType(exts, "*nibbler.A1")
 	abIndex := IndexOfType(exts, "*nibbler.AB")
@@ -72,6 +80,27 @@ func TestAutoWireExtensions(t *testing.T) {
 
 	if aIndex == -1 || abIndex == -1 || aIndex > abIndex {
 		t.Fatal("A at index", aIndex, "is not in correct index relative to AB at index", abIndex)
+	}
+}
+
+func TestAutoWireExtensionsForInterfaces(t *testing.T) {
+	var logger Logger = DefaultLogger{}
+
+	exts := []Extension{
+		&E{},
+		&D0{},
+	}
+	exts, err := AutoWireExtensions(&exts, &logger)
+
+	if err != nil {
+		t.Fail()
+	}
+
+	eIndex := IndexOfType(exts, "*nibbler.E")
+	dIndex := IndexOfType(exts, "*nibbler.D0")
+
+	if eIndex == -1 || dIndex == -1 || eIndex < dIndex {
+		t.Fatal("E at index", eIndex, "is not in correct index relative to D0 at index", dIndex)
 	}
 }
 

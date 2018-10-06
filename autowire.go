@@ -8,53 +8,108 @@ import (
 )
 
 type dependency struct {
-	Parents		[]*dependency
-	Extension	*Extension
+	parents			[]*dependency
+	extension		*Extension
+	typeName		string // mostly here for debugging, at the moment
 }
 
 // TODO: this will blow up if there's a cycle
 func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, error) {
+
+	// make a map to store dependency records by name
 	treeMap := make(map[string]*dependency)
 
+	// get the type of Extension, as it will be checked against often
 	extensionInterfaceType := reflect.TypeOf(new(Extension)).Elem()
-	exts := *extensions
+
+	// dereference entensions for ease of use
+	extensionValues := *extensions
 
 	// build a map of type name -> node
-	for _, e := range exts {
+	for _, e := range extensionValues {
 		thisExt := e
-		treeMap[reflect.TypeOf(e).String()] = &dependency{Extension: &thisExt}
+		typeName := reflect.TypeOf(e).String()
+		treeMap[typeName] = &dependency{
+			extension: &thisExt,
+			typeName: typeName,
+		}
 	}
 
-	// go through the list again to assign fields and attach dependents to extensions
-	for _, ext := range exts {
+	// go through the list of extensions again to assign fields and attach dependents to extensions
+	for extIndex, ext := range extensionValues {
 		extensionType := reflect.TypeOf(ext)
 		extensionValue := reflect.ValueOf(ext).Elem()
-		attributeCount := extensionValue.NumField()
-		thisExt := treeMap[reflect.TypeOf(ext).String()]
+		fieldCount := extensionValue.NumField()
+		thisExtensionDependency := treeMap[reflect.TypeOf(ext).String()]
 
-		for i:=0; i<attributeCount; i++ {
+		// loop through the fields for this extension
+		for i:=0; i<fieldCount; i++ {
 			fieldTypeAssignable := extensionType.Elem().Field(i)
 			fieldValue := extensionValue.Field(i)
 
-			if fieldValue.Kind() == reflect.Ptr && fieldValue.Type().Implements(extensionInterfaceType) {
-				(*logger).Debug("autowiring " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
-					" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
+			// if we've encountered a pointer field
+			if fieldValue.Kind() == reflect.Ptr {
 
-				mapExt := treeMap[fieldTypeAssignable.Type.String()]
+				// if we've encountered a field that implements Extension
+				if fieldValue.Type().Implements(extensionInterfaceType) {
 
-				if mapExt == nil {
-					return nil, errors.New("could not autowire " + fieldValue.Type().Name() + " into " + extensionType.Name())
+					(*logger).Debug("autowiring " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
+						" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
+
+					// TODO: this section looks repeated below
+
+					// get the tree node by name
+					mapExt := treeMap[fieldTypeAssignable.Type.String()]
+
+					// if it's not found, something very bad happened
+					if mapExt == nil {
+						return nil, errors.New("could not autowire " + fieldValue.Type().Name() + " into " + extensionType.Name())
+					}
+
+					// if the value isn't set, populate it
+					if fieldValue.IsNil() {
+						unsafeExt := unsafe.Pointer(mapExt.extension)
+						ptr := reflect.NewAt(fieldValue.Type(), unsafeExt)
+						fieldValue.Set(ptr.Elem())
+					}
+
+					thisExtensionDependency.parents = append(thisExtensionDependency.parents, mapExt)
+				} else {
+
+					// look through all extensions to see if one of them implements the interface in question
+					for compareIndex, compareExt := range extensionValues {
+
+						// if the value is unset and not the one we're comparing against
+						if compareIndex != extIndex && fieldValue.IsNil() {
+
+							// the extension is assignable to the field
+							compareExtensionType := reflect.TypeOf(compareExt)
+							if compareExtensionType.Implements(fieldValue.Type().Elem()) {
+
+								(*logger).Debug("autowiring instance of " + compareExtensionType.String() +
+									" as " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
+									" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
+
+								// get the tree node by name
+								mapExt := treeMap[compareExtensionType.String()]
+
+								// if it's not found, something very bad happened
+								if mapExt == nil {
+									return nil, errors.New("could not autowire " + fieldValue.Type().Name() + " into " + extensionType.Name())
+								}
+
+								// if the value isn't set, populate it
+								if fieldValue.IsNil() {
+									unsafeExt := unsafe.Pointer(mapExt.extension)
+									ptr := reflect.NewAt(fieldValue.Type(), unsafeExt)
+									fieldValue.Set(ptr.Elem())
+								}
+
+								thisExtensionDependency.parents = append(thisExtensionDependency.parents, mapExt)
+							}
+						}
+					}
 				}
-
-				// if the value isn't set, populate it
-				if fieldValue.IsNil() {
-					unsafeExt := unsafe.Pointer(mapExt.Extension)
-					ptr := reflect.NewAt(fieldValue.Type(), unsafeExt)
-					fieldValue.Set(ptr.Elem())
-				}
-
-				thisExt.Parents = append(thisExt.Parents, mapExt)
-				//mapExt.Parents = append(mapExt.Parents, thisExt)
 			}
 		}
 	}
@@ -82,7 +137,7 @@ func orderExtensions(treeMap map[string]*dependency) []Extension {
 	// convert the slice of dependencies to a slice of extensions
 	var sortedExtensions []Extension
 	for _, v := range dependencyList {
-		sortedExtensions = append(sortedExtensions, *v.Extension)
+		sortedExtensions = append(sortedExtensions, *v.extension)
 	}
 
 	return sortedExtensions
@@ -91,12 +146,12 @@ func orderExtensions(treeMap map[string]*dependency) []Extension {
 func isDescendant(candidateChild *dependency, candidateAncestor *dependency) bool {
 
 	// the base case is that no parents are left
-	if candidateChild.Parents == nil || len(candidateChild.Parents) == 0 {
+	if candidateChild.parents == nil || len(candidateChild.parents) == 0 {
 		return false
 	}
 
 	// loop through parents
-	for _, parent := range candidateChild.Parents {
+	for _, parent := range candidateChild.parents {
 
 		// if one is the candidate, we've proven the child to be a descendant
 		if parent == candidateAncestor {
