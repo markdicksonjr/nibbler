@@ -2,15 +2,57 @@ package main
 
 import (
 	"log"
-	//"github.com/markdicksonjr/nibbler/elasticsearch"
-	//"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
-	//NibUserElastic "github.com/markdicksonjr/nibbler/user/database/elastic"
 	"github.com/markdicksonjr/nibbler"
-	//"github.com/markdicksonjr/nibbler/database/elasticsearch"
 	"github.com/markdicksonjr/nibbler/database/sql"
+	"github.com/markdicksonjr/nibbler/database/elasticsearch"
+	NibUserElastic "github.com/markdicksonjr/nibbler/user/database/elastic"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
 )
+
+type UserAndDbExtensions struct {
+	UserExtension 				*user.Extension
+	UserPersistenceExtension 	user.PersistenceExtension
+	DbExtension 				nibbler.Extension
+}
+
+func allocateSqlExtensions() UserAndDbExtensions {
+
+	// prepare models for initialization
+	var models []interface{}
+	models = append(models, user.User{})
+
+	// allocate an SQL extension, providing the models for auto-migration
+	sqlExtension := sql.Extension{ Models: models }
+
+	sqlUserExtension := NibUserSql.Extension{
+		SqlExtension: &sqlExtension,
+	}
+
+	return UserAndDbExtensions{
+		DbExtension: &sqlExtension,
+		UserExtension: &user.Extension{
+			PersistenceExtension: &sqlUserExtension,
+		},
+		UserPersistenceExtension: &sqlUserExtension,
+	}
+}
+
+func allocateEsExtensions() UserAndDbExtensions {
+	elasticExtension := elasticsearch.Extension{}
+
+	elasticUserExtension := NibUserElastic.Extension{
+		ElasticExtension: &elasticExtension,
+	}
+
+	return UserAndDbExtensions{
+		DbExtension: &elasticExtension,
+		UserPersistenceExtension: &elasticUserExtension,
+		UserExtension: &user.Extension{
+			PersistenceExtension: &elasticUserExtension,
+		},
+	}
+}
 
 func main() {
 
@@ -18,32 +60,13 @@ func main() {
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadApplicationConfiguration(nil)
 
-	// prepare models for initialization
-	var models []interface{}
-	models = append(models, user.User{})
-
-	// allocate an user SQL extension, providing a base sql extension
-	userSqlExtension := NibUserSql.Extension{
-		SqlExtension: &sql.Extension{
-			Models: models,
-		},
-	}
-
-	// allocate an ES controller, providing an ES extension
-	//elasticController := NibUserElastic.Extension{
-	//	ElasticExtension: &elasticsearch.Extension{},
-	//}
-
-	// allocate our user extension, providing the SQL controller
-	userExtension := user.Extension{
-		PersistenceExtension: &userSqlExtension, // &elasticController,
-	}
+	sqlExtensions := allocateSqlExtensions()
 
 	// prepare extension(s) for initialization
 	extensions := []nibbler.Extension{
-		userSqlExtension.SqlExtension,
-		//elasticController.ElasticExtension,
-		&userExtension,
+		sqlExtensions.DbExtension,
+		sqlExtensions.UserPersistenceExtension,
+		sqlExtensions.UserExtension,
 	}
 
 	// initialize the application context
@@ -56,7 +79,7 @@ func main() {
 
 	// create a test user
 	emailVal := "test@example.com"
-	_, errCreate := userExtension.Create(&user.User{
+	_, errCreate := sqlExtensions.UserExtension.Create(&user.User{
 		Email: &emailVal,
 	})
 
@@ -64,7 +87,7 @@ func main() {
 		log.Fatal(errCreate.Error())
 	}
 
-	uV, errFind := userExtension.GetUserByEmail(emailVal)
+	uV, errFind := sqlExtensions.UserExtension.GetUserByEmail(emailVal)
 
 	if errFind != nil {
 		log.Fatal(errFind.Error())
@@ -76,7 +99,7 @@ func main() {
 	lastName := "testlast"
 	uV.FirstName = &firstName
 	uV.LastName = &lastName
-	err = userExtension.Update(uV)
+	err = sqlExtensions.UserExtension.Update(uV)
 
 	if err != nil {
 		log.Fatal(err.Error())
