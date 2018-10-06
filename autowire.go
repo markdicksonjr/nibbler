@@ -17,7 +17,7 @@ type dependency struct {
 func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, error) {
 
 	// make a map to store dependency records by name
-	treeMap := make(map[string]*dependency)
+	treeMap := make(map[reflect.Type]*dependency)
 
 	// get the type of Extension, as it will be checked against often
 	extensionInterfaceType := reflect.TypeOf(new(Extension)).Elem()
@@ -28,8 +28,9 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 	// build a map of type name -> node
 	for _, e := range extensionValues {
 		thisExt := e
-		typeName := reflect.TypeOf(e).String()
-		treeMap[typeName] = &dependency{
+		typeVal := reflect.TypeOf(e)
+		typeName := typeVal.String()
+		treeMap[typeVal] = &dependency{
 			extension: &thisExt,
 			typeName: typeName,
 		}
@@ -40,7 +41,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 		extensionType := reflect.TypeOf(ext)
 		extensionValue := reflect.ValueOf(ext).Elem()
 		fieldCount := extensionValue.NumField()
-		thisExtensionDependency := treeMap[reflect.TypeOf(ext).String()]
+		thisExtensionDependency := treeMap[reflect.TypeOf(ext)]
 
 		// loop through the fields for this extension
 		for i:=0; i<fieldCount; i++ {
@@ -59,7 +60,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 					// TODO: this section looks repeated below
 
 					// get the tree node by name
-					mapExt := treeMap[fieldTypeAssignable.Type.String()]
+					mapExt := treeMap[fieldTypeAssignable.Type]
 
 					// if it's not found, something very bad happened
 					if mapExt == nil {
@@ -91,7 +92,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 									" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
 
 								// get the tree node by name
-								mapExt := treeMap[compareExtensionType.String()]
+								mapExt := treeMap[compareExtensionType]
 
 								// if it's not found, something very bad happened
 								if mapExt == nil {
@@ -118,7 +119,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 }
 
 // reorder extensions based on dependencies
-func orderExtensions(treeMap map[string]*dependency) []Extension {
+func orderExtensions(treeMap map[reflect.Type]*dependency) []Extension {
 
 	// convert treemap to a slice of dependencies
 	var dependencyList []*dependency
