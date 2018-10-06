@@ -23,7 +23,7 @@ func main() {
 	models = append(models, user.User{})
 
 	// allocate an user SQL extension, providing a base sql extension
-	userSqlExtension := NibUserSql.SqlExtension{
+	userSqlExtension := NibUserSql.Extension{
 		SqlExtension: &sql.Extension{
 			Models: models,
 		},

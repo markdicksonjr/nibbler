@@ -62,7 +62,7 @@ func main() {
 
 	// allocate user extension, providing sql extension to it
 	userExtension := user.Extension{
-		PersistenceController: &NibUserSql.SqlExtension{
+		PersistenceExtension: &NibUserSql.Extension{
 			SqlExtension: &sqlExtension,
 		},
 	}

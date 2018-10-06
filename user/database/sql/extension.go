@@ -6,17 +6,17 @@ import (
 	"github.com/markdicksonjr/nibbler/user"
 )
 
-type SqlExtension struct {
+type Extension struct {
 	nibbler.NoOpExtension
 	SqlExtension *sql.Extension
 }
 
-func (s *SqlExtension) Init(app *nibbler.Application) error {
+func (s *Extension) Init(app *nibbler.Application) error {
 	// sql extension AutoMigrates models
 	return nil
 }
 
-func (s *SqlExtension) GetUserById(id uint) (*user.User, error) {
+func (s *Extension) GetUserById(id uint) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -29,7 +29,7 @@ func (s *SqlExtension) GetUserById(id uint) (*user.User, error) {
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) GetUserByEmail(email string) (*user.User, error) {
+func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -42,7 +42,7 @@ func (s *SqlExtension) GetUserByEmail(email string) (*user.User, error) {
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) GetUserByUsername(username string) (*user.User, error) {
+func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -56,7 +56,7 @@ func (s *SqlExtension) GetUserByUsername(username string) (*user.User, error) {
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) GetUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
@@ -69,14 +69,14 @@ func (s *SqlExtension) GetUserByPasswordResetToken(token string) (*user.User, er
 	return &userValue, s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) Create(user *user.User) (*user.User, error) {
+func (s *Extension) Create(user *user.User) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Create(user)
 	// TODO: nil, return code?, db error code?
 	return user, s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) Update(userValue *user.User) error {
+func (s *Extension) Update(userValue *user.User) error {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
@@ -88,7 +88,7 @@ func (s *SqlExtension) Update(userValue *user.User) error {
 	return s.SqlExtension.Db.Error
 }
 
-func (s *SqlExtension) UpdatePassword(userValue *user.User) (error) {
+func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,

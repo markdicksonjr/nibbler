@@ -48,7 +48,7 @@ func main() {
 	models = append(models, user.User{})
 
 	// allocate an SQL controller, providing an sql extension
-	sqlController := NibUserSql.SqlExtension{
+	sqlController := NibUserSql.Extension{
 		SqlExtension: &sql.Extension{
 			Models: models,
 		},
@@ -56,7 +56,7 @@ func main() {
 
 	// allocate user extension, providing sql extension to it
 	userExtension := user.Extension{
-		PersistenceController:  &sqlController, // &elasticController,
+		PersistenceExtension:  &sqlController, // &elasticController,
 	}
 
 	// allocate session extension, with an optional custom connector
