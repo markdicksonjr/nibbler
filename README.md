@@ -2,12 +2,20 @@
 
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
-An extension-oriented app-building module designed to take a lot of the boilerplate out of making a top-notch
+An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch
 Go web server or service worker.  These modules require Go v1.9+.  
 
-## Module Categories
+## Extensions
 
-Modules in Nibbler are organized by functional category, with the main Nibbler structures at the root level.  These are the 
+Extensions are the backbone of Nibbler.  Extensions must implement a very simple interface (nibbler.Extension).  A base class
+extension (NoOpExtension) is available for cases where only very few Extension methods (or none?) are required for the 
+extension you're building.
+
+## Included Extension Categories
+
+Nibbler also provides some extension implementations that perform common tasks for web services.
+
+Extensions provided with Nibbler are organized by functional category, with the main Nibbler structures at the root level.  These are the 
 module categories below the root level:
 
 - Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
@@ -22,24 +30,40 @@ module categories below the root level:
 Sample apps have been provided to show how Nibbler and some extensions are used.  They'll be helpful as I fill in many documentation gaps.
 
 First, grab dependencies.  If using dep, it will be with something like
+`dep ensure` or you could use something like `go get -v -t -d ./...`
 
-`dep ensure`
-
-or you could use something like
-
-`go get -v -t -d ./...`
-
-then, build the sample app you're interested in using (from the correct directory):
-
-`go build`
-
-finally, run the app (from the correct directory) with
-
-`go run sample.application`
+Then, build the sample app you're interested in using (from the correct directory):
+`go build` and then run the app (from the correct directory) with `go run sample.application`
 
 Note that using dep this way could pull in more vendor dependencies than your app might need (e.g. elasticsearch-related
 dependencies when you're using only SQL).  To avoid this, use go get without the flags above (perhaps with the Gopkg.toml
 as a reference for the full dependency list).
+
+### Auto-wiring
+
+To prepare for very complex apps, an auto-wiring mechanism has been added.  This mechanism will take a given slice of 
+allocated extensions and assign Extension pointer field values for each as well as order the extensions for initialization.
+
+Example:
+
+```
+extensions := []nibbler.Extension{
+    &A{},
+    &A1{},
+    &B1{},
+    &AB{},
+    &B{},
+    &C{},
+    &BC{},
+}
+exts, err := nibbler.AutoWireExtensions(&extensions, &logger)
+
+// check error
+
+err = app.Init(config, &logger, &extensions)
+
+// check error
+```
 
 ## Configuration
 
@@ -96,3 +120,10 @@ Your app can define sources its own way, so keep in mind the sample is just one 
 
 - the environment variables can be directly mapped to JSON values (when provided as a source to LoadApplicationConfiguration).  Environment variables 
 are all caps, and underscores are used where dots were used in the JSON format.
+
+## Logging
+
+A simple logger must be passed to most Nibbler methods.  Some simple logger implementations have been provided:
+
+- DefaultLogger - logs to the console
+- SilentLogger - logs nothing 
