@@ -42,7 +42,13 @@ as a reference for the full dependency list).
 ### Auto-wiring
 
 To prepare for very complex apps, an auto-wiring mechanism has been added.  This mechanism will take a given slice of 
-allocated extensions and assign Extension pointer field values for each as well as order the extensions for initialization.
+allocated extensions and assign Extension pointer field values for each of them that is undefined, as well as order the 
+extensions for initialization.
+
+There are currently a few restrictions, however.  The current auto-wiring implementation still has some trouble where fields
+are interfaces.  If the field is a pointer to a struct type (e.g. *sendgrid.Extension), the auto-wiring will work fine.  
+Extensions like the user extension are currently trouble for auto-wiring, as the extension has a field that is an interface 
+(which is also an extension).  For now, manually wire something like this, and automatically wire everything else.
 
 Example:
 
