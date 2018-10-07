@@ -52,17 +52,27 @@ type E struct {
 	D *D
 }
 
+type F struct {
+	NoOpExtension
+	D D
+}
+
 func TestAutoWireExtensions(t *testing.T) {
 	var logger Logger = DefaultLogger{}
 
+	a1 := A1{}
+	b1 := B1{}
+	ab := AB{}
+	bc := BC{}
+
 	exts := []Extension{
 		&A{},
-		&A1{},
-		&B1{},
-		&AB{},
+		&a1,
+		&b1,
+		&ab,
 		&B{},
 		&C{},
-		&BC{},
+		&bc,
 	}
 	exts, err := AutoWireExtensions(&exts, &logger)
 
@@ -78,17 +88,36 @@ func TestAutoWireExtensions(t *testing.T) {
 		t.Fatal("A at index", aIndex, "is not in correct index relative to A1 at index", a1Index)
 	}
 
+	if a1.A == nil {
+		t.Fatal("A1.A not wired")
+	}
+
 	if aIndex == -1 || abIndex == -1 || aIndex > abIndex {
 		t.Fatal("A at index", aIndex, "is not in correct index relative to AB at index", abIndex)
+	}
+
+	if ab.A == nil {
+		t.Fatal("AB.A not wired")
+	}
+
+	if bc.B == nil {
+		t.Fatal("BC.B not wired")
+	}
+
+	if bc.C == nil {
+		t.Fatal("BC.C not wired")
 	}
 }
 
 func TestAutoWireExtensionsForInterfaces(t *testing.T) {
 	var logger Logger = DefaultLogger{}
 
+	e := E{}
+	f := F{}
 	exts := []Extension{
-		&E{},
+		&e,
 		&D0{},
+		&f,
 	}
 	exts, err := AutoWireExtensions(&exts, &logger)
 
@@ -96,12 +125,24 @@ func TestAutoWireExtensionsForInterfaces(t *testing.T) {
 		t.Fail()
 	}
 
+	//fIndex := IndexOfType(exts, "*nibbler.F")
 	eIndex := IndexOfType(exts, "*nibbler.E")
 	dIndex := IndexOfType(exts, "*nibbler.D0")
 
 	if eIndex == -1 || dIndex == -1 || eIndex < dIndex {
 		t.Fatal("E at index", eIndex, "is not in correct index relative to D0 at index", dIndex)
 	}
+
+	if e.D == nil {
+		t.Fatal("E.D not wired")
+	}
+
+	//if f.D == nil {
+	//	t.Fatal("F.D not wired")
+	//}
+	//if fIndex == -1 || dIndex == -1 || fIndex < dIndex {
+	//	t.Fatal("F at index", fIndex, "is not in correct index relative to D0 at index", dIndex)
+	//}
 }
 
 func IndexOfType(exts []Extension, typeName string) int {
