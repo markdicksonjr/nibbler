@@ -22,13 +22,17 @@ type Extension struct {
 	Sender outbound.Sender
 
 	// for password reset
-	PasswordResetEnabled   bool
-	PasswordResetFromName  string
-	PasswordResetFromEmail string
-	PasswordResetRedirect  string // a UI or other service to handle the redirect from email (will have ?token=X or &token=X appended)
+	PasswordResetEnabled   				bool
+	PasswordResetFromName  				string
+	PasswordResetFromEmail 				string
+	PasswordResetRedirect  				string // a UI or other service to handle the redirect from email (will have ?token=X or &token=X appended)
+	PasswordResetTokenExpirationDays	*int
+
+	app *nibbler.Application
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
+	s.app = app
 
 	// assert that we have the session extension
 	if s.SessionExtension == nil {
@@ -132,9 +136,7 @@ func (s *Extension) Login(email string, password string) (*user.User, error) {
 
 func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.PasswordResetEnabled {
-		w.WriteHeader(http.StatusNotFound)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "not found"}`)) // TODO: ensure this conforms
+		nibbler.Write404Json(w)
 		return
 	}
 
@@ -149,16 +151,12 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	} else if username != "" {
 		userValue, err = s.UserExtension.GetUserByUsername(email);
 	} else {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "incorrect parameters"}`))
+		nibbler.Write500Json(w, "incorrect parameters")
 		return
 	}
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+		nibbler.Write500Json(w, err.Error())
 		return
 	}
 
@@ -172,25 +170,27 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 
 	// in the event we looked up the user by anything but email, check that there is an email
 	if userValue.Email == nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "no email on record"}`))
+		nibbler.Write500Json(w, "no email on record")
 		return
 	}
 
-	// generate reset token with expiration (one day - TODO: make configurable)
+	// compute password expiration time (defaults to 1 day)
+	expirationDays := 1
+	if s.PasswordResetTokenExpirationDays != nil {
+		expirationDays = *s.PasswordResetTokenExpirationDays
+	}
+
+	// generate reset token with expiration
 	uuidInstance := uuid.New().String()
-	expiration := time.Now().AddDate(0, 0, 1)
+	expiration := time.Now().AddDate(0, 0, expirationDays)
 	userValue.PasswordResetToken = &uuidInstance
 	userValue.PasswordResetExpiration = &expiration
 
 	errUpdate := s.UserExtension.Update(userValue)
 
 	if errUpdate != nil {
-		// TODO: log error message
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "failed to update user record"}`))
+		(*s.app.GetLogger()).Error("failed to update user record: " + errUpdate.Error())
+		nibbler.Write500Json(w, "failed to update user record")
 		return
 	}
 

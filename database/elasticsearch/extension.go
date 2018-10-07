@@ -32,7 +32,6 @@ func (s *Extension) Init(app *nibbler.Application) error {
 }
 
 func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	// TODO
 	return nil
 }
 

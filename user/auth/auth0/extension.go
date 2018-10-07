@@ -28,9 +28,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		profile, err := s.SessionExtension.GetAttribute(r, "profile")
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 
@@ -38,43 +36,33 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		email := profileMap["name"]
 
 		if email == nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 
 		emailValue := email.(string)
 
 		if len(emailValue) == 0 {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 
 		userValue, err := s.UserExtension.GetUserByEmail(emailValue)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 
 		if userValue == nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "not found"}`)) // TODO: ensure this conforms
+			nibbler.Write404Json(w)
 			return false, err
 		}
 
 		err = s.SessionExtension.SetCaller(w, r, userValue)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 

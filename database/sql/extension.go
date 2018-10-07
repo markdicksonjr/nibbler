@@ -11,6 +11,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	_ "github.com/lib/pq"
 	"github.com/markdicksonjr/nibbler"
+	"strconv"
 )
 
 type Extension struct {
@@ -27,6 +28,7 @@ type Configuration struct {
 	Username string
 	Password *string
 	Path string
+	Query url.Values
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -37,17 +39,35 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	}
 
 	if configuration.Scheme == "postgres" {
-		// TODO: parameterize sslmode, improve for non-psql dialects
+
+		// ensure port is numerical
+		_, err = strconv.Atoi(configuration.Port)
+
+		if err != nil {
+			return err
+		}
+
+		// establish the sslmode from the configuration, defaulting to disable
+		sslMode := configuration.Query.Get("sslmode")
+		if len(sslMode) == 0 {
+			sslMode = "disable"
+		}
+
 		s.Db, err = gorm.Open(configuration.Scheme,
-			fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+			fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 				configuration.Host,
-				configuration.Port, // TODO: stronger checks that this is valid
+				configuration.Port,
 				configuration.Username,
 				configuration.Path,
 				configuration.Password,
+				sslMode,
 			))
 	} else if configuration.Scheme == "sqlite3" {
-		s.Db, err = gorm.Open(configuration.Scheme, ":memory:") // TODO: non-mem dialect params
+		path := ":memory:"
+		if len(configuration.Path) > 0 {
+			path = configuration.Path
+		}
+		s.Db, err = gorm.Open(configuration.Scheme, path)
 	} else {
 		return errors.New("unknown dialect")
 	}
@@ -165,15 +185,17 @@ func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configurati
 	}
 
 	// apply fallback user/password
-	if urlParsed.User == nil && configPtr != nil {
-		config := *configPtr
-		urlParsed.User = url.UserPassword(
-			config.Get("db", "user").String(""),
-			config.Get("db", "password").String(""),
-		)
+	if urlParsed.User == nil {
+		if configPtr != nil {
+			config := *configPtr
+			urlParsed.User = url.UserPassword(
+				config.Get("db", "user").String(""),
+				config.Get("db", "password").String(""),
+			)
+		} else {
+			urlParsed.User = url.UserPassword("", "")
+		}
 	}
-
-	// TODO: urlParsed.User can be null if configPtr is null
 
 	// ensure password is set
 	password, isSet := urlParsed.User.Password()
@@ -203,8 +225,7 @@ func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configurati
 		urlParsed.Path = config.Get("db", "dbname").String("")
 	}
 
-	// TODO: a better check can be done here
-	if urlParsed.Scheme != "sqlite3" {
+	if schemeAcceptsLeadingSlashInPath(urlParsed.Scheme) {
 		// the URL parser puts a leading slash on the path, which GORM, etc doesn't like for non-file connections
 		urlParsed.Path = strings.Replace(urlParsed.Path, "/", "", -1)
 	}
@@ -212,10 +233,11 @@ func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configurati
 	configuration := &Configuration{
 		urlParsed.Scheme,
 		hostParts[0],
-		hostParts[1], // TODO: stronger checks that this is valid
+		hostParts[1],
 		urlParsed.User.Username(),
 		&password,
 		urlParsed.Path,
+		urlParsed.Query(),
 	}
 
 	if !isSet {
@@ -223,6 +245,10 @@ func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configurati
 	}
 
 	return configuration, s.validateConfiguration(configuration)
+}
+
+func schemeAcceptsLeadingSlashInPath(s string) bool {
+	return s != "sqlite3"
 }
 
 func (s *Extension) validateConfiguration(configuration *Configuration) error {
