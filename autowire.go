@@ -14,6 +14,7 @@ type dependency struct {
 }
 
 var interfaceWiringEnabled = true
+var otherFieldWiringEnabled = true
 
 // get the type of Extension, as it will be checked against often
 var extensionInterfaceType = reflect.TypeOf(new(Extension)).Elem()
@@ -54,7 +55,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 			if fieldValue.Kind() == reflect.Ptr {
 
 				// if we've encountered a field that implements Extension
-				if fieldValue.Type().Implements(extensionInterfaceType) {
+				if fieldValue.Type().AssignableTo(extensionInterfaceType) {
 
 					(*logger).Debug("autowiring " + fieldTypeAssignable.Name + " " + fieldTypeAssignable.Type.String() +
 						" into " + extensionType.Elem().Name() + " " + extensionValue.Type().String())
@@ -77,7 +78,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 					}
 
 					thisExtensionDependency.parents = append(thisExtensionDependency.parents, mapExt)
-				} else {
+				} else if otherFieldWiringEnabled {
 					err := wireFieldToAnotherExtensionType(extensionValues, extIndex, treeMap, thisExtensionDependency, i, logger)
 
 					if err != nil {
@@ -125,7 +126,7 @@ func wireFieldToAnotherExtensionType(
 
 				// check to see if either the extension or the dereferenced extension implement the type of the field
 				assignable := compareExtensionType.AssignableTo(fieldValue.Type())
-				assignable = assignable || (compareExtensionTypeKind == reflect.Ptr && compareExtensionType.AssignableTo(fieldValue.Type().Elem()))
+				assignable = assignable || (fieldValue.Type().Kind() == reflect.Ptr && compareExtensionType.AssignableTo(fieldValue.Type().Elem()))
 
 				if assignable {
 					(*logger).Debug("autowiring instance of " + compareExtensionType.String() +
