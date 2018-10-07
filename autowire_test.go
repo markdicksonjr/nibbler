@@ -125,7 +125,7 @@ func TestAutoWireExtensionsForInterfaces(t *testing.T) {
 		t.Fail()
 	}
 
-	//fIndex := IndexOfType(exts, "*nibbler.F")
+	fIndex := IndexOfType(exts, "*nibbler.F")
 	eIndex := IndexOfType(exts, "*nibbler.E")
 	dIndex := IndexOfType(exts, "*nibbler.D0")
 
@@ -137,12 +137,12 @@ func TestAutoWireExtensionsForInterfaces(t *testing.T) {
 		t.Fatal("E.D not wired")
 	}
 
-	//if f.D == nil {
-	//	t.Fatal("F.D not wired")
-	//}
-	//if fIndex == -1 || dIndex == -1 || fIndex < dIndex {
-	//	t.Fatal("F at index", fIndex, "is not in correct index relative to D0 at index", dIndex)
-	//}
+	if f.D == nil {
+		t.Fatal("F.D not wired")
+	}
+	if fIndex == -1 || dIndex == -1 || fIndex < dIndex {
+		t.Fatal("F at index", fIndex, "is not in correct index relative to D0 at index", dIndex)
+	}
 }
 
 func IndexOfType(exts []Extension, typeName string) int {
