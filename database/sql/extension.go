@@ -129,6 +129,7 @@ func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
 	return &urlParsed.Scheme, nil
 }
 
+// TODO: allow attribute Url on Extension to take precedence over all of this
 func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configuration, error) {
 	var urlParsed *url.URL = nil
 	var scheme *string

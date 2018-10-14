@@ -91,10 +91,22 @@
   version = "v1.38.3"
 
 [[projects]]
+  name = "github.com/go-stack/stack"
+  packages = ["."]
+  revision = "2fee6af1a9795aafbe0253a0cfbdf668e1fb8a9a"
+  version = "v1.8.0"
+
+[[projects]]
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/snappy"
+  packages = ["."]
+  revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
   name = "github.com/google/uuid"
@@ -230,6 +242,65 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/mongodb/mongo-go-driver"
+  packages = [
+    "bson",
+    "bson/bsoncodec",
+    "bson/decimal",
+    "bson/elements",
+    "bson/internal/llbson",
+    "bson/objectid",
+    "bson/parser",
+    "bson/parser/ast",
+    "core/address",
+    "core/auth",
+    "core/auth/internal/gssapi",
+    "core/command",
+    "core/compressor",
+    "core/connection",
+    "core/connstring",
+    "core/description",
+    "core/dispatch",
+    "core/event",
+    "core/option",
+    "core/readconcern",
+    "core/readpref",
+    "core/result",
+    "core/session",
+    "core/tag",
+    "core/topology",
+    "core/uuid",
+    "core/version",
+    "core/wiremessage",
+    "core/writeconcern",
+    "internal",
+    "mongo",
+    "mongo/aggregateopt",
+    "mongo/bulkwriteopt",
+    "mongo/changestreamopt",
+    "mongo/clientopt",
+    "mongo/collectionopt",
+    "mongo/countopt",
+    "mongo/dbopt",
+    "mongo/deleteopt",
+    "mongo/distinctopt",
+    "mongo/dropcollopt",
+    "mongo/findopt",
+    "mongo/indexopt",
+    "mongo/insertopt",
+    "mongo/listcollectionopt",
+    "mongo/listdbopt",
+    "mongo/mongoopt",
+    "mongo/replaceopt",
+    "mongo/runcmdopt",
+    "mongo/sessionopt",
+    "mongo/transactionopt",
+    "mongo/updateopt"
+  ]
+  revision = "518f2246cd0d376a473b93baaee3942d99e44d0f"
+  version = "v0.0.16"
+
+[[projects]]
   name = "github.com/olivere/elastic"
   packages = [
     ".",
@@ -268,6 +339,24 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/xdg/scram"
+  packages = ["."]
+  revision = "7eeb5667e42c09cb51bf7b7c28aea8c56767da90"
+
+[[projects]]
+  name = "github.com/xdg/stringprep"
+  packages = ["."]
+  revision = "bd625b8dc1e3b0f57412280ccbcc317f0c69d8db"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["pbkdf2"]
+  revision = "a92615f3c49003920a58dedcf32cf55022cefb8d"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -286,9 +375,28 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/sync"
+  packages = ["semaphore"]
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "2b024373dcd9800f0cae693839fac6ede8d64a8c"
+
+[[projects]]
+  name = "golang.org/x/text"
+  packages = [
+    "internal/gen",
+    "internal/triegen",
+    "internal/ucd",
+    "transform",
+    "unicode/cldr",
+    "unicode/norm"
+  ]
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -313,6 +421,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fd2281514113184a40ded460e25768edc800cdc481749fb8d60cfeb1fd379ca7"
+  inputs-digest = "44bebaa3eb9c22be78ee16b57f78b08460f23eb0be136f5b7cca4fc01135257a"
   solver-name = "gps-cdcl"
   solver-version = 1

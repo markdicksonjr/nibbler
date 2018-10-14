@@ -7,9 +7,10 @@ import (
 )
 
 type Extension struct {
-	nibbler.Extension
+	nibbler.NoOpExtension
 
-	Client *elastic.Client
+	Client	*elastic.Client
+	Url		string
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -19,24 +20,19 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		return errors.New("app configuration not provided")
 	}
 
-	configPtr := app.GetConfiguration().Raw
-	esUrl := (*configPtr).Get("elastic", "url").String("")
+	// if the Url attribute isn't set, find the config in environment variables
+	if len(s.Url) == 0 {
+		configPtr := app.GetConfiguration().Raw
+		s.Url = (*configPtr).Get("elastic", "url").String("")
 
-	if len(esUrl) == 0 {
-		esUrl = (*configPtr).Get("database", "url").String("http://localhost:9200")
+		if len(s.Url) == 0 {
+			s.Url = (*configPtr).Get("database", "url").String("http://localhost:9200")
+		}
 	}
 
-	s.Client, err = elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(esUrl))
+	s.Client, err = elastic.NewClient(elastic.SetSniff(false), elastic.SetURL(s.Url))
 
 	return err
-}
-
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	return nil
-}
-
-func (s *Extension) Destroy(context *nibbler.Application) error {
-	return nil
 }
 
 func (s *Extension) NewMatchQuery(name string, text interface{}) *elastic.MatchQuery {

@@ -5,4 +5,4 @@ for operations.
 
 ## Environment Variables
 
-First, the url will be derived from "elastic.url" (ELASTIC_URL), then "database.url" (DATABASE_URL).
+If "Url" is not set on the extension instance, the url will be derived from "elastic.url" (ELASTIC_URL), then "database.url" (DATABASE_URL).
