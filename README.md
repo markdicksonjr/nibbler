@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
 An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch
-Go web server or service worker.  These modules require Go v1.9+.  
+Go web server or service worker.  Requires Go v1.9+.  
 
 ## Extensions
 
@@ -20,7 +20,7 @@ module categories below the root level:
 
 - Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
 - Database - connect to databases and expose mechanisms to create, query, etc.
-- Mail - both inbound and outbound email/sms/etc
+- Mail - outbound email/sms/etc
 - Session - session storage and retreival
 - Storage - block/blob storage
 - User - the Nibbler user model, and various integrations that can operate with it.  These will tend to be auth integrations.
