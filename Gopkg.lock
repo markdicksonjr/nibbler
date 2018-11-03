@@ -2,18 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Azure/azure-pipeline-go"
-  packages = ["pipeline"]
-  revision = "b8e3409182fd52e74f7d7bdfbff5833591b3b655"
-  version = "v0.1.8"
-
-[[projects]]
-  name = "github.com/Azure/azure-storage-blob-go"
-  packages = ["2016-05-31/azblob"]
-  revision = "bb46532f68b79e9e1baca8fb19a382ef5d40ed33"
-  version = "0.2.0"
-
-[[projects]]
   name = "github.com/BurntSushi/toml"
   packages = ["."]
   revision = "b26d9c308763d68093482582cea63d69be07a0f0"
@@ -436,6 +424,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ae0ee14a5ddf53356440e6b9934112a5213c66094bb16f4d588482a55ff49098"
+  inputs-digest = "294e1a700fb54c470f83c733018d6d8b764125deac5fc254b131743181d7315a"
   solver-name = "gps-cdcl"
   solver-version = 1
