@@ -17,6 +17,8 @@ import (
 type Extension struct {
 	nibbler.NoOpExtension
 	ConnectServiceOnInit 	bool
+	CredentialsPath			string
+	TokenFilePath			string
 
 	Srv 					*drive.Service
 	Client 					*http.Client
@@ -25,8 +27,15 @@ type Extension struct {
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
+	if s.CredentialsPath == "" {
+		s.CredentialsPath = (*app.GetConfiguration().Raw).Get("google.drive.credentials.path").String("drive-credentials.json")
+	}
 
-	b, err := ioutil.ReadFile((*app.GetConfiguration().Raw).Get("drive.credentials.path").String("credentials.json"))
+	if s.TokenFilePath == "" {
+		s.TokenFilePath = (*app.GetConfiguration().Raw).Get("google.drive.tokenfile.path").String("drive-token.json")
+	}
+
+	b, err := ioutil.ReadFile(s.CredentialsPath)
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -45,7 +54,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 }
 
 func (s *Extension) InitService() error {
-	client := getClient(s.config)
+	client := getClient(s.config, s.TokenFilePath)
 
 	var err error
 	s.Srv, err = drive.New(client)
@@ -54,12 +63,11 @@ func (s *Extension) InitService() error {
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
-func getClient(config *oauth2.Config) *http.Client {
-	tokenFile := "drive-token.json"
-	tok, err := tokenFromFile(tokenFile)
+func getClient(config *oauth2.Config, tokenFilePath string) *http.Client {
+	tok, err := tokenFromFile(tokenFilePath)
 	if err != nil {
 		tok = getTokenFromWeb(config)
-		saveToken(tokenFile, tok)
+		saveToken(tokenFilePath, tok)
 	}
 	return config.Client(context.Background(), tok)
 }
