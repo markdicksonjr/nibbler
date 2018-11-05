@@ -209,6 +209,12 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  name = "github.com/keighl/mandrill"
+  packages = ["."]
+  revision = "5d7133fb578a9504f8ab549737c993422f65a000"
+  version = "1.1.0"
+
+[[projects]]
   name = "github.com/lib/pq"
   packages = [
     ".",
@@ -459,6 +465,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d37ec4fc467aa70ccbc4a7efa8b9fbda9cda4ed254627cc884da2f9a37f443c1"
+  inputs-digest = "65d04fb4557574866186821980440fe46223dea088974bfa57e7104d54821bdd"
   solver-name = "gps-cdcl"
   solver-version = 1
