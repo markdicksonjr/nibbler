@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"github.com/go-redis/redis"
 	_ "github.com/go-redis/redis"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/go-redis/redis"
+	"net/url"
 )
 
 type Extension struct {
@@ -20,7 +21,28 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		s.Url = (*app.GetConfiguration().Raw).Get("redis", "url").String("")
 
 		if len(s.Url) == 0 {
+			s.Url = (*app.GetConfiguration().Raw).Get("rediscloud", "url").String("")
+		}
+
+		if len(s.Url) == 0 {
 			s.Url = (*app.GetConfiguration().Raw).Get("database", "url").String("")
+		}
+
+		if len(s.Url) > 0 {
+			parsedUrl, err := url.Parse(s.Url);
+			if err != nil {
+				return nil
+			}
+
+			if parsedUrl.Host != "" {
+				s.Url = parsedUrl.Host
+
+				if parsedUrl.User != nil {
+					if pass, set := parsedUrl.User.Password(); set {
+						s.Password = pass
+					}
+				}
+			}
 		}
 	}
 
@@ -32,6 +54,10 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		}
 	}
 
+	return s.Connect()
+}
+
+func (s *Extension) Connect() error {
 	s.Client = redis.NewClient(&redis.Options{
 		Addr:     s.Url,
 		Password: s.Password,
