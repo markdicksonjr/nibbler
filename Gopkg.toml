@@ -62,3 +62,7 @@
 [[constraint]]
   branch = "master"
   name = "google.golang.org/api"
+
+[[constraint]]
+  name = "github.com/pkg/sftp"
+  version = "1.8.3"

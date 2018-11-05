@@ -215,6 +215,12 @@
   version = "1.1.0"
 
 [[projects]]
+  name = "github.com/kr/fs"
+  packages = ["."]
+  revision = "1455def202f6e05b95cc7bfc7e8ae67ae5141eba"
+  version = "v0.1.0"
+
+[[projects]]
   name = "github.com/lib/pq"
   packages = [
     ".",
@@ -344,6 +350,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/pkg/sftp"
+  packages = ["."]
+  revision = "08de04f133f27844173471167014e1a753655ac8"
+  version = "v1.8.3"
+
+[[projects]]
   name = "github.com/sendgrid/rest"
   packages = ["."]
   revision = "306b9bef57dc36f3435ccfcc08fe6ae2c6920344"
@@ -379,7 +391,16 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["pbkdf2"]
+  packages = [
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "internal/subtle",
+    "pbkdf2",
+    "poly1305",
+    "ssh"
+  ]
   revision = "a92615f3c49003920a58dedcf32cf55022cefb8d"
 
 [[projects]]
@@ -465,6 +486,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "65d04fb4557574866186821980440fe46223dea088974bfa57e7104d54821bdd"
+  inputs-digest = "92b34f3a316291e4d8990202aab7ac940cf8765e6d52d37c6f9f847ef4b1b21d"
   solver-name = "gps-cdcl"
   solver-version = 1
