@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/redis"
+	"log"
+	"time"
 )
 
 func main() {
@@ -29,6 +30,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
+	cmd := redisExtension.Client.Set("test", "sd", time.Minute)
+	if cmd.Err() != nil {
+		log.Fatal(cmd.Err())
+	}
+
+	strCmd := redisExtension.Client.Get("test")
+	if strCmd.Err() != nil {
+		log.Fatal(strCmd.Err())
+	}
+
+	log.Println(strCmd.Val() == "sd")
 
 	err = app.Run()
 

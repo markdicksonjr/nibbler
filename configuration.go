@@ -1,9 +1,9 @@
 package nibbler
 
 import (
+	"github.com/micro/go-config"
 	"github.com/micro/go-config/source"
 	"github.com/micro/go-config/source/env"
-	"github.com/micro/go-config"
 )
 
 func GetConfigurationFromSources(sources []source.Source) (config.Config, error) {

@@ -3,19 +3,19 @@ package nibbler
 import (
 	"context"
 	"errors"
+	"github.com/gorilla/mux"
+	"github.com/micro/go-config"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
-	"github.com/gorilla/mux"
-	"github.com/micro/go-config"
 )
 
 type Extension interface {
-	Init(app *Application) error
-	AddRoutes(app *Application) error
-	Destroy(app *Application) error
+	Init(app *Application)		error
+	AddRoutes(app *Application)	error
+	Destroy(app *Application)	error
 }
 
 type Logger interface {

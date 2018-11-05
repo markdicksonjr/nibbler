@@ -1,10 +1,10 @@
 package nibbler
 
 import (
-	"reflect"
 	"errors"
-	"unsafe"
+	"reflect"
 	"sort"
+	"unsafe"
 )
 
 type dependency struct {
