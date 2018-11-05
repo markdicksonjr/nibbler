@@ -40,17 +40,22 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	r, err := driveExtension.Srv.Files.List().PageSize(10).
-		Fields("nextPageToken, files(id, name)").Do()
+	r, err := driveExtension.Srv.Files.List().PageSize(25).
+		Fields("nextPageToken, files(id, name, md5Checksum, mimeType, parents)").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve files: %v", err)
 	}
-	fmt.Println("Files:")
+
+	fmt.Println("Files/Folders:")
 	if len(r.Files) == 0 {
 		fmt.Println("No files found.")
 	} else {
 		for _, i := range r.Files {
-			fmt.Printf("%s (%s)\n", i.Name, i.Id)
+			if i.MimeType == "application/vnd.google-apps.folder" {
+				fmt.Printf("Folder: %s [%s] (%s)\n", i.Name, i.MimeType, i.Id)
+			} else {
+				fmt.Printf("File: %s [%s] (%s) md5:%s\n", i.Name, i.MimeType, i.Id, i.Md5Checksum)
+			}
 		}
 	}
 	//
