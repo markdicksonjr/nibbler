@@ -55,7 +55,7 @@ func LoadApplicationConfiguration(sources *[]source.Source) (*Configuration, err
 	return &Configuration{
 		Raw:             &conf,
 		Port:            primaryPort,
-		StaticDirectory: conf.Get("nibbler", "directory", "static").String("/public"),
+		StaticDirectory: conf.Get("nibbler", "directory", "static").String("./public/"),
 		HeaderConfiguration: HeaderConfiguration{
 			AccessControlAllowOrigin: conf.Get("nibbler", "ac", "allow", "origin").String("*"),
 			AccessControlAllowMethods: conf.Get("nibbler", "ac", "allow", "methods").String("GET, POST, OPTIONS, PUT, PATCH, DELETE"),

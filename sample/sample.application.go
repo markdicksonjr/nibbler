@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"github.com/markdicksonjr/nibbler"
 	"github.com/micro/go-config/source"
 	"github.com/micro/go-config/source/env"
 	"github.com/micro/go-config/source/file"
-	"github.com/markdicksonjr/nibbler"
+	"log"
+	"net/http"
 )
 
 type SampleExtension struct {

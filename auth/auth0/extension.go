@@ -151,9 +151,8 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	delete(profile, "picture")
 	delete(profile, "updated_at")
-	profileErr := s.SessionExtension.SetAttribute(w, r, "profile", profile)
 
-	if profileErr != nil {
+	if profileErr := s.SessionExtension.SetAttribute(w, r, "profile", profile); profileErr != nil {
 		http.Error(w, profileErr.Error(), http.StatusInternalServerError)
 		return
 	}

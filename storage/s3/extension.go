@@ -11,7 +11,7 @@ import (
 )
 
 type Extension struct {
-	nibbler.Extension
+	nibbler.NoOpExtension
 
 	S3 *s3.S3
 }
@@ -63,13 +63,5 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	// create S3 service client
 	s.S3 = s3.New(sess)
 
-	return nil
-}
-
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	return nil
-}
-
-func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }

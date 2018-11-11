@@ -68,10 +68,7 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 		}
 	}
 
-	// set up the static directory routing
-	http.Handle(configValue.StaticDirectory + "/", http.StripPrefix(configValue.StaticDirectory, http.FileServer(http.Dir(configValue.StaticDirectory))))
-
-	// allocate a router for everything else
+	// allocate a router
 	ac.router = mux.NewRouter()
 
 	// init extension routes
@@ -82,6 +79,10 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 			return err
 		}
 	}
+
+	// set up the static directory routing
+	ac.router.PathPrefix("/").Handler(http.FileServer(http.Dir(configValue.StaticDirectory)))
+
 
 	loggerValue.Info("Starting server")
 
