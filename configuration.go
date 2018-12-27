@@ -4,6 +4,8 @@ import (
 	"github.com/micro/go-config"
 	"github.com/micro/go-config/source"
 	"github.com/micro/go-config/source/env"
+	"github.com/micro/go-config/source/file"
+	"os"
 )
 
 func GetConfigurationFromSources(sources []source.Source) (config.Config, error) {
@@ -23,15 +25,27 @@ func GetConfigurationFromSources(sources []source.Source) (config.Config, error)
 
 // "merging priority is in reverse order"
 // if nil, environment source used
-func LoadApplicationConfiguration(sources *[]source.Source) (*Configuration, error) {
+func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
 
 	// if sources are not provided
 	if sources == nil {
+		var envSources []source.Source
+
+		configFileExists := true
+		if _, err := os.Stat("./config.json"); err != nil {
+			if os.IsNotExist(err) {
+				configFileExists = false
+			}
+		}
+
+		// allow a file to override env config, if it exists
+		if configFileExists {
+			envSources = append(envSources, file.NewSource(file.WithPath("./config.json")))
+		}
 
 		// use environment variable source
-		envSources := []source.Source{
-			env.NewSource(),
-		}
+		envSources = append(envSources, env.NewSource())
+
 		sources = &envSources
 	}
 

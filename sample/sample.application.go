@@ -2,9 +2,6 @@ package main
 
 import (
 	"github.com/markdicksonjr/nibbler"
-	"github.com/micro/go-config/source"
-	"github.com/micro/go-config/source/env"
-	"github.com/micro/go-config/source/file"
 	"log"
 	"net/http"
 )
@@ -27,14 +24,10 @@ func main() {
 	// allocate logger
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
 
-	envSources := []source.Source{
-		file.NewSource(file.WithPath("./sample.config.json")),
-		env.NewSource(),
-	}
-
 	// allocate configuration
-	config, err := nibbler.LoadApplicationConfiguration(&envSources)
+	config, err := nibbler.LoadConfiguration(nil)
 
+	// any error is fatal at this point
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -46,15 +39,12 @@ func main() {
 
 	// initialize the application
 	appContext := nibbler.Application{}
-	err = appContext.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err := appContext.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	err = appContext.Run()
-
-	if err != nil {
+	// run the app
+	if err = appContext.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

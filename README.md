@@ -76,22 +76,23 @@ err = app.Init(config, &logger, &extensions)
 The app configuration can be created with this method:
 
 ```go
-config, err := nibbler.LoadApplicationConfiguration(nil)
+config, err := nibbler.LoadConfiguration(nil)
 ```
 
-If nil is provided to the core.LoadApplicationConfiguration method, it will use environment variables for
-configuration of your app.  This feature can be overridden by doing something like this in your app:
+If nil is provided to the core.LoadConfiguration method, it will use environment variables for
+configuration of your app, with anything in ./config.json overriding it.  This feature can be overridden 
+by doing something like this in your app:
 
 ```go
 envSources := []source.Source{
-    file.NewSource(file.WithPath("./sample.config.json")),
+    file.NewSource(file.WithPath("./config.json")),
     env.NewSource(),
 }
 
-config, err := nibbler.LoadApplicationConfiguration(&envSources)
+config, err := nibbler.LoadConfiguration(&envSources)
 ```
 
-In this case, it will first apply environment variables, then apply properties from the json file (reverse order of definition). 
+In this case (providing nil does this), it will first apply environment variables, then apply properties from the json file (reverse order of definition). 
 The environment variables used are upper-case but with dot-notation where the dots are replaced by underscores (e.g. nibbler.port is NIBBLER_PORT).
 
 The following properties are available by default, but custom properties can be obtained from your extension from the Application
@@ -124,7 +125,7 @@ environment variable NIBBLER_PORT to something like 8001 and start the app.  You
 over file-defined values.  If you remove all environment variables and values in the JSON file, you'll see the server start on port 3000.
 Your app can define sources its own way, so keep in mind the sample is just one demonstration of how this can be done.
 
-- the environment variables can be directly mapped to JSON values (when provided as a source to LoadApplicationConfiguration).  Environment variables 
+- the environment variables can be directly mapped to JSON values (when provided as a source to LoadConfiguration).  Environment variables 
 are all caps, and underscores are used where dots were used in the JSON format.
 
 ## Logging

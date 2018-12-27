@@ -37,7 +37,7 @@ func main() {
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
 
 	// allocate configuration
-	config, err := nibbler.LoadApplicationConfiguration(nil)
+	config, err := nibbler.LoadConfiguration(nil)
 
 	if err != nil {
 		log.Fatal(err)

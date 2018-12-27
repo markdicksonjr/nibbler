@@ -58,7 +58,7 @@ func main() {
 
 	// allocate logger and configuration
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
-	config, err := nibbler.LoadApplicationConfiguration(nil)
+	config, err := nibbler.LoadConfiguration(nil)
 
 	sqlExtensions := allocateSqlExtensions()
 

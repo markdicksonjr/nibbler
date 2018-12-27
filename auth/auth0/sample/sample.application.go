@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/auth/auth0"
@@ -27,7 +28,7 @@ func main() {
 
 	// allocate logger and configuration
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
-	config, err := nibbler.LoadApplicationConfiguration(nil)
+	config, err := nibbler.LoadConfiguration(nil)
 
 	// allocate session extension
 	sessionExtension := session.Extension{
@@ -52,16 +53,12 @@ func main() {
 
 	// initialize the application
 	appContext := nibbler.Application{}
-	err = appContext.Init(config, &logger, &extensions)
-
-	if err != nil {
-		logger.Error(err.Error())
+	if err := appContext.Init(config, &logger, &extensions); err != nil {
+		log.Fatal(err.Error())
 	}
 
-	// start the app
-	err = appContext.Run()
-
-	if err != nil {
-		logger.Error(err.Error())
+	// run the app
+	if err = appContext.Run(); err != nil {
+		log.Fatal(err.Error())
 	}
 }
