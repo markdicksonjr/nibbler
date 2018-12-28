@@ -11,6 +11,7 @@ import (
 type SqlMemoryStoreConnector struct {
 	SqlExtension 	*sql.Extension
 	Secret     		string
+	MaxAgeMs		int
 
 	connectionInfo	string
 	db				*gorm.DB
@@ -46,5 +47,8 @@ func (s SqlMemoryStoreConnector) Connect() (error, sessions.Store) {
 }
 
 func (s SqlMemoryStoreConnector) MaxAge() int {
-	return 60 * 60 * 24 * 15 // 15 days
+	if s.MaxAgeMs == 0 {
+		return 60 * 60 * 24 * 15 // 15 days
+	}
+	return s.MaxAgeMs
 }
