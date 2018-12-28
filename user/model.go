@@ -44,6 +44,8 @@ type User struct {
 	ReferenceId				*string		`json:"referenceId,omitempty"`
 	PasswordResetToken		*string		`json:"passwordResetToken,omitempty"`
 	PasswordResetExpiration	*time.Time	`json:"passwordResetExpiration,omitempty"`
+	EmailValidationToken	*string		`json:"emailValidationToken,omitempty"`
+	EmailValidationExpiration	*time.Time	`json:"emailValidationExpiration,omitempty"`
 	EmploymentStartDate		*time.Time	`json:"employmentStartDate,omitempty"`
 	EmploymentEndDate		*time.Time	`json:"employmentEndDate,omitempty"`
 	ContractStartDate		*time.Time	`json:"contractStartDate,omitempty"`
@@ -74,5 +76,7 @@ func GetSafeUser(user User) User {
 	safeUser.Password = nil
 	safeUser.PasswordResetExpiration = nil
 	safeUser.PasswordResetToken = nil
+	safeUser.EmailValidationToken = nil
+	safeUser.EmailValidationExpiration = nil
 	return safeUser
 }

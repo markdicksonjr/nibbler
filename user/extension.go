@@ -17,6 +17,7 @@ type PersistenceExtension interface {
 	Update(user *User) (error)
 	UpdatePassword(user *User) (error)
 	GetUserByPasswordResetToken(token string) (*User, error)
+	GetUserByEmailValidationToken(token string) (*User, error)
 }
 
 type Extension struct {
@@ -62,6 +63,14 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*User, error) {
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
+
+func (s *Extension) GetUserByEmailVerificationToken(token string) (*User, error) {
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.GetUserByEmailValidationToken(token)
+	}
+	return nil, errors.New(noExtensionErrorMessage)
+}
+
 func (s *Extension) GetUserByUsername(username string) (*User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByUsername(username)
@@ -90,3 +99,4 @@ func (s *Extension) UpdatePassword(user *User) (error) {
 	}
 	return errors.New(noExtensionErrorMessage)
 }
+

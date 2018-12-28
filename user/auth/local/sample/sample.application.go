@@ -24,9 +24,7 @@ func (s *SampleExtension) AddRoutes(app *nibbler.Application) error {
 }
 
 func (s *SampleExtension) ProtectedRoute(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"result": "authorized"}`))
+	nibbler.Write200Json(w, `{"result": "authorized"}`)
 }
 
 func main() {
@@ -79,6 +77,12 @@ func main() {
 		PasswordResetFromName:  "Test",
 		PasswordResetFromEmail: "test@example.com",
 		PasswordResetRedirect:  "http://localhost:3000/test-ui",
+
+		RegistrationEnabled:	true,
+		EmailVerificationEnabled:true,
+		EmailVerificationFromName:"Test",
+		EmailVerificationFromEmail:"test@example.com",
+		EmailVerificationRedirect:"http://localhost:3000/verify",
 	}
 
 	// prepare extensions for initialization
@@ -102,7 +106,7 @@ func main() {
 	}
 
 	// check to see if our test user exists
-	emailVal := "markdicksonjr@gmail.com"
+	emailVal := "markdicksonjr1@gmail.com"
 	user, errGet := userExtension.GetUserByEmail(emailVal)
 
 	if errGet != nil {

@@ -69,6 +69,19 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error
 	return &userValue, s.SqlExtension.Db.Error
 }
 
+func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
+	s.SqlExtension.Db.Error = nil
+
+	userValue := user.User{}
+	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, "email_validation_token = ?", token)
+
+	if s.SqlExtension.Db.RecordNotFound() {
+		return nil, nil
+	}
+
+	return &userValue, s.SqlExtension.Db.Error
+}
+
 func (s *Extension) Create(user *user.User) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Create(user)

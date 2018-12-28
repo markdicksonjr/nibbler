@@ -2,6 +2,12 @@ package nibbler
 
 import "net/http"
 
+func Write200Json(w http.ResponseWriter, content string) {
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(content))
+}
+
 func Write404Json(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Header().Set("Content-Type", "application/json")
