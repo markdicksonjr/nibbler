@@ -66,7 +66,6 @@ func ToJson(user *User) (result string, err error) {
 	}
 
 	result = string(userJsonBytes)
-
 	return
 }
 
@@ -75,8 +74,5 @@ func GetSafeUser(user User) User {
 	safeUser.Password = nil
 	safeUser.PasswordResetExpiration = nil
 	safeUser.PasswordResetToken = nil
-	safeUser.FailedLoginCount = nil
-	safeUser.IsActive = nil
-	safeUser.IsEmailValidated = nil
 	return safeUser
 }

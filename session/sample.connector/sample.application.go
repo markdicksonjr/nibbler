@@ -13,6 +13,26 @@ import (
 	"log"
 )
 
+type SqlMemoryStoreConnector struct {
+}
+
+func (s SqlMemoryStoreConnector) Connect() (error, sessions.Store) {
+	db, err := gorm.Open("sqlite3", ":memory:")
+
+	if err != nil {
+		return err, nil
+	}
+
+	store := gormstore.NewOptions(db,
+		gormstore.Options{},
+		[]byte("some-key"),
+	)
+
+	store.SessionOpts.MaxAge = 60 * 60 * 24 * 15 // 15 days
+
+	return nil, store
+}
+
 func main() {
 
 	// allocate logger and configuration
@@ -42,9 +62,9 @@ func main() {
 	}
 
 	// allocate session extension, with an optional custom connector
+	var sessionConnector session.SessionStoreConnector = &SqlMemoryStoreConnector{}
 	sessionExtension := session.Extension{
-		MaxAge: 60 * 60 * 24 * 15, // 15 days
-		Secret: "something",
+		StoreConnector: &sessionConnector,
 	}
 
 	// prepare extensions for initialization

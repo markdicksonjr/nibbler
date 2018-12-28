@@ -3,10 +3,10 @@ package session
 import (
 	"encoding/gob"
 	"errors"
-	"net/http"
 	"github.com/gorilla/sessions"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/user"
+	"net/http"
 )
 
 type SessionStoreConnector interface {
@@ -16,17 +16,17 @@ type SessionStoreConnector interface {
 type Extension struct {
 	nibbler.NoOpExtension
 
+	// settings for when you don't provide a connector
 	Secret         string
 	SessionName    string
+	MaxAge         int
+
 	StoreConnector *SessionStoreConnector	// creates cookie store if not provided
+
 	store          *sessions.Store			// created by this extension
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	if len(s.Secret) == 0 {
-		return errors.New("session extension requires secret")
-	}
-
 	(*app.GetConfiguration().Raw).Get()
 
 	gob.Register(map[string]interface{}{})
@@ -35,12 +35,27 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	if s.StoreConnector != nil {
 		storeConnector := *s.StoreConnector
 		errConnect, store := storeConnector.Connect()
+
+		// save the store to the extension
 		s.store = &store
 		return errConnect
 	}
 
-	// if a connector isn't provided, use a cookie store
+	// otherwise, we need the session secret
+	if len(s.Secret) == 0 {
+		return errors.New("session extension requires secret")
+	}
+
+	// use a cookie store
 	var store sessions.Store = sessions.NewCookieStore([]byte(s.Secret))
+
+	// set the max age if the user has provided it
+	if s.MaxAge != 0 {
+		var cookieStore = store.(*sessions.CookieStore)
+		cookieStore.MaxAge(s.MaxAge)
+	}
+
+	// save the store to the extension
 	s.store = &store
 
 	return nil
