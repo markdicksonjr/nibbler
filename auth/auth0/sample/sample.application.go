@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/markdicksonjr/nibbler/session/connectors"
 	"log"
 	"net/http"
 	"github.com/markdicksonjr/nibbler"
@@ -33,7 +34,9 @@ func main() {
 	// allocate session extension
 	sessionExtension := session.Extension{
 		SessionName: "auth0",
-		Secret: "something",
+		StoreConnector: connectors.SqlStoreConnector{
+			Secret: "something",
+		},
 	}
 
 	// allocate auth0 extension
