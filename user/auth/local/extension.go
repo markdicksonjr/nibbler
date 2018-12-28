@@ -2,14 +2,15 @@ package local
 
 import (
 	"errors"
-	"net/http"
-	"strings"
-	"time"
 	"github.com/google/uuid"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/user"
-	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/mail/outbound"
+	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/user"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type Extension struct {
@@ -109,7 +110,8 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"user": ` + jsonString + `}`))
+	w.Write([]byte(`{"user": ` + jsonString +
+		`, "sessionAgeMs"":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`))
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {

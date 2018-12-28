@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/markdicksonjr/nibbler/session/connectors"
 	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/auth/auth0"
@@ -45,12 +46,6 @@ func main() {
 	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
-	// allocate session extension
-	sessionExtension := session.Extension{
-		SessionName: "auth0",
-		Secret: "something",
-	}
-
 	// prepare models for initialization
 	var models []interface{}
 	models = append(models, user.User{})
@@ -58,6 +53,15 @@ func main() {
 	// allocate the sql extension, with all models
 	sqlExtension := sql.Extension{
 		Models: models,
+	}
+
+	// allocate session extension
+	sessionExtension := session.Extension{
+		SessionName: "auth0",
+		StoreConnector: connectors.SqlMemoryStoreConnector{
+			SqlExtension: &sqlExtension,
+			Secret: "somesecret",
+		},
 	}
 
 	// allocate user extension, providing sql extension to it

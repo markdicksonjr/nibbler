@@ -5,6 +5,7 @@ import (
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/mail/outbound/sendgrid"
 	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/session/connectors"
 	NibUser "github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
@@ -57,8 +58,12 @@ func main() {
 	}
 
 	// allocate session extension
-	sessionExtension := session.Extension{
+	connector := connectors.SqlMemoryStoreConnector{
+		SqlExtension: &sqlExtension,
 		Secret:      "dumbsecret",
+	}
+	sessionExtension := session.Extension{
+		StoreConnector: &connector,
 		SessionName: "dumbcookie",
 	}
 

@@ -1,15 +1,13 @@
 package main
 
 import (
-	"github.com/gorilla/sessions"
-	"github.com/jinzhu/gorm"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/session/connectors"
 	"github.com/markdicksonjr/nibbler/user"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
 	_ "github.com/michaeljs1990/sqlitestore"
-	"github.com/wader/gormstore"
 	"log"
 )
 
@@ -42,9 +40,12 @@ func main() {
 	}
 
 	// allocate session extension, with an optional custom connector
+	var sessionConnector session.SessionStoreConnector = &connectors.SqlMemoryStoreConnector{
+		Secret: "somesecret",
+		SqlExtension: sqlController.SqlExtension,
+	}
 	sessionExtension := session.Extension{
-		MaxAge: 60 * 60 * 24 * 15, // 15 days
-		Secret: "something",
+		StoreConnector: sessionConnector,
 	}
 
 	// prepare extensions for initialization

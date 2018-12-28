@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/sql"
+	"log"
 )
 
 func main() {
