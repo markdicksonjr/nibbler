@@ -97,9 +97,19 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	s.SessionExtension.SetCaller(w, r, userValue)
 
+	safeUser := user.GetSafeUser(*userValue)
+	jsonString, err := user.ToJson(&safeUser)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"result": "ok"}`))
+	w.Write([]byte(`{"user": ` + jsonString + `}`))
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {

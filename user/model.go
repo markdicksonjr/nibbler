@@ -19,11 +19,11 @@ type User struct {
 	PortraitUri 			*string		`json:"portraitUri,omitempty"`
 	AvatarUri				*string		`json:"avatarUri,omitempty"`
 	StatusText  			*string		`json:"statusText,omitempty"`
-	IsActive				bool		`json:"isActive"`
-	IsEmailValidated		bool		`json:"isEmailValidated"`
+	IsActive				*bool		`json:"isActive,omitempty"`
+	IsEmailValidated		*bool		`json:"isEmailValidated,omitempty"`
 	DeactivatedAt			*time.Time  `json:"deactivatedAt,omitempty"`
 	LastLogin				*time.Time	`json:"lastLogin,omitempty"`
-	FailedLoginCount		int8		`json:"failedLoginCount"`
+	FailedLoginCount		*int8		`json:"failedLoginCount,omitempty"`
 	Gender					*string		`json:"gender,omitempty" gorm:"size:1"`
 	PhoneHome				*string		`json:"phoneHome,omitempty" gorm:"size:24"`
 	PhoneWork				*string		`json:"phoneWork,omitempty" gorm:"size:24"`
@@ -75,5 +75,8 @@ func GetSafeUser(user User) User {
 	safeUser.Password = nil
 	safeUser.PasswordResetExpiration = nil
 	safeUser.PasswordResetToken = nil
+	safeUser.FailedLoginCount = nil
+	safeUser.IsActive = nil
+	safeUser.IsEmailValidated = nil
 	return safeUser
 }
