@@ -58,7 +58,7 @@ func main() {
 	// allocate session extension
 	sessionExtension := session.Extension{
 		SessionName: "auth0",
-		StoreConnector: connectors.SqlMemoryStoreConnector{
+		StoreConnector: connectors.SqlStoreConnector{
 			SqlExtension: &sqlExtension,
 			Secret: "somesecret",
 		},

@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// allocate session extension, with an optional custom connector
-	var sessionConnector session.SessionStoreConnector = &connectors.SqlMemoryStoreConnector{
+	var sessionConnector session.SessionStoreConnector = &connectors.SqlStoreConnector{
 		Secret: "somesecret",
 		SqlExtension: sqlController.SqlExtension,
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/wader/gormstore"
 )
 
-type SqlMemoryStoreConnector struct {
+type SqlStoreConnector struct {
 	SqlExtension 	*sql.Extension
 	Secret     		string
 	MaxAgeMs		int
@@ -17,7 +17,7 @@ type SqlMemoryStoreConnector struct {
 	db				*gorm.DB
 }
 
-func (s SqlMemoryStoreConnector) Connect() (error, sessions.Store) {
+func (s SqlStoreConnector) Connect() (error, sessions.Store) {
 
 	// if no DB provided, use sqlite3 memory DB
 	if s.SqlExtension == nil {
@@ -46,7 +46,7 @@ func (s SqlMemoryStoreConnector) Connect() (error, sessions.Store) {
 	return nil, store
 }
 
-func (s SqlMemoryStoreConnector) MaxAge() int {
+func (s SqlStoreConnector) MaxAge() int {
 	if s.MaxAgeMs == 0 {
 		return 60 * 60 * 24 * 15 // 15 days
 	}
