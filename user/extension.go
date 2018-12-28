@@ -41,14 +41,6 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetSafeUser(user User) User {
-	safeUser := user
-	safeUser.Password = nil
-	safeUser.PasswordResetExpiration = nil
-	safeUser.PasswordResetToken = nil
-	return safeUser
-}
-
 func (s *Extension) GetUserById(id uint) (*User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserById(id)

@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
-	"net/http"
 	"github.com/markdicksonjr/nibbler"
+	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/mail/outbound/sendgrid"
 	"github.com/markdicksonjr/nibbler/session"
-	"github.com/markdicksonjr/nibbler/database/sql"
 	NibUser "github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
+	"log"
+	"net/http"
 )
 
 type SampleExtension struct {

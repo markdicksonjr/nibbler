@@ -69,3 +69,11 @@ func ToJson(user *User) (result string, err error) {
 
 	return
 }
+
+func GetSafeUser(user User) User {
+	safeUser := user
+	safeUser.Password = nil
+	safeUser.PasswordResetExpiration = nil
+	safeUser.PasswordResetToken = nil
+	return safeUser
+}
