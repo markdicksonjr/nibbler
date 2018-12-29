@@ -105,7 +105,7 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByEmailVerificationToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("emailValidationToken", token)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
