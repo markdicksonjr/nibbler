@@ -2,6 +2,8 @@ package user
 
 import (
 	"encoding/json"
+	"github.com/markdicksonjr/nibbler"
+	"reflect"
 	"time"
 )
 
@@ -54,10 +56,8 @@ type User struct {
 }
 
 func FromJson(jsonString string) (*User, error) {
-	byteArray := []byte(jsonString)
-	user := User{}
-	err := json.Unmarshal(byteArray, &user)
-	return &user, err
+	userInt, err := nibbler.FromJson(jsonString, reflect.TypeOf(&User{}))
+	return userInt.(*User), err
 }
 
 func ToJson(user *User) (result string, err error) {
