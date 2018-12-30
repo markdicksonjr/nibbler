@@ -21,6 +21,10 @@ type Extension struct {
 	Db *gorm.DB
 }
 
+func NullifyField(db *gorm.DB, field string) *gorm.DB {
+	return db.Update(field, gorm.Expr("NULL"))
+}
+
 type Configuration struct {
 	Scheme string
 	Host string

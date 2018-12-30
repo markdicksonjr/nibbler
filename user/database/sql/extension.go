@@ -106,8 +106,9 @@ func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
 		Password: userValue.Password,
-		PasswordResetToken: nil,
-		PasswordResetExpiration: nil,
 	})
+
+	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token")
+	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token_expiration")
 	return s.SqlExtension.Db.Error
 }

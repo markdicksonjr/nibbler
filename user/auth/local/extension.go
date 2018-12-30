@@ -85,7 +85,6 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 	app.GetRouter().HandleFunc("/api/login", s.LoginFormHandler).Methods("POST")
 	app.GetRouter().HandleFunc("/api/logout", s.LogoutHandler).Methods("POST", "GET")
 	app.GetRouter().HandleFunc("/api/password/reset-token", s.ResetPasswordTokenHandler).Methods("POST")
-	app.GetRouter().HandleFunc("/api/password/reset-token/validity", s.ResetPasswordTokenVerifyHandler).Methods("POST")
 	app.GetRouter().HandleFunc("/api/password", s.ResetPasswordHandler).Methods("POST")
 
 	if s.RegistrationEnabled {

@@ -105,34 +105,16 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
-func (s *Extension) ResetPasswordTokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.PasswordResetEnabled {
 		nibbler.Write404Json(w)
 		return
 	}
 
-	token := r.FormValue("token")
-	userValue, err := s.getUserByPasswordResetToken(token)
-
-	if err != nil {
-		// TODO: log err?
-		nibbler.Write200Json(w, `{"result": false}`)
-		return
-	}
-
-	if userValue == nil {
-		nibbler.Write200Json(w, `{"result": false}`)
-		return
-	}
-
-	nibbler.Write200Json(w, `{"result": true}`)
-}
-
-func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	token := r.FormValue("token")
 
-	userValue, err := s.getUserByPasswordResetToken(token)
+	userValue, err := s.getUserByPasswordResetTokenAndValidate(token)
 
 	if err != nil {
 		nibbler.Write500Json(w, err.Error())
@@ -146,10 +128,12 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 
 	// at this point, the token is verified
 
-	// TODO: check password complexity...
+	// TODO: check password complexity...  make configurable...
 
 	*userValue.Password = GeneratePasswordHash(password)
-	err = s.UserExtension.UpdatePassword(userValue)
+	(*userValue).PasswordResetToken = nil
+	(*userValue).PasswordResetExpiration = nil
+	err = s.UserExtension.UpdatePassword(userValue) // TODO: ensure extension sets above props to null, as well
 
 	if err != nil {
 		nibbler.Write500Json(w, err.Error())
@@ -159,7 +143,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
-func (s *Extension) getUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *Extension) getUserByPasswordResetTokenAndValidate(token string) (*user.User, error) {
 	if !s.PasswordResetEnabled {
 		return nil, nil
 	}
