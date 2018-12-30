@@ -76,7 +76,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if s.OnLoginSuccessful != nil {
+	if s.OnLogoutSuccessful != nil {
 		sessionUser, err := s.SessionExtension.GetCaller(r)
 
 		if err != nil {
