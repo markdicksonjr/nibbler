@@ -63,7 +63,7 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nibbler.Write200Json(w, `{"user": ` + jsonString +
-		`, "sessionAgeSeconds"":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
+		`, "sessionAgeSeconds":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
