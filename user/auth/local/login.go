@@ -13,16 +13,14 @@ func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.R
 		caller, err := s.SessionExtension.GetCaller(r)
 
 		if err != nil {
+			nibbler.Write404Json(w)
 			// TODO: log
-			w.WriteHeader(http.StatusNotFound)
-			//w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`404 page not found`))
 			return
 		}
 
 		if caller == nil {
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte(`404 page not found`))
+			nibbler.Write404Json(w)
+			// TODO: log
 			return
 		}
 
@@ -62,16 +60,34 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if s.OnLoginSuccessful != nil {
+		(*s.OnLoginSuccessful)(safeUser, s.SessionExtension.StoreConnector.MaxAge())
+	}
+
 	nibbler.Write200Json(w, `{"user": ` + jsonString +
 		`, "sessionAgeSeconds":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	s.SessionExtension.SetCaller(w, r, nil)
+	err := s.SessionExtension.SetCaller(w, r, nil)
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"result": "ok"}`))
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
+	if s.OnLoginSuccessful != nil {
+		sessionUser, err := s.SessionExtension.GetCaller(r)
+
+		if err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		(*s.OnLogoutSuccessful)(*sessionUser)
+	}
+
+	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
 func (s *Extension) Login(email string, password string) (*user.User, error) {
@@ -95,5 +111,5 @@ func (s *Extension) Login(email string, password string) (*user.User, error) {
 		return nil, errors.New("invalid password")
 	}
 
-	return u, nil;
+	return u, nil
 }
