@@ -34,7 +34,9 @@ type Extension struct {
 
 	// callbacks (for extending default behavior)
 	OnLoginSuccessful					*func(loggedInUser user.User, sessionMaxAgeMinutes int)
-	OnLogoutSuccessful					*func(loggedInUser user.User)
+	OnLogoutSuccessful					*func(loggedOutUser user.User)
+	OnRegistrationSuccessful			*func(registeredUser user.User)
+	OnEmailVerificationSuccessful		*func(registeredUser user.User)
 
 	app									 *nibbler.Application
 }

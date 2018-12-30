@@ -123,6 +123,10 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 		}()
 	}
 
+	if s.OnRegistrationSuccessful != nil {
+		(*s.OnRegistrationSuccessful)(safeUser)
+	}
+
 	nibbler.Write200Json(w, `{"user": ` + jsonString + `}`)
 }
 
@@ -158,6 +162,11 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 	if err = s.UserExtension.Update(userValue); err != nil {
 		nibbler.Write500Json(w, err.Error())
 		return
+	}
+
+	if s.OnEmailVerificationSuccessful != nil {
+		safeUser := user.GetSafeUser(*userValue)
+		(*s.OnEmailVerificationSuccessful)(safeUser)
 	}
 
 	nibbler.Write200Json(w, `{"result": true}`)
