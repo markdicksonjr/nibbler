@@ -8,8 +8,6 @@ import (
 	"strconv"
 )
 
-// TODO: endpoint for setting the new password - re-confirm the token before allowing
-
 func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		caller, err := s.SessionExtension.GetCaller(r)
@@ -65,7 +63,7 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nibbler.Write200Json(w, `{"user": ` + jsonString +
-		`, "sessionAgeMs"":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
+		`, "sessionAgeSeconds"":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {

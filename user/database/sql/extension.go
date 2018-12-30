@@ -90,6 +90,9 @@ func (s *Extension) Create(user *user.User) (*user.User, error) {
 }
 
 func (s *Extension) Update(userValue *user.User) error {
+	// TODO: possibly use First(), update fields we care about, then use Save
+	// Update will not save nil values, but Save will, presumably
+
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
