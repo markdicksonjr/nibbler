@@ -10,7 +10,7 @@ const noExtensionErrorMessage = "no extension found"
 
 type PersistenceExtension interface {
 	nibbler.Extension
-	GetUserById(id uint) (*User, error)
+	GetUserById(id string) (*User, error)
 	GetUserByEmail(email string) (*User, error)
 	GetUserByUsername(username string) (*User, error)
 	Create(user *User) (*User, error)
@@ -42,7 +42,7 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id uint) (*User, error) {
+func (s *Extension) GetUserById(id string) (*User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserById(id)
 	}

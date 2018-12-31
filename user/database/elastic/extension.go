@@ -1,12 +1,11 @@
 package elastic
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/elasticsearch"
 	"github.com/markdicksonjr/nibbler/user"
-	"context"
-	"strconv"
-	"encoding/json"
 )
 
 type Extension struct {
@@ -37,9 +36,9 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id uint) (*user.User, error) {
+func (s *Extension) GetUserById(id string) (*user.User, error) {
 	ctx := context.Background()
-	result, err := s.ElasticExtension.Client.Get().Index("user").Id(strconv.Itoa(int(id))).Do(ctx)
+	result, err := s.ElasticExtension.Client.Get().Index("user").Id(id).Do(ctx)
 
 	if err != nil {
 		return nil, err

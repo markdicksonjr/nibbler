@@ -16,7 +16,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id uint) (*user.User, error) {
+func (s *Extension) GetUserById(id string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
