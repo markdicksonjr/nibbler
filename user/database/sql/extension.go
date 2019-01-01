@@ -26,7 +26,7 @@ func (s *Extension) GetUserById(id string) (*user.User, error) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.Db.Error
+	return &userValue, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
@@ -39,7 +39,7 @@ func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.Db.Error
+	return &userValue, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
@@ -53,7 +53,7 @@ func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
 	}
 
 	// TODO: nil, return code?, db error code?
-	return &userValue, s.SqlExtension.Db.Error
+	return &userValue, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
@@ -66,7 +66,7 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.Db.Error
+	return &userValue, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
@@ -79,14 +79,14 @@ func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, err
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.Db.Error
+	return &userValue, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) Create(user *user.User) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 	s.SqlExtension.Db = s.SqlExtension.Db.Create(user)
 	// TODO: nil, return code?, db error code?
-	return user, s.SqlExtension.Db.Error
+	return user, s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) Update(userValue *user.User) error {
@@ -94,6 +94,7 @@ func (s *Extension) Update(userValue *user.User) error {
 	// Update will not save nil values, but Save will, presumably
 
 	s.SqlExtension.Db.Error = nil
+
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
 		FirstName: userValue.FirstName,
@@ -101,11 +102,12 @@ func (s *Extension) Update(userValue *user.User) error {
 		PasswordResetToken: userValue.PasswordResetToken,
 		PasswordResetExpiration: userValue.PasswordResetExpiration,
 	})
-	return s.SqlExtension.Db.Error
+	return s.SqlExtension.GetAndClearError()
 }
 
 func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 	s.SqlExtension.Db.Error = nil
+
 	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
 		Password: userValue.Password,
@@ -113,5 +115,5 @@ func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 
 	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token")
 	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token_expiration")
-	return s.SqlExtension.Db.Error
+	return s.SqlExtension.GetAndClearError()
 }
