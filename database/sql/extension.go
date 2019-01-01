@@ -106,6 +106,10 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
+func IsRecordNotFoundError(err error) bool {
+	return gorm.IsRecordNotFoundError(err)
+}
+
 func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
 	var urlParsed *url.URL = nil
 	var parseError error = nil
