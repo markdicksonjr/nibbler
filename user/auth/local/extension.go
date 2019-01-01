@@ -18,27 +18,28 @@ type Extension struct {
 	Sender outbound.Sender
 
 	// for password reset
-	PasswordResetEnabled                 bool
-	PasswordResetFromName                string
-	PasswordResetFromEmail               string
-	PasswordResetRedirect                string // a UI or other service to handle the redirect from email (will have ?token=X or &token=X appended)
-	PasswordResetTokenExpirationDays     *int
+	PasswordResetEnabled                 	bool
+	PasswordResetFromName                	string
+	PasswordResetFromEmail               	string
+	PasswordResetRedirect                	string // a UI or other service to handle the redirect from email (will have ?token=X or &token=X appended)
+	PasswordResetTokenExpirationDays     	*int
 
 	// for email verification
-	RegistrationEnabled                  bool
-	EmailVerificationEnabled			 bool
-	EmailVerificationTokenExpirationDays *int
-	EmailVerificationRedirect            string
-	EmailVerificationFromName            string
-	EmailVerificationFromEmail           string
+	RegistrationEnabled                  	bool
+	EmailVerificationEnabled			 	bool // whether email verification is available (doesn't mean it's required)
+	EmailVerificationRequired				bool // whether email verification is required before logging in
+	EmailVerificationTokenExpirationDays 	*int
+	EmailVerificationRedirect            	string
+	EmailVerificationFromName            	string
+	EmailVerificationFromEmail           	string
 
 	// callbacks (for extending default behavior)
-	OnLoginSuccessful					*func(loggedInUser user.User, sessionMaxAgeMinutes int)
-	OnLogoutSuccessful					*func(loggedOutUser user.User)
-	OnRegistrationSuccessful			*func(registeredUser user.User)
-	OnEmailVerificationSuccessful		*func(registeredUser user.User)
+	OnLoginSuccessful						*func(loggedInUser user.User, sessionMaxAgeMinutes int)
+	OnLogoutSuccessful						*func(loggedOutUser user.User)
+	OnRegistrationSuccessful				*func(registeredUser user.User)
+	OnEmailVerificationSuccessful			*func(registeredUser user.User)
 
-	app									 *nibbler.Application
+	app									 	*nibbler.Application
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {

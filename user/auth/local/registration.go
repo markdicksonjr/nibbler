@@ -131,30 +131,37 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
+
+	// the endpoint is only available if verification is enabled
 	if !s.EmailVerificationEnabled {
 		nibbler.Write404Json(w)
 		return
 	}
 
+	// grab and validate input parameters
 	token := r.FormValue("token")
 	if token == "" {
 		nibbler.Write500Json(w, "a token form parameter is required")
 		return
 	}
 
+	// look up the user from the token (factoring in expiration times)
 	userValue, err := s.getUserByEmailValidationToken(token)
 
+	// if an error happened during the lookup
 	if err != nil {
-		// TODO: log err?
+		(*s.app.GetLogger()).Error("while verifying email token: " + err.Error())
 		nibbler.Write200Json(w, `{"result": false}`)
 		return
 	}
 
+	// if no user has that email token
 	if userValue == nil {
 		nibbler.Write200Json(w, `{"result": false}`)
 		return
 	}
 
+	// update the user in the DB
 	isTrue := true
 	userValue.IsEmailValidated = &isTrue
 	userValue.EmailValidationToken = nil
@@ -164,6 +171,26 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// grab the user from the session - it may not be there
+	// token validation could happen while logged in, but will
+	// more likely happen while not logged in
+	sessionUser, err := s.SessionExtension.GetCaller(r)
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
+	// if there's a user in the session, update the IsEmailValidated field of the user the session
+	if sessionUser != nil {
+		sessionUser.IsEmailValidated = &isTrue
+
+		if err := s.SessionExtension.SetCaller(w, r, sessionUser); err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+	}
+
+	// if the success callback was provided, call it
 	if s.OnEmailVerificationSuccessful != nil {
 		safeUser := user.GetSafeUser(*userValue)
 		(*s.OnEmailVerificationSuccessful)(safeUser)

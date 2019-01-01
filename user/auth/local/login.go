@@ -13,14 +13,40 @@ func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.R
 		caller, err := s.SessionExtension.GetCaller(r)
 
 		if err != nil {
+			(*s.app.GetLogger()).Error("while enforcing login, an error occurred: " + err.Error())
 			nibbler.Write404Json(w)
-			// TODO: log
 			return
 		}
 
 		if caller == nil {
 			nibbler.Write404Json(w)
 			// TODO: log
+			return
+		}
+
+		routerFunc(w, r)
+	}
+}
+
+// also validates the user is logged in
+func (s *Extension) EnforceEmailValidated(routerFunc func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		caller, err := s.SessionExtension.GetCaller(r)
+
+		if err != nil {
+			(*s.app.GetLogger()).Error("while enforcing email validated, an error occurred: " + err.Error())
+			nibbler.Write404Json(w)
+			return
+		}
+
+		if caller == nil {
+			nibbler.Write404Json(w)
+			// TODO: log
+			return
+		}
+
+		if caller.IsEmailValidated == nil || !*caller.IsEmailValidated {
+			nibbler.Write404Json(w)
 			return
 		}
 
@@ -109,6 +135,11 @@ func (s *Extension) Login(email string, password string) (*user.User, error) {
 
 	if !validPassword {
 		return nil, errors.New("invalid password")
+	}
+
+	// if we need email verification but it hasn't been done yet, fail
+	if s.EmailVerificationEnabled && s.EmailVerificationRequired && (u.IsEmailValidated == nil || !*u.IsEmailValidated) {
+		return nil, errors.New("email not verified")
 	}
 
 	return u, nil

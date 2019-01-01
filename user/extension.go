@@ -23,7 +23,14 @@ type PersistenceExtension interface {
 type Extension struct {
 	nibbler.Extension
 
-	PersistenceExtension PersistenceExtension
+	PersistenceExtension 	PersistenceExtension
+
+	OnBeforeUserCreate 		*func(user *User)
+	OnAfterUserCreate 		*func(user *User)
+	OnBeforeUserUpdate		*func(user *User)
+	OnAfterUserUpdate		*func(user *User)
+	OnBeforePasswordUpdate	*func(user *User)
+	OnAfterPasswordUpdate	*func(user *User)
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -81,21 +88,72 @@ func (s *Extension) GetUserByUsername(username string) (*User, error) {
 func (s *Extension) Create(user *User) (*User, error) {
 	if s.PersistenceExtension != nil {
 		user.ID = uuid.New().String()
-		return s.PersistenceExtension.Create(user)
+
+		// call the OnBeforeUserCreate callback if provided
+		if s.OnBeforeUserCreate != nil {
+			(*s.OnBeforeUserCreate)(user)
+		}
+
+		// save the new user to the DB
+		resultUser, err := s.PersistenceExtension.Create(user)
+
+		// if an error occurred, return now
+		if err != nil {
+			return resultUser, err
+		}
+
+		// call the OnAfterUserCreate callback if provided
+		if s.OnAfterUserCreate != nil {
+			(*s.OnAfterUserCreate)(resultUser)
+		}
+
+		return resultUser, err
 	}
 	return user, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) Update(user *User) (error) {
+func (s *Extension) Update(user *User) error {
 	if s.PersistenceExtension != nil {
-		return s.PersistenceExtension.Update(user)
+
+		// call the OnBeforeUserUpdate callback if provided
+		if s.OnBeforeUserUpdate != nil {
+			(*s.OnBeforeUserUpdate)(user)
+		}
+
+		// change user user in the DB
+		if err := s.PersistenceExtension.Update(user); err != nil {
+			return err
+		}
+
+		// call the OnAfterUserUpdate callback if provided
+		if s.OnAfterUserUpdate != nil {
+			(*s.OnAfterUserUpdate)(user)
+		}
+
+		return nil
 	}
 	return errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) UpdatePassword(user *User) (error) {
+func (s *Extension) UpdatePassword(user *User) error {
 	if s.PersistenceExtension != nil {
-		return s.PersistenceExtension.UpdatePassword(user)
+
+		// call the OnBeforePasswordUpdate callback if provided
+		if s.OnBeforePasswordUpdate != nil {
+			(*s.OnBeforePasswordUpdate)(user)
+		}
+
+		// change user user in the DB
+		if err := s.PersistenceExtension.UpdatePassword(user); err != nil {
+			return err
+		}
+
+		// call the OnAfterUserUpdate callback if provided
+		if s.OnAfterPasswordUpdate != nil {
+			(*s.OnAfterPasswordUpdate)(user)
+		}
+
+		return nil
 	}
 	return errors.New(noExtensionErrorMessage)
 }
