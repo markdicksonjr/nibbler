@@ -106,12 +106,6 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetAndClearError() error {
-	err := s.Db.Error
-	s.Db.Error = nil
-	return err
-}
-
 func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
 	var urlParsed *url.URL = nil
 	var parseError error = nil

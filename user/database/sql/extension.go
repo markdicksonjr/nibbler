@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"github.com/jinzhu/gorm"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
@@ -17,103 +18,99 @@ func (s *Extension) Init(app *nibbler.Application) error {
 }
 
 func (s *Extension) GetUserById(id string) (*user.User, error) {
-	s.SqlExtension.Db.Error = nil
-
 	userValue := user.User{}
-	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, id)
+	err := s.SqlExtension.Db.First(&userValue, id).Error
 
-	if s.SqlExtension.Db.RecordNotFound() {
+	if gorm.IsRecordNotFoundError(err) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.GetAndClearError()
+	return &userValue, err
 }
 
 func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
-	s.SqlExtension.Db.Error = nil
-
 	userValue := user.User{}
-	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, "email = ?", email)
+	err := s.SqlExtension.Db.First(&userValue, "email = ?", email).Error
 
-	if s.SqlExtension.Db.RecordNotFound() {
+	if gorm.IsRecordNotFoundError(err) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.GetAndClearError()
+	return &userValue, err
 }
 
 func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
-	s.SqlExtension.Db.Error = nil
-
 	userValue := user.User{}
-	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, "username = ?", username)
+	err := s.SqlExtension.Db.First(&userValue, "username = ?", username).Error
 
-	if s.SqlExtension.Db.RecordNotFound() {
+	if gorm.IsRecordNotFoundError(err) {
 		return nil, nil
 	}
 
 	// TODO: nil, return code?, db error code?
-	return &userValue, s.SqlExtension.GetAndClearError()
+	return &userValue, err
 }
 
 func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
-	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, "password_reset_token = ?", token)
+	err := s.SqlExtension.Db.First(&userValue, "password_reset_token = ?", token).Error
 
-	if s.SqlExtension.Db.RecordNotFound() {
+	if gorm.IsRecordNotFoundError(err) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.GetAndClearError()
+	return &userValue, err
 }
 
 func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
 	s.SqlExtension.Db.Error = nil
 
 	userValue := user.User{}
-	s.SqlExtension.Db = s.SqlExtension.Db.First(&userValue, "email_validation_token = ?", token)
+	err := s.SqlExtension.Db.First(&userValue, "email_validation_token = ?", token).Error
 
-	if s.SqlExtension.Db.RecordNotFound() {
+	if gorm.IsRecordNotFoundError(err) {
 		return nil, nil
 	}
 
-	return &userValue, s.SqlExtension.GetAndClearError()
+	return &userValue, err
 }
 
 func (s *Extension) Create(user *user.User) (*user.User, error) {
-	s.SqlExtension.Db.Error = nil
-	s.SqlExtension.Db = s.SqlExtension.Db.Create(user)
+	err := s.SqlExtension.Db.Create(user).Error
 	// TODO: nil, return code?, db error code?
-	return user, s.SqlExtension.GetAndClearError()
+	return user, err
 }
 
 func (s *Extension) Update(userValue *user.User) error {
 	// TODO: possibly use First(), update fields we care about, then use Save
 	// Update will not save nil values, but Save will, presumably
 
-	s.SqlExtension.Db.Error = nil
-
-	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
+	return s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
 		FirstName: userValue.FirstName,
 		LastName: userValue.LastName,
 		PasswordResetToken: userValue.PasswordResetToken,
 		PasswordResetExpiration: userValue.PasswordResetExpiration,
-	})
-	return s.SqlExtension.GetAndClearError()
+	}).Error
 }
 
 func (s *Extension) UpdatePassword(userValue *user.User) (error) {
-	s.SqlExtension.Db.Error = nil
-
-	s.SqlExtension.Db = s.SqlExtension.Db.Model(userValue).Updates(user.User{
+	if err := s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID: userValue.ID,
 		Password: userValue.Password,
-	})
+	}).Error; err != nil {
+		return err
+	}
 
-	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token")
-	s.SqlExtension.Db = sql.NullifyField(s.SqlExtension.Db, "password_reset_token_expiration")
-	return s.SqlExtension.GetAndClearError()
+	if err := sql.NullifyField(s.SqlExtension.Db, "password_reset_token").Error; err != nil {
+		return err
+	}
+
+	if err := sql.NullifyField(s.SqlExtension.Db, "password_reset_token_expiration").Error; err != nil {
+		return err
+	}
+
+	return nil
 }
