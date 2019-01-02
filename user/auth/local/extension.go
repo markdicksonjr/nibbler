@@ -6,6 +6,7 @@ import (
 	"github.com/markdicksonjr/nibbler/mail/outbound"
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/user"
+	"net/http"
 )
 
 type Extension struct {
@@ -89,6 +90,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 }
 
 func (s *Extension) AddRoutes(app *nibbler.Application) error {
+	app.GetRouter().HandleFunc("/api/user", s.GetCurrentUserHandler).Methods("GET")
 	app.GetRouter().HandleFunc("/api/login", s.LoginFormHandler).Methods("POST")
 	app.GetRouter().HandleFunc("/api/logout", s.LogoutHandler).Methods("POST", "GET")
 	app.GetRouter().HandleFunc("/api/password/reset-token", s.ResetPasswordTokenHandler).Methods("POST")
@@ -106,4 +108,27 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 
 func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
+}
+
+func (s *Extension) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
+	currentUser, err := s.SessionExtension.GetCaller(r)
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
+	if currentUser == nil {
+		nibbler.Write404Json(w)
+		return
+	}
+
+	safeUser := user.GetSafeUser(*currentUser)
+	jsonString, err := user.ToJson(&safeUser)
+
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
+	nibbler.Write200Json(w, jsonString)
 }
