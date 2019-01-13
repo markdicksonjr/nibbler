@@ -5,6 +5,9 @@
 An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch
 Go web server or service worker.  Requires Go v1.9+.  
 
+A [sample app](https://github.com/markdicksonjr/nibbler-sample) is available that uses Nibbler.  Hopefully it highlights
+the ease-of-use of the framework.
+
 ## Extensions
 
 Extensions are the backbone of Nibbler.  Extensions must implement a very simple interface (nibbler.Extension).  A base class
