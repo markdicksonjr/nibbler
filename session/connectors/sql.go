@@ -9,12 +9,12 @@ import (
 )
 
 type SqlStoreConnector struct {
-	SqlExtension 	*sql.Extension
-	Secret     		string
-	MaxAgeSeconds	int
+	SqlExtension  *sql.Extension
+	Secret        string
+	MaxAgeSeconds int
 
-	connectionInfo	string
-	db				*gorm.DB
+	connectionInfo string
+	db             *gorm.DB
 }
 
 func (s SqlStoreConnector) Connect() (error, sessions.Store) {

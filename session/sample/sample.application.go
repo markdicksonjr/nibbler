@@ -24,8 +24,9 @@ func main() {
 	}
 
 	// prepare models for initialization
-	var models []interface{}
-	models = append(models, user.User{})
+	var models = []interface{}{
+		user.User{},
+	}
 
 	// allocate an SQL controller, providing an sql extension
 	sqlController := NibUserSql.Extension{
@@ -57,16 +58,12 @@ func main() {
 
 	// initialize the application
 	appContext := nibbler.Application{}
-	err = appContext.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = appContext.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
 	// start the app
-	err = appContext.Run()
-
-	if err != nil {
+	if err = appContext.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

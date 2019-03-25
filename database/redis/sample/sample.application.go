@@ -25,9 +25,7 @@ func main() {
 
 	// initialize the application
 	app := nibbler.Application{}
-	err = app.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -43,10 +41,7 @@ func main() {
 
 	log.Println(strCmd.Val() == "sd")
 
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }
-

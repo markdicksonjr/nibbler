@@ -2,7 +2,7 @@ package nibbler
 
 import "log"
 
-type DefaultLogger struct {}
+type DefaultLogger struct{}
 
 func (logger DefaultLogger) Error(message string) {
 	log.Println(message)
@@ -20,7 +20,7 @@ func (logger DefaultLogger) Debug(message string) {
 	log.Println(message)
 }
 
-type SilentLogger struct {}
+type SilentLogger struct{}
 
 func (logger SilentLogger) Error(message string) {
 }

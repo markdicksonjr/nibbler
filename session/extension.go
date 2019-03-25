@@ -17,8 +17,8 @@ type SessionStoreConnector interface {
 type Extension struct {
 	nibbler.NoOpExtension
 	SessionName    string
-	StoreConnector SessionStoreConnector	// creates cookie store if not provided
-	store          *sessions.Store			// created by this extension
+	StoreConnector SessionStoreConnector // creates cookie store if not provided
+	store          *sessions.Store       // created by this extension
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {

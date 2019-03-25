@@ -9,8 +9,8 @@ import (
 type Extension struct {
 	nibbler.NoOpExtension
 
-	Client	*elastic.Client
-	Url		string
+	Client *elastic.Client
+	Url    string
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {

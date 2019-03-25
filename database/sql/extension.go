@@ -3,22 +3,22 @@ package sql
 import (
 	"errors"
 	"fmt"
-	"net/url"
-	"os"
-	"strings"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	_ "github.com/lib/pq"
 	"github.com/markdicksonjr/nibbler"
+	"net/url"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type Extension struct {
 	nibbler.Extension
 
 	Models []interface{}
-	Db *gorm.DB
+	Db     *gorm.DB
 }
 
 func NullifyField(db *gorm.DB, field string) *gorm.DB {
@@ -26,13 +26,13 @@ func NullifyField(db *gorm.DB, field string) *gorm.DB {
 }
 
 type Configuration struct {
-	Scheme string
-	Host string
-	Port string
+	Scheme   string
+	Host     string
+	Port     string
 	Username string
 	Password *string
-	Path string
-	Query url.Values
+	Path     string
+	Query    url.Values
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {

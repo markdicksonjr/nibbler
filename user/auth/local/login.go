@@ -90,8 +90,8 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 		(*s.OnLoginSuccessful)(safeUser, s.SessionExtension.StoreConnector.MaxAge())
 	}
 
-	nibbler.Write200Json(w, `{"user": ` + jsonString +
-		`, "sessionAgeSeconds":`+ strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge()) + `}`)
+	nibbler.Write200Json(w, `{"user": `+jsonString+
+		`, "sessionAgeSeconds":`+strconv.Itoa(s.SessionExtension.StoreConnector.MaxAge())+`}`)
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -118,7 +118,6 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Extension) Login(email string, password string) (*user.User, error) {
 	u, err := s.UserExtension.GetUserByEmail(email);
-
 	if err != nil {
 		return u, err
 	}
@@ -128,7 +127,6 @@ func (s *Extension) Login(email string, password string) (*user.User, error) {
 	}
 
 	validPassword, err := ValidatePassword(password, *u.Password);
-
 	if err != nil {
 		return nil, err
 	}

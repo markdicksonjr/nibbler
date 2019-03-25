@@ -1,15 +1,15 @@
 package main
 
 import (
-	"log"
+	"context"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/mongo"
-	"context"
+	"log"
 )
 
 type Animal struct {
-	Name	string	`json:"name" bson:"name"`
-	Type	string	`json:"type" bson:"type"`
+	Name string `json:"name" bson:"name"`
+	Type string `json:"type" bson:"type"`
 }
 
 func main() {
@@ -30,9 +30,7 @@ func main() {
 
 	// initialize the application
 	app := nibbler.Application{}
-	err = app.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -47,9 +45,7 @@ func main() {
 
 	log.Println(insertResult.InsertedID)
 
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

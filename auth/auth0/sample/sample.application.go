@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/markdicksonjr/nibbler/session/connectors"
-	"log"
-	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/auth/auth0"
 	"github.com/markdicksonjr/nibbler/session"
+	"github.com/markdicksonjr/nibbler/session/connectors"
+	"log"
+	"net/http"
 )
 
 type SampleExtension struct {
@@ -41,7 +41,7 @@ func main() {
 
 	// allocate auth0 extension
 	auth0Extension := auth0.Extension{
-		SessionExtension: &sessionExtension,
+		SessionExtension:    &sessionExtension,
 		LoggedInRedirectUrl: "/",
 	}
 

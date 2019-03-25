@@ -34,4 +34,3 @@ func (s *SampleExtension) ProtectedRoute(w http.ResponseWriter, r *http.Request)
 
 	nibbler.Write200Json(w, `{"result": "authorized"}`)
 }
-

@@ -75,7 +75,7 @@ func main() {
 	emailVal := "someone@example.com"
 	password := ""
 	_, errCreate := userExtension.Create(&user.User{
-		Email: &emailVal,
+		Email:    &emailVal,
 		Password: &password,
 	})
 

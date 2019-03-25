@@ -2,16 +2,16 @@ package sparkpost
 
 import (
 	"errors"
+	"github.com/SparkPost/gosparkpost"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/mail/outbound"
-	"github.com/SparkPost/gosparkpost"
 )
 
 type Extension struct {
 	nibbler.NoOpExtension
 	outbound.Sender
 
-	apiKey string
+	apiKey      string
 	initialized bool
 }
 
@@ -38,9 +38,9 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outboun
 	}
 
 	cfg := &gosparkpost.Config{
-		BaseUrl:	"https://api.sparkpost.com",
-		ApiKey: 	s.apiKey,
-		ApiVersion:	1,
+		BaseUrl:    "https://api.sparkpost.com",
+		ApiKey:     s.apiKey,
+		ApiVersion: 1,
 	}
 	var sp gosparkpost.Client
 	err := sp.Init(cfg)
@@ -68,8 +68,8 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outboun
 
 	if res != nil {
 		return &outbound.Response{
-			Body: "", // TODO: res.Body or res.HTTP.Body via Reader interface
-			Headers: res.HTTP.Header,
+			Body:       "", // TODO: res.Body or res.HTTP.Body via Reader interface
+			Headers:    res.HTTP.Header,
 			StatusCode: res.HTTP.StatusCode,
 		}, err
 	}

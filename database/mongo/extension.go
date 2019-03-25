@@ -8,8 +8,8 @@ import (
 
 type Extension struct {
 	nibbler.NoOpExtension
-	Client	*mongo.Client
-	Url		string
+	Client *mongo.Client
+	Url    string
 }
 
 // e.g. mongodb://foo:bar@localhost:27017
@@ -31,7 +31,5 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		return err
 	}
 
-	err = s.Client.Connect(context.TODO())
-
-	return err
+	return s.Client.Connect(context.TODO())
 }

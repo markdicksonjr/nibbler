@@ -88,17 +88,17 @@ func (s *Extension) Update(userValue *user.User) error {
 	// Update will not save nil values, but Save will, presumably
 
 	return s.SqlExtension.Db.Model(userValue).Updates(user.User{
-		ID: userValue.ID,
-		FirstName: userValue.FirstName,
-		LastName: userValue.LastName,
-		PasswordResetToken: userValue.PasswordResetToken,
+		ID:                      userValue.ID,
+		FirstName:               userValue.FirstName,
+		LastName:                userValue.LastName,
+		PasswordResetToken:      userValue.PasswordResetToken,
 		PasswordResetExpiration: userValue.PasswordResetExpiration,
 	}).Error
 }
 
 func (s *Extension) UpdatePassword(userValue *user.User) (error) {
 	if err := s.SqlExtension.Db.Model(userValue).Updates(user.User{
-		ID: userValue.ID,
+		ID:       userValue.ID,
 		Password: userValue.Password,
 	}).Error; err != nil {
 		return err

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/elasticsearch"
+	"log"
 )
 
 func main() {
@@ -23,15 +23,11 @@ func main() {
 
 	// initialize the application
 	appContext := nibbler.Application{}
-	err = appContext.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = appContext.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	err = appContext.Run()
-
-	if err != nil {
+	if err = appContext.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

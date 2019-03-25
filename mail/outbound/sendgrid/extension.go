@@ -2,17 +2,17 @@ package sendgrid
 
 import (
 	"errors"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
-	"github.com/sendgrid/sendgrid-go"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/mail/outbound"
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 type Extension struct {
 	nibbler.NoOpExtension
 	outbound.Sender
 
-	apiKey string
+	apiKey      string
 	initialized bool
 }
 
@@ -47,12 +47,12 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outboun
 	}
 
 	fromSg := mail.Email{
-		Name: (*from).Name,
+		Name:    (*from).Name,
 		Address: (*from).Address,
 	}
 
 	toSg := mail.Email{
-		Name: (*to[0]).Name,
+		Name:    (*to[0]).Name,
 		Address: (*to[0]).Address,
 	}
 
@@ -60,7 +60,7 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outboun
 	for i, v := range to {
 		if i > 0 {
 			toList = append(toList, &mail.Email{
-				Name: (*v).Name,
+				Name:    (*v).Name,
 				Address: (*v).Address,
 			})
 		}
@@ -78,8 +78,8 @@ func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outboun
 
 	if res != nil {
 		return &outbound.Response{
-			Body: res.Body,
-			Headers: res.Headers,
+			Body:       res.Body,
+			Headers:    res.Headers,
 			StatusCode: res.StatusCode,
 		}, err
 	}

@@ -1,8 +1,8 @@
 package nibbler
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 type A struct {

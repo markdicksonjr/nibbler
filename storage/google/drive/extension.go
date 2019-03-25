@@ -16,14 +16,14 @@ import (
 
 type Extension struct {
 	nibbler.NoOpExtension
-	ConnectServiceOnInit 	bool
-	CredentialsPath			string
-	TokenFilePath			string
+	ConnectServiceOnInit bool
+	CredentialsPath      string
+	TokenFilePath        string
 
-	Srv 					*drive.Service
-	Client 					*http.Client
+	Srv    *drive.Service
+	Client *http.Client
 
-	config 					*oauth2.Config
+	config *oauth2.Config
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {

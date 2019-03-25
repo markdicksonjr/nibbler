@@ -13,9 +13,9 @@ import (
 )
 
 type Extension interface {
-	Init(app *Application)		error
-	AddRoutes(app *Application)	error
-	Destroy(app *Application)	error
+	Init(app *Application) error
+	AddRoutes(app *Application) error
+	Destroy(app *Application) error
 }
 
 type Logger interface {
@@ -33,16 +33,16 @@ type Configuration struct {
 }
 
 type HeaderConfiguration struct {
-	AccessControlAllowHeaders	string
-	AccessControlAllowMethods	string
-	AccessControlAllowOrigin	string
+	AccessControlAllowHeaders string
+	AccessControlAllowMethods string
+	AccessControlAllowOrigin  string
 }
 
 type Application struct {
-	config		*Configuration
-	extensions	*[]Extension
-	logger		*Logger
-	router		*mux.Router
+	config     *Configuration
+	extensions *[]Extension
+	logger     *Logger
+	router     *mux.Router
 }
 
 func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[]Extension) error {
@@ -82,7 +82,6 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 
 	// set up the static directory routing
 	ac.router.PathPrefix("/").Handler(http.FileServer(http.Dir(configValue.StaticDirectory)))
-
 
 	loggerValue.Info("Starting server")
 
@@ -143,7 +142,7 @@ func (ac *Application) Run() error {
 	var err error
 	var destroyError error
 	for i := range extensionValue {
-		x := extensionValue[len(extensionValue) - i - 1]
+		x := extensionValue[len(extensionValue)-i-1]
 		destroyError = x.Destroy(ac)
 
 		if destroyError != nil {
@@ -168,15 +167,13 @@ func startServer(h *http.Server, ac *Application) error {
 	// log that we're listening and state the port
 	loggerValue.Info("Listening on " + strconv.Itoa((*ac.config).Port))
 
-	// listen (this blocks)
-	err := h.ListenAndServe()
-
-	// log an error if it happened
-	if err != nil {
+	// listen (this blocks) - log an error if it happened
+	if err := h.ListenAndServe(); err != nil {
 		loggerValue.Error("Failed to initialize server: " + err.Error())
+		return err
 	}
 
-	return err
+	return nil
 }
 
 func (ac *Application) GetLogger() *Logger {

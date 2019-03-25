@@ -1,19 +1,19 @@
 package main
 
 import (
-	"log"
-	"github.com/markdicksonjr/nibbler/user"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/database/elasticsearch"
+	"github.com/markdicksonjr/nibbler/database/sql"
+	"github.com/markdicksonjr/nibbler/user"
 	NibUserElastic "github.com/markdicksonjr/nibbler/user/database/elastic"
 	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
+	"log"
 )
 
 type UserAndDbExtensions struct {
-	UserExtension 				*user.Extension
-	UserPersistenceExtension 	user.PersistenceExtension
-	DbExtension 				nibbler.Extension
+	UserExtension            *user.Extension
+	UserPersistenceExtension user.PersistenceExtension
+	DbExtension              nibbler.Extension
 }
 
 func allocateSqlExtensions() UserAndDbExtensions {
@@ -23,7 +23,7 @@ func allocateSqlExtensions() UserAndDbExtensions {
 	models = append(models, user.User{})
 
 	// allocate an SQL extension, providing the models for auto-migration
-	sqlExtension := sql.Extension{ Models: models }
+	sqlExtension := sql.Extension{Models: models}
 
 	sqlUserExtension := NibUserSql.Extension{
 		SqlExtension: &sqlExtension,
@@ -46,7 +46,7 @@ func allocateEsExtensions() UserAndDbExtensions {
 	}
 
 	return UserAndDbExtensions{
-		DbExtension: &elasticExtension,
+		DbExtension:              &elasticExtension,
 		UserPersistenceExtension: &elasticUserExtension,
 		UserExtension: &user.Extension{
 			PersistenceExtension: &elasticUserExtension,

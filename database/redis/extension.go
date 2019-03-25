@@ -2,7 +2,6 @@ package redis
 
 import (
 	"github.com/go-redis/redis"
-	_ "github.com/go-redis/redis"
 	"github.com/markdicksonjr/nibbler"
 	"net/url"
 )
@@ -10,10 +9,10 @@ import (
 type Extension struct {
 	nibbler.NoOpExtension
 
-	Url			string
-	Password	string
-	DB			int
-	Client		*redis.Client
+	Url      string
+	Password string
+	DB       int
+	Client   *redis.Client
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -29,7 +28,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		}
 
 		if len(s.Url) > 0 {
-			parsedUrl, err := url.Parse(s.Url);
+			parsedUrl, err := url.Parse(s.Url)
 			if err != nil {
 				return nil
 			}
@@ -61,7 +60,7 @@ func (s *Extension) Connect() error {
 	s.Client = redis.NewClient(&redis.Options{
 		Addr:     s.Url,
 		Password: s.Password,
-		DB:       s.DB,			// 0 = use default DB
+		DB:       s.DB, // 0 = use default DB
 	})
 
 	_, err := s.Client.Ping().Result()

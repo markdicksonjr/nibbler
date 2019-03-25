@@ -8,9 +8,9 @@ import (
 )
 
 type dependency struct {
-	parents			[]*dependency
-	extension		*Extension
-	typeName		string // mostly here for debugging, at the moment
+	parents   []*dependency
+	extension *Extension
+	typeName  string // mostly here for debugging, at the moment
 }
 
 var interfaceWiringEnabled = true
@@ -35,7 +35,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 		typeName := typeVal.String()
 		treeMap[typeVal] = &dependency{
 			extension: &thisExt,
-			typeName: typeName,
+			typeName:  typeName,
 		}
 	}
 
@@ -47,7 +47,7 @@ func AutoWireExtensions(extensions *[]Extension, logger *Logger) ([]Extension, e
 		thisExtensionDependency := treeMap[reflect.TypeOf(ext)]
 
 		// loop through the fields for this extension
-		for i:=0; i<fieldCount; i++ {
+		for i := 0; i < fieldCount; i++ {
 			fieldTypeAssignable := extensionType.Elem().Field(i)
 			fieldValue := extensionValue.Field(i)
 

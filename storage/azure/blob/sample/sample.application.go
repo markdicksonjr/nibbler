@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/Azure/azure-storage-blob-go/azblob"
+	"github.com/markdicksonjr/nibbler"
+	"github.com/markdicksonjr/nibbler/storage/azure/blob"
 	"log"
 	"strings"
-	"github.com/Azure/azure-storage-blob-go/azblob"
-	"github.com/markdicksonjr/nibbler/storage/azure/blob"
-	"github.com/markdicksonjr/nibbler"
 )
 
 func main() {
@@ -33,9 +33,7 @@ func main() {
 
 	// create and initialize the application
 	app := nibbler.Application{}
-	err = app.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -60,7 +58,7 @@ func main() {
 
 	// create the blob with string (plain text) content.
 	data := "Hello World!"
-	_, err = blobURL.AppendBlock(ctx, strings.NewReader(data), azblob.AppendBlobAccessConditions{}, nil)//..PutBlob(ctx, strings.NewReader(data), azblob.BlobHTTPHeaders{ContentType: "text/plain"}, azblob.Metadata{}, azblob.BlobAccessConditions{})
+	_, err = blobURL.AppendBlock(ctx, strings.NewReader(data), azblob.AppendBlobAccessConditions{}, nil) //..PutBlob(ctx, strings.NewReader(data), azblob.BlobHTTPHeaders{ContentType: "text/plain"}, azblob.Metadata{}, azblob.BlobAccessConditions{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -110,11 +108,7 @@ func main() {
 	}
 
 	// start the app
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }
-
-

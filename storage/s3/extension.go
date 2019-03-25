@@ -2,12 +2,12 @@ package s3
 
 import (
 	"errors"
-	"log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/markdicksonjr/nibbler"
+	"log"
 )
 
 type Extension struct {
@@ -52,8 +52,8 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	})
 	sess, err := session.NewSession(&aws.Config{
 		Credentials: creds,
-		Endpoint: aws.String(configValue.Get("s3", "endpoint").String("")),
-		Region: aws.String(configValue.Get("s3", "region").String("")),
+		Endpoint:    aws.String(configValue.Get("s3", "endpoint").String("")),
+		Region:      aws.String(configValue.Get("s3", "region").String("")),
 	})
 
 	if err != nil {

@@ -39,13 +39,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// prepare models for initialization
-	var models []interface{}
-	models = append(models, NibUser.User{})
-
 	// allocate the sql extension, with all models
 	sqlExtension := sql.Extension{
-		Models: models,
+		Models: []interface{}{
+			NibUser.User{},
+		},
 	}
 
 	// allocate user extension, providing sql extension to it
@@ -58,11 +56,11 @@ func main() {
 	// allocate session extension
 	connector := connectors.SqlStoreConnector{
 		SqlExtension: &sqlExtension,
-		Secret:      "dumbsecret",
+		Secret:       "dumbsecret",
 	}
 	sessionExtension := session.Extension{
 		StoreConnector: &connector,
-		SessionName: "dumbcookie",
+		SessionName:    "dumbcookie",
 	}
 
 	// allocate the sendgrid extension
@@ -72,17 +70,17 @@ func main() {
 	userLocalAuthExtension := NibUserLocalAuth.Extension{
 		SessionExtension:       &sessionExtension,
 		UserExtension:          &userExtension,
-		Sender:     			&sendgridExtension,
+		Sender:                 &sendgridExtension,
 		PasswordResetEnabled:   true,
 		PasswordResetFromName:  "Test",
 		PasswordResetFromEmail: "test@example.com",
 		PasswordResetRedirect:  "http://localhost:3000/test-ui",
 
-		RegistrationEnabled:	true,
-		EmailVerificationEnabled:true,
-		EmailVerificationFromName:"Test",
-		EmailVerificationFromEmail:"test@example.com",
-		EmailVerificationRedirect:"http://localhost:3000/verify",
+		RegistrationEnabled:        true,
+		EmailVerificationEnabled:   true,
+		EmailVerificationFromName:  "Test",
+		EmailVerificationFromEmail: "test@example.com",
+		EmailVerificationRedirect:  "http://localhost:3000/verify",
 	}
 
 	// prepare extensions for initialization
@@ -99,9 +97,7 @@ func main() {
 
 	// initialize the application
 	app := nibbler.Application{}
-	err = app.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -118,7 +114,7 @@ func main() {
 		// create a test user, if it does not exist
 		password := NibUserLocalAuth.GeneratePasswordHash("tester123")
 		_, errCreate := userExtension.Create(&NibUser.User{
-			Email: &emailVal,
+			Email:    &emailVal,
 			Password: &password,
 		})
 
@@ -129,9 +125,7 @@ func main() {
 	}
 
 	// start the app
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

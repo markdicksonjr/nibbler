@@ -1,10 +1,10 @@
 package auth0
 
 import (
-	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/auth/auth0"
 	"github.com/markdicksonjr/nibbler/user"
+	"net/http"
 )
 
 type Extension struct {
@@ -59,25 +59,21 @@ func (s *Extension) Init(app *nibbler.Application) error {
 			return false, err
 		}
 
-		err = s.SessionExtension.SetCaller(w, r, userValue)
-
-		if err != nil {
+		if err = s.SessionExtension.SetCaller(w, r, userValue); err != nil {
 			nibbler.Write500Json(w, err.Error())
 			return false, err
 		}
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "ok"}`))
+		_, err = w.Write([]byte(`{"result": "ok"}`))
 
-		return false, nil
+		return false, err
 	}
 
 	s.OnLogoutComplete = func(a *auth0.Extension, w http.ResponseWriter, r *http.Request) error {
-		s.SessionExtension.SetCaller(w, r, nil)
-		return nil
+		return s.SessionExtension.SetCaller(w, r, nil)
 	}
 
 	return nil
 }
-

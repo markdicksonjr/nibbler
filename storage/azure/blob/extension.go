@@ -4,17 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/url"
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"github.com/markdicksonjr/nibbler"
+	"net/url"
 )
 
 type Extension struct {
 	nibbler.Extension
 
 	accountName string
-	accountKey string
-	credential *azblob.SharedKeyCredential
+	accountKey  string
+	credential  *azblob.SharedKeyCredential
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -67,4 +67,3 @@ func (s *Extension) GetContainerURL(ctx context.Context, name string) (*azblob.C
 	containerUrl := serviceURL.NewContainerURL(name)
 	return &containerUrl, nil
 }
-

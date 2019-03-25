@@ -29,7 +29,7 @@ func main() {
 
 	// create and initialize the application
 	app := nibbler.Application{}
-	if app.Init(config, &logger, &extensions); err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 

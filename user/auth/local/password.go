@@ -92,13 +92,13 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 		// send the email
 		_, err = s.Sender.SendMail(
 			&outbound.Email{
-				Name: s.PasswordResetFromName,
+				Name:    s.PasswordResetFromName,
 				Address: s.PasswordResetFromEmail,
 			},
 			"Password Reset", // TODO: make configurable
 			toList,
-			"Please go to " + link + " to reset your password",
-			"Please go to <a href=\"" + link + "\">" + link + "</a> to reset your password",
+			"Please go to "+link+" to reset your password",
+			"Please go to <a href=\""+link+"\">"+link+"</a> to reset your password",
 		)
 	}()
 
@@ -150,7 +150,7 @@ func (s *Extension) getUserByPasswordResetTokenAndValidate(token string) (*user.
 
 	userValue, err := s.UserExtension.GetUserByPasswordResetToken(token)
 
-	if err != nil || userValue == nil{
+	if err != nil || userValue == nil {
 		return nil, nil
 	}
 

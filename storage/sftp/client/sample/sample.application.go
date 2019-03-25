@@ -37,9 +37,7 @@ func main() {
 	log.Println(strconv.Itoa(len(filesInfo)))
 
 	// start the app
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

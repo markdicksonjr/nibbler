@@ -24,7 +24,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 	// TODO: password meets requirements
 
 	// look up the user with that email
-	u, err := s.UserExtension.GetUserByEmail(email);
+	u, err := s.UserExtension.GetUserByEmail(email)
 	if err != nil {
 		nibbler.Write500Json(w, err.Error())
 		return
@@ -40,7 +40,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 	// begin putting together a new user
 	emailValidated := !s.EmailVerificationEnabled
 	userValue := user.User{
-		Email: &email,
+		Email:            &email,
 		IsEmailValidated: &emailValidated,
 	}
 
@@ -87,7 +87,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 		go func() {
 
 			// generate the link for the email
-			var link= s.EmailVerificationRedirect
+			var link = s.EmailVerificationRedirect
 			useAmpersand := strings.Contains(s.EmailVerificationRedirect, "?")
 			if useAmpersand {
 				link += "&token=" + *userValue.EmailValidationToken
@@ -108,13 +108,13 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 			// send the email
 			_, err = s.Sender.SendMail(
 				&outbound.Email{
-					Name: s.EmailVerificationFromName,
+					Name:    s.EmailVerificationFromName,
 					Address: s.EmailVerificationFromEmail,
 				},
 				"Email Verification", // TODO: make configurable
 				toList,
-				"Please go to " + link + " to verify your email", // TODO: configurable, with template param for link
-				"Please go to <a href=\"" + link + "\">" + link + "</a> to verify your email", // TODO: configurable, with template param for link
+				"Please go to "+link+" to verify your email",                          // TODO: configurable, with template param for link
+				"Please go to <a href=\""+link+"\">"+link+"</a> to verify your email", // TODO: configurable, with template param for link
 			)
 
 			if err != nil {
@@ -127,7 +127,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 		(*s.OnRegistrationSuccessful)(safeUser)
 	}
 
-	nibbler.Write200Json(w, `{"user": ` + jsonString + `}`)
+	nibbler.Write200Json(w, `{"user": `+jsonString+`}`)
 }
 
 func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +206,7 @@ func (s *Extension) getUserByEmailValidationToken(token string) (*user.User, err
 
 	userValue, err := s.UserExtension.GetUserByEmailVerificationToken(token)
 
-	if err != nil || userValue == nil{
+	if err != nil || userValue == nil {
 		return nil, nil
 	}
 

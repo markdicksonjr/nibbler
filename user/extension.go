@@ -14,8 +14,8 @@ type PersistenceExtension interface {
 	GetUserByEmail(email string) (*User, error)
 	GetUserByUsername(username string) (*User, error)
 	Create(user *User) (*User, error)
-	Update(user *User) (error)
-	UpdatePassword(user *User) (error)
+	Update(user *User) error
+	UpdatePassword(user *User) error
 	GetUserByPasswordResetToken(token string) (*User, error)
 	GetUserByEmailValidationToken(token string) (*User, error)
 }
@@ -23,14 +23,14 @@ type PersistenceExtension interface {
 type Extension struct {
 	nibbler.Extension
 
-	PersistenceExtension 	PersistenceExtension
+	PersistenceExtension PersistenceExtension
 
-	OnBeforeUserCreate 		*func(user *User)
-	OnAfterUserCreate 		*func(user *User)
-	OnBeforeUserUpdate		*func(user *User)
-	OnAfterUserUpdate		*func(user *User)
-	OnBeforePasswordUpdate	*func(user *User)
-	OnAfterPasswordUpdate	*func(user *User)
+	OnBeforeUserCreate     *func(user *User)
+	OnAfterUserCreate      *func(user *User)
+	OnBeforeUserUpdate     *func(user *User)
+	OnAfterUserUpdate      *func(user *User)
+	OnBeforePasswordUpdate *func(user *User)
+	OnAfterPasswordUpdate  *func(user *User)
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -69,7 +69,6 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*User, error) {
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
-
 
 func (s *Extension) GetUserByEmailVerificationToken(token string) (*User, error) {
 	if s.PersistenceExtension != nil {
@@ -157,4 +156,3 @@ func (s *Extension) UpdatePassword(user *User) error {
 	}
 	return errors.New(noExtensionErrorMessage)
 }
-

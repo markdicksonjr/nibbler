@@ -9,12 +9,12 @@ import (
 type Extension struct {
 	nibbler.NoOpExtension
 	conn *ssh.Client
-	app *nibbler.Application
+	app  *nibbler.Application
 
 	Username string
 	Password string
-	Host string
-	HostKey *ssh.PublicKey
+	Host     string
+	HostKey  *ssh.PublicKey
 
 	Client *sftp.Client
 }

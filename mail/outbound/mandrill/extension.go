@@ -39,7 +39,6 @@ func (s *Extension) Connect() error {
 	return nil
 }
 
-
 func (s *Extension) SendMail(from *outbound.Email, subject string, to []*outbound.Email, plainTextContent string, htmlContent string) (*outbound.Response, error) {
 	if !s.initialized {
 		return nil, errors.New("send grid extension used for sending without initialization")

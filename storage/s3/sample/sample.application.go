@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/storage/s3"
+	"log"
 )
 
 func main() {
@@ -30,9 +30,7 @@ func main() {
 
 	// create and initialize the application
 	app := nibbler.Application{}
-	err = app.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = app.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -50,9 +48,7 @@ func main() {
 	}
 
 	// start the app
-	err = app.Run()
-
-	if err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

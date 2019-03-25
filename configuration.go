@@ -71,7 +71,7 @@ func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
 		Port:            primaryPort,
 		StaticDirectory: conf.Get("nibbler", "directory", "static").String("./public/"),
 		HeaderConfiguration: HeaderConfiguration{
-			AccessControlAllowOrigin: conf.Get("nibbler", "ac", "allow", "origin").String("*"),
+			AccessControlAllowOrigin:  conf.Get("nibbler", "ac", "allow", "origin").String("*"),
 			AccessControlAllowMethods: conf.Get("nibbler", "ac", "allow", "methods").String("GET, POST, OPTIONS, PUT, PATCH, DELETE"),
 			AccessControlAllowHeaders: conf.Get("nibbler", "ac", "allow", "headers").String("Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token, Authorization"),
 		},

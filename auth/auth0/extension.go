@@ -8,10 +8,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"golang.org/x/oauth2"
-	"net/http"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/session"
+	"golang.org/x/oauth2"
+	"net/http"
 )
 
 type Extension struct {
@@ -33,7 +33,7 @@ type Extension struct {
 
 	config *nibbler.Configuration
 
-	OnLoginComplete func(s *Extension, w http.ResponseWriter, r *http.Request) (allowRedirect bool, err error)
+	OnLoginComplete  func(s *Extension, w http.ResponseWriter, r *http.Request) (allowRedirect bool, err error)
 	OnLogoutComplete func(s *Extension, w http.ResponseWriter, r *http.Request) error
 }
 
