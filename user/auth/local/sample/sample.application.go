@@ -106,7 +106,7 @@ func main() {
 	}
 
 	// check to see if our test user exists
-	emailVal := "markdicksonjr1@gmail.com"
+	emailVal := "markdicksonjr@gmail.com"
 	user, errGet := userExtension.GetUserByEmail(emailVal)
 
 	if errGet != nil {

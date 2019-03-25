@@ -71,9 +71,7 @@ func main() {
 
 	// initialize the application context
 	appContext := nibbler.Application{}
-	err = appContext.Init(config, &logger, &extensions)
-
-	if err != nil {
+	if err = appContext.Init(config, &logger, &extensions); err != nil {
 		log.Fatal(err.Error())
 	}
 
@@ -99,16 +97,13 @@ func main() {
 	lastName := "testlast"
 	uV.FirstName = &firstName
 	uV.LastName = &lastName
-	err = sqlExtensions.UserExtension.Update(uV)
 
-	if err != nil {
+	if err = sqlExtensions.UserExtension.Update(uV); err != nil {
 		log.Fatal(err.Error())
 	}
 
 	// start the app
-	err = appContext.Run()
-
-	if err != nil {
+	if err = appContext.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

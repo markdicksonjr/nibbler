@@ -33,7 +33,7 @@ func TestToJson(t *testing.T) {
 }
 
 func TestFromJson(t *testing.T) {
-	str, err := FromJson("{\"id\":\"kj\",\"createdAt\":\"2018-01-01T00:00:00Z\",\"updatedAt\":\"2018-02-01T00:00:00Z\",\"current\":7}", reflect.TypeOf(&Score{}))
+	str, err := FromJson("{\"id\":\"kj\",\"createdAt\":\"2018-01-01T00:00:00Z\",\"updatedAt\":\"2018-02-01T00:00:00Z\",\"current\":7}", reflect.TypeOf(Score{}))
 
 	if err != nil {
 		t.Fail()

@@ -21,16 +21,17 @@ func (s *SampleExtension) ProtectedRoute(w http.ResponseWriter, r *http.Request)
 	u, err := s.Auth0Extension.SessionExtension.GetCaller(r)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"result": "` + err.Error() + `"}`))
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
+	if u == nil {
+		nibbler.Write404Json(w)
 		return
 	}
 
 	log.Println(u)
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"result": "authorized"}`))
+	nibbler.Write200Json(w, `{"result": "authorized"}`)
 }
 
