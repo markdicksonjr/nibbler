@@ -139,7 +139,7 @@ func (s *Extension) Update(userValue *user.User) error {
 	return err
 }
 
-func (s *Extension) UpdatePassword(userValue *user.User) (error) {
+func (s *Extension) UpdatePassword(userValue *user.User) error {
 	ctx := context.Background()
 
 	// TODO: password...

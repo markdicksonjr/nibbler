@@ -13,9 +13,7 @@ func GetConfigurationFromSources(sources []source.Source) (config.Config, error)
 
 	// load each source
 	for _, sourceItem := range sources {
-		err := conf.Load(sourceItem)
-
-		if err != nil {
+		if err := conf.Load(sourceItem); err != nil {
 			return nil, err
 		}
 	}

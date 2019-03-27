@@ -7,17 +7,17 @@ import (
 )
 
 type Score struct {
-	ID						string		`json:"id" bson:"_id"`
-	CreatedAt				time.Time	`json:"createdAt"`
-	UpdatedAt				time.Time	`json:"updatedAt"`
-	DeletedAt				*time.Time	`json:"deletedAt,omitempty" sql:"index"`
-	Current					*int64		`json:"current"`
+	ID        string     `json:"id" bson:"_id"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	Current   *int64     `json:"current"`
 }
 
 func TestToJson(t *testing.T) {
 	var current int64 = 7
 	score := Score{
-		ID: "kj",
+		ID:      "kj",
 		Current: &current,
 	}
 

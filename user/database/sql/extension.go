@@ -96,7 +96,7 @@ func (s *Extension) Update(userValue *user.User) error {
 	}).Error
 }
 
-func (s *Extension) UpdatePassword(userValue *user.User) (error) {
+func (s *Extension) UpdatePassword(userValue *user.User) error {
 	if err := s.SqlExtension.Db.Model(userValue).Updates(user.User{
 		ID:       userValue.ID,
 		Password: userValue.Password,

@@ -59,11 +59,9 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 	var err error = nil
 
 	// initialize all extensions
+	// if any error occurred, return the error and stop processing
 	for _, x := range extensionValue {
-		err = x.Init(ac)
-
-		// if any error occurred, return the error and stop processing
-		if err != nil {
+		if err = x.Init(ac); err != nil {
 			return err
 		}
 	}
@@ -72,10 +70,9 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 	ac.router = mux.NewRouter()
 
 	// init extension routes
+	// if any error occurred, return the error and stop processing
 	for _, x := range extensionValue {
-		err = x.AddRoutes(ac)
-
-		if err != nil {
+		if err = x.AddRoutes(ac); err != nil {
 			return err
 		}
 	}

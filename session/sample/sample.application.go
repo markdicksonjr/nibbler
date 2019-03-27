@@ -37,12 +37,12 @@ func main() {
 
 	// allocate user extension, providing sql extension to it
 	userExtension := user.Extension{
-		PersistenceExtension:  &sqlController, // &elasticController,
+		PersistenceExtension: &sqlController, // &elasticController,
 	}
 
 	// allocate session extension, with an optional custom connector
 	var sessionConnector session.SessionStoreConnector = &connectors.SqlStoreConnector{
-		Secret: "somesecret",
+		Secret:       "somesecret",
 		SqlExtension: sqlController.SqlExtension,
 	}
 	sessionExtension := session.Extension{
