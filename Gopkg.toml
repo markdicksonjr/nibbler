@@ -66,3 +66,7 @@
 [[constraint]]
   name = "github.com/pkg/sftp"
   version = "1.8.3"
+
+[[constraint]]
+  name = "github.com/googollee/go-socket.io"
+  version = "1.4.1"

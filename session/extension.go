@@ -22,8 +22,6 @@ type Extension struct {
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	(*app.GetConfiguration().Raw).Get()
-
 	gob.Register(map[string]interface{}{})
 
 	// if a store connector is provided, use it
