@@ -84,14 +84,12 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 }
 
 func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	rawConfig := *s.config.Raw
-	domain := rawConfig.Get("auth0", "domain").String("")
+	domain := (*s.config.Raw).Get("auth0", "domain").String("")
 
 	conf := &oauth2.Config{
-		ClientID:     rawConfig.Get("auth0", "client", "id").String(""),
-		ClientSecret: rawConfig.Get("auth0", "client", "secret").String(""),
-		RedirectURL:  rawConfig.Get("auth0", "callback", "url").String(""),
+		ClientID:     (*s.config.Raw).Get("auth0", "client", "id").String(""),
+		ClientSecret: (*s.config.Raw).Get("auth0", "client", "secret").String(""),
+		RedirectURL:  (*s.config.Raw).Get("auth0", "callback", "url").String(""),
 		Scopes:       []string{"openid", "profile"}, // TODO: make configurable
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + domain + "/authorize",
@@ -142,9 +140,7 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	accessTokenErr := s.SessionExtension.SetAttribute(w, r, "access_token", token.AccessToken)
-
-	if accessTokenErr != nil {
+	if accessTokenErr := s.SessionExtension.SetAttribute(w, r, "access_token", token.AccessToken); accessTokenErr != nil {
 		http.Error(w, accessTokenErr.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -205,10 +201,12 @@ func (s *Extension) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	audience := oauth2.SetAuthURLParam("audience", aud)
-	url := conf.AuthCodeURL(state, audience)
-
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	http.Redirect(
+		w,
+		r,
+		conf.AuthCodeURL(state, oauth2.SetAuthURLParam("audience", aud)),
+		http.StatusTemporaryRedirect,
+	)
 }
 
 func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
