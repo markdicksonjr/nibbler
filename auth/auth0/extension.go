@@ -200,9 +200,7 @@ func (s *Extension) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	rand.Read(b)
 	state := base64.StdEncoding.EncodeToString(b)
 
-	err := s.SessionExtension.SetAttribute(w, r, "state", state)
-
-	if err != nil {
+	if err := s.SessionExtension.SetAttribute(w, r, "state", state); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -217,9 +215,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	s.SessionExtension.SetAttribute(w, r, "profile", nil)
 
 	if s.OnLogoutComplete != nil {
-		err := s.OnLogoutComplete(s, w, r)
-
-		if err != nil {
+		if err := s.OnLogoutComplete(s, w, r); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Header().Set("Content-Type", "application/json")
 			w.Write([]byte(`{"result": "` + err.Error() + `"}`))
