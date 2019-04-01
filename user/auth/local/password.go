@@ -133,9 +133,9 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	*userValue.Password = GeneratePasswordHash(password)
 	(*userValue).PasswordResetToken = nil
 	(*userValue).PasswordResetExpiration = nil
-	err = s.UserExtension.UpdatePassword(userValue) // TODO: ensure extension sets above props to null, as well
 
-	if err != nil {
+	// TODO: ensure extension sets above props to null, as well
+	if err = s.UserExtension.UpdatePassword(userValue); err != nil {
 		nibbler.Write500Json(w, err.Error())
 		return
 	}

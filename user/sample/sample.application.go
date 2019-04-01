@@ -18,12 +18,10 @@ type UserAndDbExtensions struct {
 
 func allocateSqlExtensions() UserAndDbExtensions {
 
-	// prepare models for initialization
-	var models []interface{}
-	models = append(models, user.User{})
-
 	// allocate an SQL extension, providing the models for auto-migration
-	sqlExtension := sql.Extension{Models: models}
+	sqlExtension := sql.Extension{Models: []interface{}{
+		user.User{},
+	}}
 
 	sqlUserExtension := NibUserSql.Extension{
 		SqlExtension: &sqlExtension,

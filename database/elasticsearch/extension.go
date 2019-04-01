@@ -35,6 +35,8 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return err
 }
 
+// TODO: these are pretty silly
+
 func (s *Extension) NewMatchQuery(name string, text interface{}) *elastic.MatchQuery {
 	return elastic.NewMatchQuery(name, text)
 }
