@@ -24,7 +24,7 @@ module categories below the root level:
 - Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
 - Database - connect to databases and expose mechanisms to create, query, etc.
 - Mail - outbound email/sms/etc
-- Session - session storage and retreival
+- Session - session storage and retrieval
 - Storage - block/blob storage
 - User - the Nibbler user model, and various integrations that can operate with it.  These will tend to be auth integrations.
 
@@ -65,11 +65,11 @@ extensions := []nibbler.Extension{
     &C{},
     &BC{},
 }
-exts, err := nibbler.AutoWireExtensions(&extensions, &logger)
+exts, err := nibbler.AutoWireExtensions(extensions, logger)
 
 // check error
 
-err = app.Init(config, &logger, &extensions)
+err = app.Init(config, logger, extensions)
 
 // check error
 ```
@@ -102,7 +102,7 @@ The following properties are available by default, but custom properties can be 
 password to it in the Init() method.  For example:
 
 ```
-(*app.GetConfiguration().Raw).Get("some", "property")
+app.GetConfiguration().Raw.Get("some", "property")
 ```
 
 The core properties (all optional) are:

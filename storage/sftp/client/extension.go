@@ -40,15 +40,15 @@ func (s *Extension) Connect() error {
 	}
 
 	if len(s.Username) == 0 {
-		s.Username = (*s.app.GetConfiguration().Raw).Get("sftp", "client", "username").String("")
+		s.Username = s.app.GetConfiguration().Raw.Get("sftp", "client", "username").String("")
 	}
 
 	if len(s.Password) == 0 {
-		s.Password = (*s.app.GetConfiguration().Raw).Get("sftp", "client", "password").String("")
+		s.Password = s.app.GetConfiguration().Raw.Get("sftp", "client", "password").String("")
 	}
 
 	if len(s.Host) == 0 {
-		s.Host = (*s.app.GetConfiguration().Raw).Get("sftp", "client", "host").String("")
+		s.Host = s.app.GetConfiguration().Raw.Get("sftp", "client", "host").String("")
 	}
 
 	callback := ssh.InsecureIgnoreHostKey()

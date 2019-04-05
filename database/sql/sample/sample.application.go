@@ -9,7 +9,6 @@ import (
 func main() {
 
 	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
 	if err != nil {
@@ -20,13 +19,12 @@ func main() {
 	sqlExtension := sql.Extension{
 		//models = ...
 	}
-	extensions := []nibbler.Extension{
-		&sqlExtension,
-	}
 
-	// initialize the application
+	// initialize the application, provide config, logger, extensions
 	app := nibbler.Application{}
-	if err = app.Init(config, &logger, &extensions); err != nil {
+	if err = app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&sqlExtension,
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

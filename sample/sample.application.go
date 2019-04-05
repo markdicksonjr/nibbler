@@ -21,9 +21,6 @@ func (s *SampleExtension) AddRoutes(context *nibbler.Application) error {
 
 func main() {
 
-	// allocate logger
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
-
 	// allocate configuration
 	config, err := nibbler.LoadConfiguration(nil)
 
@@ -32,14 +29,11 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
-		&SampleExtension{},
-	}
-
-	// initialize the application
+	// initialize the application, provide config, logger, extensions
 	appContext := nibbler.Application{}
-	if err := appContext.Init(config, &logger, &extensions); err != nil {
+	if err := appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&SampleExtension{},
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

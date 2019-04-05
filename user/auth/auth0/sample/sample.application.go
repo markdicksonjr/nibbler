@@ -14,8 +14,7 @@ import (
 
 func main() {
 
-	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
+	// configuration
 	config, err := nibbler.LoadConfiguration(nil)
 	if err != nil {
 		log.Fatal(err)
@@ -54,8 +53,9 @@ func main() {
 		UserExtension: &userExtension,
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
+	// initialize the application, provide config, logger, extensions
+	appContext := nibbler.Application{}
+	if err = appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		&sqlExtension,
 		&userExtension,
 		&sessionExtension,
@@ -63,11 +63,7 @@ func main() {
 		&SampleExtension{
 			Auth0Extension: &auth0Extension,
 		},
-	}
-
-	// initialize the application
-	appContext := nibbler.Application{}
-	if err = appContext.Init(config, &logger, &extensions); err != nil {
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

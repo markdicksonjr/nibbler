@@ -9,9 +9,6 @@ import (
 
 func main() {
 
-	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
-
 	// allocate configuration
 	config, err := nibbler.LoadConfiguration(nil)
 	if err != nil {
@@ -22,19 +19,16 @@ func main() {
 		Port: 8000,
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
-		&socketIoExtension,
-	}
-
-	// initialize the application
+	// initialize the application, provide config, logger, extensions
 	appContext := nibbler.Application{}
-	if err = appContext.Init(config, &logger, &extensions); err != nil {
+	if err = appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&socketIoExtension,
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 
 	socketIoExtension.RegisterConnectHandler("test", "test", func(s socketio.Conn) error {
-		logger.Debug("socket connect")
+		log.Println("socket connect")
 		return nil
 	})
 

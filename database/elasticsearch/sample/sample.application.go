@@ -9,21 +9,17 @@ import (
 func main() {
 
 	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// prepare extension(s) for initialization
-	extensions := []nibbler.Extension{
-		&elasticsearch.Extension{},
-	}
-
-	// initialize the application
+	// initialize the application, provide config, logger, extensions
 	appContext := nibbler.Application{}
-	if err = appContext.Init(config, &logger, &extensions); err != nil {
+	if err = appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&elasticsearch.Extension{},
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

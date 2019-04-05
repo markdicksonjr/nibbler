@@ -15,22 +15,20 @@ type Animal struct {
 func main() {
 
 	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	// prepare extensions for initialization
+	// allocate the mongo extension
 	mongoExtension := mongo.Extension{}
-	extensions := []nibbler.Extension{
-		&mongoExtension,
-	}
 
-	// initialize the application
+	// initialize the application, provide config, logger, extensions
 	app := nibbler.Application{}
-	if err = app.Init(config, &logger, &extensions); err != nil {
+	if err = app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&mongoExtension,
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

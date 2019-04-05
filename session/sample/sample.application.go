@@ -13,9 +13,6 @@ import (
 
 func main() {
 
-	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
-
 	// allocate configuration
 	config, err := nibbler.LoadConfiguration(nil)
 
@@ -49,16 +46,13 @@ func main() {
 		StoreConnector: sessionConnector,
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
+	// initialize the application, provide config, logger, extensions
+	appContext := nibbler.Application{}
+	if err = appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		sqlController.SqlExtension,
 		&userExtension,
 		&sessionExtension,
-	}
-
-	// initialize the application
-	appContext := nibbler.Application{}
-	if err = appContext.Init(config, &logger, &extensions); err != nil {
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

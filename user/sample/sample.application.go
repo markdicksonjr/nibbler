@@ -55,21 +55,17 @@ func allocateEsExtensions() UserAndDbExtensions {
 func main() {
 
 	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
 	sqlExtensions := allocateSqlExtensions()
 
-	// prepare extension(s) for initialization
-	extensions := []nibbler.Extension{
+	// initialize the application, provide config, logger, extensions
+	appContext := nibbler.Application{}
+	if err = appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		sqlExtensions.DbExtension,
 		sqlExtensions.UserPersistenceExtension,
 		sqlExtensions.UserExtension,
-	}
-
-	// initialize the application context
-	appContext := nibbler.Application{}
-	if err = appContext.Init(config, &logger, &extensions); err != nil {
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

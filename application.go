@@ -28,7 +28,7 @@ type Logger interface {
 type Configuration struct {
 	HeaderConfiguration HeaderConfiguration
 	Port                int
-	Raw                 *config.Config
+	Raw                 config.Config
 	StaticDirectory     string
 }
 
@@ -40,27 +40,25 @@ type HeaderConfiguration struct {
 
 type Application struct {
 	config     *Configuration
-	extensions *[]Extension
-	logger     *Logger
+	extensions []Extension
+	logger     Logger
 	router     *mux.Router
 }
 
-func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[]Extension) error {
+func (ac *Application) Init(config *Configuration, logger Logger, extensions []Extension) error {
 	ac.config = config
 	ac.logger = logger
 	ac.extensions = extensions
 
 	// dereference parameters for ease-of-use
-	extensionValue := *extensions
 	configValue := *config
-	loggerValue := *logger
 
 	// prepare a general-use error variable
 	var err error = nil
 
 	// initialize all extensions
 	// if any error occurred, return the error and stop processing
-	for _, x := range extensionValue {
+	for _, x := range extensions {
 		if err = x.Init(ac); err != nil {
 			return err
 		}
@@ -71,7 +69,7 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 
 	// init extension routes
 	// if any error occurred, return the error and stop processing
-	for _, x := range extensionValue {
+	for _, x := range extensions {
 		if err = x.AddRoutes(ac); err != nil {
 			return err
 		}
@@ -80,7 +78,7 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 	// set up the static directory routing
 	ac.router.PathPrefix("/").Handler(http.FileServer(http.Dir(configValue.StaticDirectory)))
 
-	loggerValue.Info("Starting server")
+	logger.Info("Starting server")
 
 	http.Handle("/", ac.router)
 
@@ -89,11 +87,8 @@ func (ac *Application) Init(config *Configuration, logger *Logger, extensions *[
 
 func (ac *Application) Run() error {
 
-	// dereference parameters for ease-of-use
-	loggerValue := *ac.logger
-
 	// get the configured app mode, accounting for the default value
-	mode := (*ac.config.Raw).Get("nibbler", "mode").String("web")
+	mode := ac.config.Raw.Get("nibbler", "mode").String("web")
 
 	// allocate and prep signal channel
 	signals := make(chan os.Signal, 1)
@@ -114,12 +109,12 @@ func (ac *Application) Run() error {
 		<-signals
 
 		// shut down the server
-		loggerValue.Info("shutting down the server")
+		ac.logger.Info("shutting down the server")
 		shutdownError = h.Shutdown(context.Background())
 
 		// log a shutdown error (factor into return value later)
 		if shutdownError != nil {
-			loggerValue.Error(shutdownError.Error())
+			ac.logger.Error(shutdownError.Error())
 		}
 	} else if mode == "worker" {
 
@@ -130,16 +125,13 @@ func (ac *Application) Run() error {
 		return errors.New("unknown nibbler mode detected: " + mode)
 	}
 
-	loggerValue.Info("shutting down the application")
-
-	// dereference parameters for ease-of-use
-	extensionValue := *ac.extensions
+	ac.logger.Info("shutting down the application")
 
 	// destroy extensions in reverse order
 	var err error
 	var destroyError error
-	for i := range extensionValue {
-		x := extensionValue[len(extensionValue)-i-1]
+	for i := range ac.extensions {
+		x := ac.extensions[len(ac.extensions)-i-1]
 		destroyError = x.Destroy(ac)
 
 		if destroyError != nil {
@@ -158,22 +150,19 @@ func (ac *Application) Run() error {
 
 func startServer(h *http.Server, ac *Application) error {
 
-	// dereference parameters for ease-of-use
-	loggerValue := *ac.logger
-
 	// log that we're listening and state the port
-	loggerValue.Info("Listening on " + strconv.Itoa((*ac.config).Port))
+	ac.logger.Info("Listening on " + strconv.Itoa((*ac.config).Port))
 
 	// listen (this blocks) - log an error if it happened
 	if err := h.ListenAndServe(); err != nil {
-		loggerValue.Error("Failed to initialize server: " + err.Error())
+		ac.logger.Error("Failed to initialize server: " + err.Error())
 		return err
 	}
 
 	return nil
 }
 
-func (ac *Application) GetLogger() *Logger {
+func (ac *Application) GetLogger() Logger {
 	return ac.logger
 }
 

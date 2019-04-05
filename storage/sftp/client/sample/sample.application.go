@@ -9,9 +9,6 @@ import (
 
 func main() {
 
-	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
-
 	// allocate configuration (from env vars, files, etc)
 	config, err := nibbler.LoadConfiguration(nil)
 
@@ -22,14 +19,11 @@ func main() {
 	// allocate the SFTP client extension
 	sftpExtension := client.Extension{}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
-		&sftpExtension,
-	}
-
-	// create and initialize the application
+	// initialize the application, provide config, logger, extensions
 	app := nibbler.Application{}
-	if err = app.Init(config, &logger, &extensions); err != nil {
+	if err = app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+		&sftpExtension,
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

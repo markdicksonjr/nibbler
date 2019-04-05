@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/markdicksonjr/nibbler"
-	"log"
 )
 
 type Extension struct {
@@ -25,13 +24,11 @@ func (s S3CredentialProvider) Retrieve() (credentials.Value, error) {
 		return credentials.Value{}, errors.New("app configuration not found by s3 extension")
 	}
 
-	configValue := *s.Config.Raw
-
 	return credentials.Value{
-		configValue.Get("s3", "accesskey").String(""),
-		configValue.Get("s3", "secret").String(""),
-		configValue.Get("s3", "session", "key").String(""),
-		"local",
+		AccessKeyID: s.Config.Raw.Get("s3", "accesskey").String(""),
+		SecretAccessKey: s.Config.Raw.Get("s3", "secret").String(""),
+		SessionToken:s.Config.Raw.Get("s3", "session", "key").String(""),
+		ProviderName: "local",
 	}, nil
 }
 
@@ -41,23 +38,20 @@ func (s S3CredentialProvider) IsExpired() bool {
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	config := app.GetConfiguration()
-	if config == nil || config.Raw == nil {
+	if app.GetConfiguration() == nil || app.GetConfiguration().Raw == nil {
 		return errors.New("app configuration not found by s3 extension")
 	}
-	configValue := *config.Raw
 
-	creds := credentials.NewCredentials(&S3CredentialProvider{
-		Config: config,
-	})
 	sess, err := session.NewSession(&aws.Config{
-		Credentials: creds,
-		Endpoint:    aws.String(configValue.Get("s3", "endpoint").String("")),
-		Region:      aws.String(configValue.Get("s3", "region").String("")),
+		Credentials: credentials.NewCredentials(&S3CredentialProvider{
+			Config: app.GetConfiguration(),
+		}),
+		Endpoint: aws.String(app.GetConfiguration().Raw.Get("s3", "endpoint").String("")),
+		Region:   aws.String(app.GetConfiguration().Raw.Get("s3", "region").String("")),
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// create S3 service client

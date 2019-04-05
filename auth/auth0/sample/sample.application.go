@@ -28,7 +28,6 @@ func (s *SampleExtension) ProtectedRoute(w http.ResponseWriter, r *http.Request)
 func main() {
 
 	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
 	config, err := nibbler.LoadConfiguration(nil)
 
 	// allocate session extension
@@ -45,18 +44,15 @@ func main() {
 		LoggedInRedirectUrl: "/",
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
+	// initialize the application, provide config, logger, extensions
+	appContext := nibbler.Application{}
+	if err := appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		&sessionExtension,
 		&auth0Extension,
 		&SampleExtension{
 			Auth0Extension: &auth0Extension,
 		},
-	}
-
-	// initialize the application
-	appContext := nibbler.Application{}
-	if err := appContext.Init(config, &logger, &extensions); err != nil {
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

@@ -65,7 +65,7 @@ func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
 	}
 
 	return &Configuration{
-		Raw:             &conf,
+		Raw:             conf,
 		Port:            primaryPort,
 		StaticDirectory: conf.Get("nibbler", "directory", "static").String("./public/"),
 		HeaderConfiguration: HeaderConfiguration{

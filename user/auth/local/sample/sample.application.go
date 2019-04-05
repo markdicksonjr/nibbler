@@ -29,9 +29,6 @@ func (s *SampleExtension) ProtectedRoute(w http.ResponseWriter, r *http.Request)
 
 func main() {
 
-	// allocate logger and configuration
-	var logger nibbler.Logger = nibbler.DefaultLogger{}
-
 	// allocate configuration
 	config, err := nibbler.LoadConfiguration(nil)
 
@@ -83,8 +80,9 @@ func main() {
 		EmailVerificationRedirect:  "http://localhost:3000/verify",
 	}
 
-	// prepare extensions for initialization
-	extensions := []nibbler.Extension{
+	// initialize the application, provide config, logger, extensions
+	app := nibbler.Application{}
+	if err = app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		&sqlExtension,
 		&userExtension,
 		&sessionExtension,
@@ -93,11 +91,7 @@ func main() {
 		&SampleExtension{
 			AuthExtension: &userLocalAuthExtension,
 		},
-	}
-
-	// initialize the application
-	app := nibbler.Application{}
-	if err = app.Init(config, &logger, &extensions); err != nil {
+	}); err != nil {
 		log.Fatal(err.Error())
 	}
 

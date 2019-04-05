@@ -84,12 +84,12 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 }
 
 func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
-	domain := (*s.config.Raw).Get("auth0", "domain").String("")
+	domain := s.config.Raw.Get("auth0", "domain").String("")
 
 	conf := &oauth2.Config{
-		ClientID:     (*s.config.Raw).Get("auth0", "client", "id").String(""),
-		ClientSecret: (*s.config.Raw).Get("auth0", "client", "secret").String(""),
-		RedirectURL:  (*s.config.Raw).Get("auth0", "callback", "url").String(""),
+		ClientID:     s.config.Raw.Get("auth0", "client", "id").String(""),
+		ClientSecret: s.config.Raw.Get("auth0", "client", "secret").String(""),
+		RedirectURL:  s.config.Raw.Get("auth0", "callback", "url").String(""),
 		Scopes:       []string{"openid", "profile"}, // TODO: make configurable
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + domain + "/authorize",
@@ -172,14 +172,13 @@ func (s *Extension) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Extension) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	rawConfig := *s.config.Raw
-	domain := rawConfig.Get("auth0", "domain").String("")
-	aud := rawConfig.Get("auth0", "audience").String("")
+	domain := s.config.Raw.Get("auth0", "domain").String("")
+	aud := s.config.Raw.Get("auth0", "audience").String("")
 
 	conf := &oauth2.Config{
-		ClientID:     rawConfig.Get("auth0", "client", "id").String(""),
-		ClientSecret: rawConfig.Get("auth0", "client", "secret").String(""),
-		RedirectURL:  rawConfig.Get("auth0", "callback", "url").String(""),
+		ClientID:     s.config.Raw.Get("auth0", "client", "id").String(""),
+		ClientSecret: s.config.Raw.Get("auth0", "client", "secret").String(""),
+		RedirectURL:  s.config.Raw.Get("auth0", "callback", "url").String(""),
 		Scopes:       []string{"openid", "profile"}, // TODO: make configurable
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + domain + "/authorize",

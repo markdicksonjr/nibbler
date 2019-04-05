@@ -22,11 +22,10 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 	// if the Url attribute isn't set, find the config in environment variables
 	if len(s.Url) == 0 {
-		configPtr := app.GetConfiguration().Raw
-		s.Url = (*configPtr).Get("elastic", "url").String("")
+		s.Url = app.GetConfiguration().Raw.Get("elastic", "url").String("")
 
 		if len(s.Url) == 0 {
-			s.Url = (*configPtr).Get("database", "url").String("http://localhost:9200")
+			s.Url = app.GetConfiguration().Raw.Get("database", "url").String("http://localhost:9200")
 		}
 	}
 

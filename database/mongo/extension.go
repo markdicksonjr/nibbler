@@ -17,10 +17,10 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 	// if the Url attribute isn't set, find the config in environment variables
 	if len(s.Url) == 0 {
-		s.Url = (*app.GetConfiguration().Raw).Get("mongo", "url").String("")
+		s.Url = app.GetConfiguration().Raw.Get("mongo", "url").String("")
 
 		if len(s.Url) == 0 {
-			s.Url = (*app.GetConfiguration().Raw).Get("database", "url").String("")
+			s.Url = app.GetConfiguration().Raw.Get("database", "url").String("")
 		}
 	}
 

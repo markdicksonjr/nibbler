@@ -18,8 +18,8 @@ type Extension struct {
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	s.accountName = (*app.GetConfiguration().Raw).Get("azure", "blob", "account", "name").String("")
-	s.accountKey = (*app.GetConfiguration().Raw).Get("azure", "blob", "account", "key").String("")
+	s.accountName = app.GetConfiguration().Raw.Get("azure", "blob", "account", "name").String("")
+	s.accountKey = app.GetConfiguration().Raw.Get("azure", "blob", "account", "key").String("")
 
 	if s.accountName == "" || s.accountKey == "" {
 		return errors.New("azure blob extension requires both account name and account key")

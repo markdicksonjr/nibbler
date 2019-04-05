@@ -21,7 +21,7 @@ type Extension struct {
 
 func (s *Extension) Init(app *nibbler.Application) error {
 	if len(s.Key) == 0 {
-		s.Key = (*app.GetConfiguration().Raw).Get("mandrill", "api", "key").String("")
+		s.Key = app.GetConfiguration().Raw.Get("mandrill", "api", "key").String("")
 	}
 
 	if len(s.Key) == 0 {

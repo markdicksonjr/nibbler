@@ -13,7 +13,7 @@ func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.R
 		caller, err := s.SessionExtension.GetCaller(r)
 
 		if err != nil {
-			(*s.app.GetLogger()).Error("while enforcing login, an error occurred: " + err.Error())
+			s.app.GetLogger().Error("while enforcing login, an error occurred: " + err.Error())
 			nibbler.Write404Json(w)
 			return
 		}
@@ -34,7 +34,7 @@ func (s *Extension) EnforceEmailValidated(routerFunc func(http.ResponseWriter, *
 		caller, err := s.SessionExtension.GetCaller(r)
 
 		if err != nil {
-			(*s.app.GetLogger()).Error("while enforcing email validated, an error occurred: " + err.Error())
+			s.app.GetLogger().Error("while enforcing email validated, an error occurred: " + err.Error())
 			nibbler.Write404Json(w)
 			return
 		}
