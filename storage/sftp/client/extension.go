@@ -26,12 +26,16 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 func (s *Extension) Connect() error {
 	if s.conn != nil {
-		s.conn.Close()
+		if err := s.conn.Close(); err != nil {
+			return err
+		}
 		s.conn = nil
 	}
 
 	if s.Client != nil {
-		s.Client.Close()
+		if err := s.Client.Close(); err != nil {
+			return err
+		}
 		s.Client = nil
 	}
 
@@ -73,12 +77,16 @@ func (s *Extension) Connect() error {
 
 func (s *Extension) Destroy(app *nibbler.Application) error {
 	if s.conn != nil {
-		s.conn.Close()
+		if err := s.conn.Close(); err != nil {
+			return err
+		}
 		s.conn = nil
 	}
 
 	if s.Client != nil {
-		s.Client.Close()
+		if err := s.Client.Close(); err != nil {
+			return err
+		}
 		s.Client = nil
 	}
 	return nil
