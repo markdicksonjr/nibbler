@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/markdicksonjr/nibbler"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Extension struct {
@@ -25,7 +26,9 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	}
 
 	var err error
-	s.Client, err = mongo.NewClient(s.Url)
+	connectionOptions := options.ClientOptions{}
+	connectionOptions.ApplyURI(s.Url)
+	s.Client, err = mongo.NewClient(&connectionOptions)
 
 	if err != nil {
 		return err

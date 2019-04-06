@@ -55,7 +55,7 @@
 
 [[constraint]]
   name = "go.mongodb.org/mongo-driver"
-  version = "0.0.16"
+  version = "1.0.0"
 
 [[constraint]]
   name = "github.com/go-redis/redis"
