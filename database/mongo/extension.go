@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Extension struct {
