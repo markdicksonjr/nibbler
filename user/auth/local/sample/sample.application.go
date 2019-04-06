@@ -106,15 +106,20 @@ func main() {
 	if user == nil {
 
 		// create a test user, if it does not exist
-		password := NibUserLocalAuth.GeneratePasswordHash("tester123")
-		_, errCreate := userExtension.Create(&NibUser.User{
+		password, err := NibUserLocalAuth.GeneratePasswordHash("tester123")
+
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		_, err = userExtension.Create(&NibUser.User{
 			Email:    &emailVal,
 			Password: &password,
 		})
 
 		// assert the test user got created
-		if errCreate != nil {
-			log.Fatal(errCreate.Error())
+		if err != nil {
+			log.Fatal(err.Error())
 		}
 	}
 

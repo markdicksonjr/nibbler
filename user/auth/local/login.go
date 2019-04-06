@@ -117,7 +117,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Extension) Login(email string, password string) (*user.User, error) {
-	u, err := s.UserExtension.GetUserByEmail(email);
+	u, err := s.UserExtension.GetUserByEmail(email)
 	if err != nil {
 		return u, err
 	}
@@ -126,7 +126,7 @@ func (s *Extension) Login(email string, password string) (*user.User, error) {
 		return nil, nil
 	}
 
-	validPassword, err := ValidatePassword(password, *u.Password);
+	validPassword, err := ValidatePassword(password, *u.Password)
 	if err != nil {
 		return nil, err
 	}

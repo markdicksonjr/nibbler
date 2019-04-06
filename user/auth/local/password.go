@@ -130,7 +130,12 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 
 	// TODO: check password complexity...  make configurable...
 
-	*userValue.Password = GeneratePasswordHash(password)
+	*userValue.Password, err = GeneratePasswordHash(password)
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
 	(*userValue).PasswordResetToken = nil
 	(*userValue).PasswordResetExpiration = nil
 

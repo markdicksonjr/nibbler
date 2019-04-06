@@ -60,7 +60,13 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// compute and set the encrypted password
-	encryptedPassword := GeneratePasswordHash(password)
+	encryptedPassword, err := GeneratePasswordHash(password)
+
+	if err != nil {
+		nibbler.Write500Json(w, err.Error())
+		return
+	}
+
 	userValue.Password = &encryptedPassword
 
 	// create a test user, if it does not exist
