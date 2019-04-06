@@ -259,14 +259,6 @@
   version = "v0.3.6"
 
 [[projects]]
-  branch = "master"
-  digest = "1:44bc6eaa5a1f52113d229a8716ab126b427a1a0e820dc4299eeaae8e66f15f08"
-  name = "github.com/jameskeane/bcrypt"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c3cd44c1e20fec46baad45b108a45be93394dc8d"
-
-[[projects]]
   digest = "1:5003a6cd968a1dcf09b85b26822e762500629398ff7cdfa526443da128c90adb"
   name = "github.com/jinzhu/gorm"
   packages = [
@@ -507,9 +499,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4cf8287566f3ec70dd67d4d52d34e22af1e70801c24355cb0fbaec9621ab2cf8"
+  digest = "1:7fda576011f70190db7ac0328bd00b3e0d743d20f0754a3c2cecd8213084ca06"
   name = "golang.org/x/crypto"
   packages = [
+    "bcrypt",
+    "blowfish",
     "curve25519",
     "ed25519",
     "ed25519/internal/edwards25519",
@@ -633,7 +627,6 @@
     "github.com/googollee/go-socket.io",
     "github.com/gorilla/mux",
     "github.com/gorilla/sessions",
-    "github.com/jameskeane/bcrypt",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/postgres",
     "github.com/jinzhu/gorm/dialects/sqlite",
@@ -651,6 +644,7 @@
     "github.com/sendgrid/sendgrid-go",
     "github.com/sendgrid/sendgrid-go/helpers/mail",
     "github.com/wader/gormstore",
+    "golang.org/x/crypto/bcrypt",
     "golang.org/x/crypto/ssh",
     "golang.org/x/net/context",
     "golang.org/x/oauth2",
