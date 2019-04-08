@@ -16,10 +16,7 @@ type Extension struct {
 func (s *Extension) Init(app *nibbler.Application) error {
 
 	// call init on the base auth0 extension
-	err := s.Extension.Init(app)
-
-	// any error is fatal, return it
-	if err != nil {
+	if err := s.Extension.Init(app); err != nil {
 		return err
 	}
 
@@ -36,14 +33,14 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		email := profileMap["name"]
 
 		if email == nil {
-			nibbler.Write500Json(w, err.Error())
+			nibbler.Write500Json(w, "no email was found for this profile")
 			return false, err
 		}
 
 		emailValue := email.(string)
 
 		if len(emailValue) == 0 {
-			nibbler.Write500Json(w, err.Error())
+			nibbler.Write500Json(w, "a blank email was found for this profile")
 			return false, err
 		}
 

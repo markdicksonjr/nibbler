@@ -7,11 +7,8 @@ import (
 
 // typeOfPtr should be the type of a pointer to the type you're unmarshalling to
 func FromJson(jsonString string, typeItem reflect.Type) (interface{}, error) {
-	byteArray := []byte(jsonString)
-
 	obj := reflect.New(typeItem).Interface()
-
-	err := json.Unmarshal(byteArray, obj)
+	err := json.Unmarshal([]byte(jsonString), obj)
 	return obj, err
 }
 

@@ -36,7 +36,6 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 }
 
 func (s *Extension) Destroy(app *nibbler.Application) error {
-
 	return nil
 }
 
