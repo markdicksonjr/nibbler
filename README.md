@@ -116,9 +116,6 @@ The core properties (all optional) are:
 
 For specific configuration values for a given extension, look at the relevant module README.md.
 
-By default, Nibbler will only pay attention to environment variables, but the sample application that ships with
-Nibbler shows how one might apply both environment variables and files.
-
 A sample config example is provided "sample.config.json".  There are a few things to notice:
 
 - both port and nibbler.port are defined.  The nibbler.port value takes priority over the port value.  So you will notice when the app starts
