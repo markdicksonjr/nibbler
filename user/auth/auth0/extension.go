@@ -61,6 +61,11 @@ func (s *Extension) Init(app *nibbler.Application) error {
 			return false, err
 		}
 
+		if len(s.LoggedInRedirectUrl) > 0 {
+			http.Redirect(w, r, s.LoggedInRedirectUrl, http.StatusSeeOther)
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		_, err = w.Write([]byte(`{"result": "ok"}`))
