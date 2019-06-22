@@ -8,7 +8,7 @@ import (
 // http://codahale.com/how-to-safely-store-a-password/
 
 func GeneratePasswordHash(password string) (string, error) {
-	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MaxCost)
+	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashedPwd), err
 }
 
