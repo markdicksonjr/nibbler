@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/gorilla/mux"
-	"github.com/micro/go-config"
+	"github.com/micro/go-micro/config"
 	"net/http"
 	"os"
 	"os/signal"

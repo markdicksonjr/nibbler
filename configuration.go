@@ -1,10 +1,10 @@
 package nibbler
 
 import (
-	"github.com/micro/go-config"
-	"github.com/micro/go-config/source"
-	"github.com/micro/go-config/source/env"
-	"github.com/micro/go-config/source/file"
+	"github.com/micro/go-micro/config"
+	"github.com/micro/go-micro/config/source"
+	"github.com/micro/go-micro/config/source/env"
+	"github.com/micro/go-micro/config/source/file"
 	"os"
 )
 
