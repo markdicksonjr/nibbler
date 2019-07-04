@@ -3,7 +3,6 @@ package local
 import (
 	"errors"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/mail/outbound"
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/user"
 	"net/http"
@@ -16,7 +15,7 @@ type Extension struct {
 	UserExtension    *user.Extension
 
 	// for emailing
-	Sender outbound.Sender
+	Sender nibbler.MailSender
 
 	// for password reset
 	PasswordResetEnabled             bool

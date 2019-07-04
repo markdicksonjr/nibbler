@@ -3,7 +3,6 @@ package local
 import (
 	"github.com/google/uuid"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/mail/outbound"
 	"github.com/markdicksonjr/nibbler/user"
 	"net/http"
 	"strings"
@@ -108,16 +107,16 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 
 			// build the recipient list
 			emailVal := *userValue.Email
-			var toList []*outbound.Email
-			toList = append(toList, &outbound.Email{Address: emailVal, Name: name})
+			var toList []*nibbler.EmailAddress
+			toList = append(toList, &nibbler.EmailAddress{Address: emailVal, Name: name})
 
 			// send the email
 			_, err = s.Sender.SendMail(
-				&outbound.Email{
+				&nibbler.EmailAddress{
 					Name:    s.EmailVerificationFromName,
 					Address: s.EmailVerificationFromEmail,
 				},
-				"Email Verification", // TODO: make configurable
+				"EmailAddress Verification", // TODO: make configurable
 				toList,
 				"Please go to "+link+" to verify your email",                          // TODO: configurable, with template param for link
 				"Please go to <a href=\""+link+"\">"+link+"</a> to verify your email", // TODO: configurable, with template param for link

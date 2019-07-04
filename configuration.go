@@ -71,7 +71,7 @@ func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
 		HeaderConfiguration: HeaderConfiguration{
 			AccessControlAllowOrigin:  conf.Get("nibbler", "ac", "allow", "origin").String("*"),
 			AccessControlAllowMethods: conf.Get("nibbler", "ac", "allow", "methods").String("GET, POST, OPTIONS, PUT, PATCH, DELETE"),
-			AccessControlAllowHeaders: conf.Get("nibbler", "ac", "allow", "headers").String("Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token, Authorization"),
+			AccessControlAllowHeaders: conf.Get("nibbler", "ac", "allow", "headers").String("Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-MailSendResponse-Time, X-PINGOTHER, X-CSRF-Token, Authorization"),
 		},
 	}, nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/sql"
-	"github.com/markdicksonjr/nibbler/mail/outbound/sendgrid"
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/session/connectors"
 	NibUser "github.com/markdicksonjr/nibbler/user"
@@ -61,20 +60,20 @@ func main() {
 	}
 
 	// allocate the sendgrid extension
-	sendgridExtension := sendgrid.Extension{}
+	//sendgridExtension := sendgrid.Extension{}
 
 	// allocate user local auth extension
 	userLocalAuthExtension := NibUserLocalAuth.Extension{
-		SessionExtension:       &sessionExtension,
-		UserExtension:          &userExtension,
-		Sender:                 &sendgridExtension,
-		PasswordResetEnabled:   true,
+		SessionExtension: &sessionExtension,
+		UserExtension:    &userExtension,
+		//Sender:                 &sendgridExtension,
+		PasswordResetEnabled:   false,
 		PasswordResetFromName:  "Test",
 		PasswordResetFromEmail: "test@example.com",
 		PasswordResetRedirect:  "http://localhost:3000/test-ui",
 
 		RegistrationEnabled:        true,
-		EmailVerificationEnabled:   true,
+		EmailVerificationEnabled:   false,
 		EmailVerificationFromName:  "Test",
 		EmailVerificationFromEmail: "test@example.com",
 		EmailVerificationRedirect:  "http://localhost:3000/verify",
@@ -87,7 +86,7 @@ func main() {
 		&userExtension,
 		&sessionExtension,
 		&userLocalAuthExtension,
-		&sendgridExtension,
+		//&sendgridExtension,
 		&SampleExtension{
 			AuthExtension: &userLocalAuthExtension,
 		},
