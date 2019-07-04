@@ -25,12 +25,12 @@ type Extension struct {
 
 	PersistenceExtension PersistenceExtension
 
-	OnBeforeUserCreate     *func(user *User)
-	OnAfterUserCreate      *func(user *User)
-	OnBeforeUserUpdate     *func(user *User)
-	OnAfterUserUpdate      *func(user *User)
-	OnBeforePasswordUpdate *func(user *User)
-	OnAfterPasswordUpdate  *func(user *User)
+	OnBeforeUserCreate     func(user *User)
+	OnAfterUserCreate      func(user *User)
+	OnBeforeUserUpdate     func(user *User)
+	OnAfterUserUpdate      func(user *User)
+	OnBeforePasswordUpdate func(user *User)
+	OnAfterPasswordUpdate  func(user *User)
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -90,7 +90,7 @@ func (s *Extension) Create(user *User) (*User, error) {
 
 		// call the OnBeforeUserCreate callback if provided
 		if s.OnBeforeUserCreate != nil {
-			(*s.OnBeforeUserCreate)(user)
+			s.OnBeforeUserCreate(user)
 		}
 
 		// save the new user to the DB
@@ -103,7 +103,7 @@ func (s *Extension) Create(user *User) (*User, error) {
 
 		// call the OnAfterUserCreate callback if provided
 		if s.OnAfterUserCreate != nil {
-			(*s.OnAfterUserCreate)(resultUser)
+			s.OnAfterUserCreate(resultUser)
 		}
 
 		return resultUser, err
@@ -116,7 +116,7 @@ func (s *Extension) Update(user *User) error {
 
 		// call the OnBeforeUserUpdate callback if provided
 		if s.OnBeforeUserUpdate != nil {
-			(*s.OnBeforeUserUpdate)(user)
+			s.OnBeforeUserUpdate(user)
 		}
 
 		// change user user in the DB
@@ -126,7 +126,7 @@ func (s *Extension) Update(user *User) error {
 
 		// call the OnAfterUserUpdate callback if provided
 		if s.OnAfterUserUpdate != nil {
-			(*s.OnAfterUserUpdate)(user)
+			s.OnAfterUserUpdate(user)
 		}
 
 		return nil
@@ -139,7 +139,7 @@ func (s *Extension) UpdatePassword(user *User) error {
 
 		// call the OnBeforePasswordUpdate callback if provided
 		if s.OnBeforePasswordUpdate != nil {
-			(*s.OnBeforePasswordUpdate)(user)
+			s.OnBeforePasswordUpdate(user)
 		}
 
 		// change user user in the DB
@@ -149,7 +149,7 @@ func (s *Extension) UpdatePassword(user *User) error {
 
 		// call the OnAfterUserUpdate callback if provided
 		if s.OnAfterPasswordUpdate != nil {
-			(*s.OnAfterPasswordUpdate)(user)
+			s.OnAfterPasswordUpdate(user)
 		}
 
 		return nil
