@@ -12,13 +12,6 @@ func FromJson(jsonString string, typeItem reflect.Type) (interface{}, error) {
 	return obj, err
 }
 
-func ToJson(obj interface{}) (result string, err error) {
-	objJsonBytes, err := json.Marshal(obj)
-
-	if err != nil {
-		return
-	}
-
-	result = string(objJsonBytes)
-	return
+func ToJson(obj interface{}) (result []byte, err error) {
+	return json.Marshal(obj)
 }

@@ -27,7 +27,7 @@ func TestToJson(t *testing.T) {
 		t.Fail()
 	}
 
-	if out != "{\"id\":\"kj\",\"createdAt\":\"0001-01-01T00:00:00Z\",\"updatedAt\":\"0001-01-01T00:00:00Z\",\"current\":7}" {
+	if string(out) != "{\"id\":\"kj\",\"createdAt\":\"0001-01-01T00:00:00Z\",\"updatedAt\":\"0001-01-01T00:00:00Z\",\"current\":7}" {
 		t.Fail()
 	}
 }
