@@ -19,10 +19,8 @@ type Extension struct {
 
 	Models []interface{}
 	Db     *gorm.DB
-}
 
-func NullifyField(db *gorm.DB, field string) *gorm.DB {
-	return db.Update(field, gorm.Expr("NULL"))
+	configuration *Configuration
 }
 
 type Configuration struct {
@@ -36,42 +34,38 @@ type Configuration struct {
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
-	configuration, err := s.getBestConfiguration(app)
+	var err error
+	s.configuration, err = s.GetBestConfiguration(app)
 
 	if err != nil {
 		return err
 	}
 
-	if configuration.Scheme == "postgres" {
+	// our postgres driver initializes in way that we can't just plop in the URL
+	if s.configuration.Scheme == "postgres" {
 
 		// ensure port is numerical
-		_, err = strconv.Atoi(configuration.Port)
-
-		if err != nil {
+		if _, err = strconv.Atoi(s.configuration.Port); err != nil {
 			return err
 		}
 
 		// establish the sslmode from the configuration, defaulting to disable
-		sslMode := configuration.Query.Get("sslmode")
+		sslMode := s.configuration.Query.Get("sslmode")
 		if len(sslMode) == 0 {
 			sslMode = "disable"
 		}
 
-		s.Db, err = gorm.Open(configuration.Scheme,
+		s.Db, err = gorm.Open(s.configuration.Scheme,
 			fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-				configuration.Host,
-				configuration.Port,
-				configuration.Username,
-				configuration.Path,
-				*configuration.Password,
+				s.configuration.Host,
+				s.configuration.Port,
+				s.configuration.Username,
+				s.configuration.Path,
+				*s.configuration.Password,
 				sslMode,
 			))
-	} else if configuration.Scheme == "sqlite3" {
-		path := ":memory:"
-		if len(configuration.Path) > 0 {
-			path = configuration.Path
-		}
-		s.Db, err = gorm.Open(configuration.Scheme, path)
+	} else if s.configuration.Scheme == "sqlite3" {
+		s.Db, err = gorm.Open(s.configuration.Scheme, s.configuration.Path)
 	} else {
 		return errors.New("unknown dialect")
 	}
@@ -97,6 +91,10 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) GetConfiguration() *Configuration {
+	return s.configuration
+}
+
 func (s *Extension) Destroy(app *nibbler.Application) error {
 	if s.Db != nil {
 		err := s.Db.Close()
@@ -108,6 +106,10 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 
 func IsRecordNotFoundError(err error) bool {
 	return gorm.IsRecordNotFoundError(err)
+}
+
+func NullifyField(db *gorm.DB, field string) *gorm.DB {
+	return db.Update(field, gorm.Expr("NULL"))
 }
 
 func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
@@ -138,7 +140,7 @@ func (s *Extension) getBestDialect(app *nibbler.Application) (*string, error) {
 }
 
 // TODO: allow attribute Url on Extension to take precedence over all of this
-func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configuration, error) {
+func (s *Extension) GetBestConfiguration(app *nibbler.Application) (*Configuration, error) {
 	var urlParsed *url.URL = nil
 	var scheme *string
 
@@ -240,6 +242,11 @@ func (s *Extension) getBestConfiguration(app *nibbler.Application) (*Configurati
 		&password,
 		urlParsed.Path,
 		urlParsed.Query(),
+	}
+
+	// for sqlite, default path to ":memory:"
+	if configuration.Scheme == "sqlite3" && len(configuration.Path) == 0 {
+		configuration.Path = ":memory:"
 	}
 
 	if !isSet {
