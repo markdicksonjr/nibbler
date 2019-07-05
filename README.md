@@ -2,17 +2,17 @@
 
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
-An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch
-Go web server or service worker.  Requires Go v1.9+.  
+An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch Go web server or 
+service worker.  Requires Go v1.12+.  
 
 A [sample app](https://github.com/markdicksonjr/nibbler-sample) is available that uses Nibbler.  Hopefully it highlights
 the ease-of-use of the framework.
 
 ## Extensions
 
-Extensions are the backbone of Nibbler.  Extensions must implement a very simple interface (nibbler.Extension).  A base class
-extension (NoOpExtension) is available for cases where only very few Extension methods (or none?) are required for the 
-extension you're building.
+Extensions are the backbone of Nibbler.  Extensions must implement a very simple interface (nibbler.Extension).  A base 
+class extension (NoOpExtension) is available for cases where only very few Extension methods (or none?) are required for 
+the extension you're building.
 
 ## Included Extension Categories
 
@@ -21,12 +21,25 @@ Nibbler also provides some extension implementations that perform common tasks f
 Extensions provided with Nibbler are organized by functional category, with the main Nibbler structures at the root level.  These are the 
 module categories below the root level:
 
-- Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
 - Database - connect to databases and expose mechanisms to create, query, etc.
-- Mail - outbound email/sms/etc
 - Session - session storage and retrieval
-- Storage - block/blob storage
 - User - the Nibbler user model, and various integrations that can operate with it.  These will tend to be auth integrations.
+
+## External Extensions
+
+There are various features provided by external modules:
+
+- Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
+- Mail - outbound email/sms/etc
+- Storage - block/blob storage
+
+Here are some repositories containing such extensions (more to come):
+
+https://github.com/markdicksonjr/nibbler-auth0
+https://github.com/markdicksonjr/nibbler-mail-outbound
+https://github.com/markdicksonjr/nibbler-oauth2
+https://github.com/markdicksonjr/nibbler-socket
+https://github.com/markdicksonjr/nibbler-storage
 
 ## Running the included sample apps
 
