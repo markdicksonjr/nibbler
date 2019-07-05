@@ -22,11 +22,11 @@ func GetConfigurationFromSources(sources []source.Source) (config.Config, error)
 }
 
 // "merging priority is in reverse order"
-// if nil, environment source used
-func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
+// if nil or empty, file and environment sources used (file takes precendence)
+func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 
 	// if sources are not provided
-	if sources == nil {
+	if len(sources) == 0 {
 		var envSources []source.Source
 
 		configFileExists := true
@@ -43,12 +43,11 @@ func LoadConfiguration(sources *[]source.Source) (*Configuration, error) {
 
 		// use environment variable source
 		envSources = append(envSources, env.NewSource())
-
-		sources = &envSources
+		sources = envSources
 	}
 
 	// load the app configuration
-	conf, err := GetConfigurationFromSources(*sources)
+	conf, err := GetConfigurationFromSources(sources)
 
 	// if an error occurred, return it
 	if err != nil {

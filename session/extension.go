@@ -29,8 +29,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 		return errors.New("session extension requires connector")
 	}
 
-	storeConnector := s.StoreConnector
-	errConnect, store := storeConnector.Connect()
+	errConnect, store := s.StoreConnector.Connect()
 
 	// save the store to the extension
 	s.store = &store

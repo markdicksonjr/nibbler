@@ -94,7 +94,7 @@ err = app.Init(config, logger, extensions)
 The app configuration can be created with this method:
 
 ```go
-config, err := nibbler.LoadConfiguration(nil)
+config, err := nibbler.LoadConfiguration()
 ```
 
 If nil is provided to the core.LoadConfiguration method, it will use environment variables for

@@ -22,7 +22,7 @@ func (s *SampleExtension) AddRoutes(context *nibbler.Application) error {
 func main() {
 
 	// allocate configuration
-	config, err := nibbler.LoadConfiguration(nil)
+	config, err := nibbler.LoadConfiguration()
 
 	// any error is fatal at this point
 	if err != nil {

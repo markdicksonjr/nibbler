@@ -19,10 +19,10 @@ type Extension interface {
 }
 
 type Logger interface {
-	Debug(message string)
-	Error(message string)
-	Info(message string)
-	Warn(message string)
+	Debug(message ...string)
+	Error(message ...string)
+	Info(message ...string)
+	Warn(message ...string)
 }
 
 type Configuration struct {

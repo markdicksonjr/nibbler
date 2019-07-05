@@ -9,4 +9,5 @@ require (
 	github.com/gorilla/sessions v1.1.2
 	github.com/micro/go-micro v1.7.0
 	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443
+	golang.org/x/tools v0.0.0-20190620191750-1fa568393b23
 )
