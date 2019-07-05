@@ -36,9 +36,11 @@ There are various features provided by external modules:
 Here are some repositories containing such extensions (more to come):
 
 https://github.com/markdicksonjr/nibbler-auth0
+https://github.com/markdicksonjr/nibbler-elasticsearch
 https://github.com/markdicksonjr/nibbler-mail-outbound
 https://github.com/markdicksonjr/nibbler-oauth2
 https://github.com/markdicksonjr/nibbler-socket
+https://github.com/markdicksonjr/nibbler-sql
 https://github.com/markdicksonjr/nibbler-storage
 
 ## Running the included sample apps
