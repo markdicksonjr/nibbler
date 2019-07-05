@@ -34,10 +34,10 @@ type Extension struct {
 	EmailVerificationFromEmail           string
 
 	// callbacks (for extending default behavior)
-	OnLoginSuccessful             *func(loggedInUser user.User, sessionMaxAgeMinutes int)
-	OnLogoutSuccessful            *func(loggedOutUser user.User)
-	OnRegistrationSuccessful      *func(registeredUser user.User)
-	OnEmailVerificationSuccessful *func(registeredUser user.User)
+	OnLoginSuccessful             *func(loggedInUser nibbler.User, sessionMaxAgeMinutes int)
+	OnLogoutSuccessful            *func(loggedOutUser nibbler.User)
+	OnRegistrationSuccessful      *func(registeredUser nibbler.User)
+	OnEmailVerificationSuccessful *func(registeredUser nibbler.User)
 
 	app *nibbler.Application
 }

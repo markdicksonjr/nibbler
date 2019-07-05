@@ -3,7 +3,6 @@ package local
 import (
 	"github.com/google/uuid"
 	"github.com/markdicksonjr/nibbler"
-	"github.com/markdicksonjr/nibbler/user"
 	"net/http"
 	"strings"
 	"time"
@@ -18,7 +17,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	email := r.FormValue("email")
 	username := r.FormValue("username")
 
-	var userValue *user.User
+	var userValue *nibbler.User
 	var err error
 
 	if email != "" {
@@ -147,7 +146,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
-func (s *Extension) getUserByPasswordResetTokenAndValidate(token string) (*user.User, error) {
+func (s *Extension) getUserByPasswordResetTokenAndValidate(token string) (*nibbler.User, error) {
 	if !s.PasswordResetEnabled {
 		return nil, nil
 	}

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/elasticsearch"
-	"github.com/markdicksonjr/nibbler/user"
 )
 
 type Extension struct {
@@ -36,7 +35,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id string) (*user.User, error) {
+func (s *Extension) GetUserById(id string) (*nibbler.User, error) {
 	ctx := context.Background()
 	result, err := s.ElasticExtension.Client.Get().Index("user").Id(id).Do(ctx)
 
@@ -44,12 +43,12 @@ func (s *Extension) GetUserById(id string) (*user.User, error) {
 		return nil, err
 	}
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err = json.Unmarshal(*result.Source, &userValue)
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
+func (s *Extension) GetUserByEmail(email string) (*nibbler.User, error) {
 	ctx := context.Background()
 
 	matchQuery := s.ElasticExtension.NewMatchQuery("email", email)
@@ -63,12 +62,12 @@ func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
 		return nil, nil
 	}
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err = json.Unmarshal(*result.Hits.Hits[0].Source, &userValue)
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
+func (s *Extension) GetUserByUsername(username string) (*nibbler.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("username", username)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
@@ -81,12 +80,12 @@ func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
 		return nil, nil
 	}
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err = json.Unmarshal(*result.Hits.Hits[0].Source, &userValue)
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByPasswordResetToken(token string) (*nibbler.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("passwordResetToken", token)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
@@ -99,12 +98,12 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error
 		return nil, nil
 	}
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err = json.Unmarshal(*result.Hits.Hits[0].Source, &userValue)
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByEmailValidationToken(token string) (*nibbler.User, error) {
 	ctx := context.Background()
 	matchQuery := s.ElasticExtension.NewMatchQuery("emailValidationToken", token)
 	result, err := s.ElasticExtension.Client.Search().Index("user").Query(matchQuery).Size(1).Do(ctx)
@@ -117,12 +116,12 @@ func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, err
 		return nil, nil
 	}
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err = json.Unmarshal(*result.Hits.Hits[0].Source, &userValue)
 	return &userValue, err
 }
 
-func (s *Extension) Create(userValue *user.User) (*user.User, error) {
+func (s *Extension) Create(userValue *nibbler.User) (*nibbler.User, error) {
 	ctx := context.Background()
 
 	// TODO
@@ -130,7 +129,7 @@ func (s *Extension) Create(userValue *user.User) (*user.User, error) {
 	return nil, err
 }
 
-func (s *Extension) Update(userValue *user.User) error {
+func (s *Extension) Update(userValue *nibbler.User) error {
 	ctx := context.Background()
 
 	// TODO
@@ -139,7 +138,7 @@ func (s *Extension) Update(userValue *user.User) error {
 	return err
 }
 
-func (s *Extension) UpdatePassword(userValue *user.User) error {
+func (s *Extension) UpdatePassword(userValue *nibbler.User) error {
 	ctx := context.Background()
 
 	// TODO: password...

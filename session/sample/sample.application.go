@@ -6,7 +6,7 @@ import (
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/session/connectors"
 	"github.com/markdicksonjr/nibbler/user"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/persistence/sql"
 	_ "github.com/michaeljs1990/sqlitestore"
 	"log"
 )
@@ -22,7 +22,7 @@ func main() {
 
 	// prepare models for initialization
 	var models = []interface{}{
-		user.User{},
+		nibbler.User{},
 	}
 
 	// allocate an SQL controller, providing an sql extension
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	// allocate session extension, with an optional custom connector
-	var sessionConnector session.SessionStoreConnector = &connectors.SqlStoreConnector{
+	var sessionConnector session.StoreConnector = &connectors.SqlStoreConnector{
 		Secret:       "somesecret",
 		SqlExtension: sqlController.SqlExtension,
 	}

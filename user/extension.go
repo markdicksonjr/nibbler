@@ -10,14 +10,14 @@ const noExtensionErrorMessage = "no extension found"
 
 type PersistenceExtension interface {
 	nibbler.Extension
-	GetUserById(id string) (*User, error)
-	GetUserByEmail(email string) (*User, error)
-	GetUserByUsername(username string) (*User, error)
-	Create(user *User) (*User, error)
-	Update(user *User) error
-	UpdatePassword(user *User) error
-	GetUserByPasswordResetToken(token string) (*User, error)
-	GetUserByEmailValidationToken(token string) (*User, error)
+	GetUserById(id string) (*nibbler.User, error)
+	GetUserByEmail(email string) (*nibbler.User, error)
+	GetUserByUsername(username string) (*nibbler.User, error)
+	Create(user *nibbler.User) (*nibbler.User, error)
+	Update(user *nibbler.User) error
+	UpdatePassword(user *nibbler.User) error
+	GetUserByPasswordResetToken(token string) (*nibbler.User, error)
+	GetUserByEmailValidationToken(token string) (*nibbler.User, error)
 }
 
 type Extension struct {
@@ -25,12 +25,12 @@ type Extension struct {
 
 	PersistenceExtension PersistenceExtension
 
-	OnBeforeUserCreate     func(user *User)
-	OnAfterUserCreate      func(user *User)
-	OnBeforeUserUpdate     func(user *User)
-	OnAfterUserUpdate      func(user *User)
-	OnBeforePasswordUpdate func(user *User)
-	OnAfterPasswordUpdate  func(user *User)
+	OnBeforeUserCreate     func(user *nibbler.User)
+	OnAfterUserCreate      func(user *nibbler.User)
+	OnBeforeUserUpdate     func(user *nibbler.User)
+	OnAfterUserUpdate      func(user *nibbler.User)
+	OnBeforePasswordUpdate func(user *nibbler.User)
+	OnAfterPasswordUpdate  func(user *nibbler.User)
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -49,42 +49,42 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id string) (*User, error) {
+func (s *Extension) GetUserById(id string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserById(id)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) GetUserByEmail(email string) (*User, error) {
+func (s *Extension) GetUserByEmail(email string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByEmail(email)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) GetUserByPasswordResetToken(token string) (*User, error) {
+func (s *Extension) GetUserByPasswordResetToken(token string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByPasswordResetToken(token)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) GetUserByEmailVerificationToken(token string) (*User, error) {
+func (s *Extension) GetUserByEmailVerificationToken(token string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByEmailValidationToken(token)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) GetUserByUsername(username string) (*User, error) {
+func (s *Extension) GetUserByUsername(username string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByUsername(username)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) Create(user *User) (*User, error) {
+func (s *Extension) Create(user *nibbler.User) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		user.ID = uuid.New().String()
 
@@ -111,7 +111,7 @@ func (s *Extension) Create(user *User) (*User, error) {
 	return user, errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) Update(user *User) error {
+func (s *Extension) Update(user *nibbler.User) error {
 	if s.PersistenceExtension != nil {
 
 		// call the OnBeforeUserUpdate callback if provided
@@ -134,7 +134,7 @@ func (s *Extension) Update(user *User) error {
 	return errors.New(noExtensionErrorMessage)
 }
 
-func (s *Extension) UpdatePassword(user *User) error {
+func (s *Extension) UpdatePassword(user *nibbler.User) error {
 	if s.PersistenceExtension != nil {
 
 		// call the OnBeforePasswordUpdate callback if provided

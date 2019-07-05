@@ -38,7 +38,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 
 	// begin putting together a new user
 	emailValidated := !s.EmailVerificationEnabled
-	userValue := user.User{
+	userValue := nibbler.User{
 		Email:            &email,
 		IsEmailValidated: &emailValidated,
 	}
@@ -204,7 +204,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 	nibbler.Write200Json(w, `{"result": true}`)
 }
 
-func (s *Extension) getUserByEmailValidationToken(token string) (*user.User, error) {
+func (s *Extension) getUserByEmailValidationToken(token string) (*nibbler.User, error) {
 	if !s.EmailVerificationEnabled {
 		return nil, nil
 	}

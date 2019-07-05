@@ -4,7 +4,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/database/sql"
-	"github.com/markdicksonjr/nibbler/user"
 )
 
 type Extension struct {
@@ -17,8 +16,8 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) GetUserById(id string) (*user.User, error) {
-	userValue := user.User{}
+func (s *Extension) GetUserById(id string) (*nibbler.User, error) {
+	userValue := nibbler.User{}
 	err := s.SqlExtension.Db.First(&userValue, id).Error
 
 	if gorm.IsRecordNotFoundError(err) {
@@ -28,8 +27,8 @@ func (s *Extension) GetUserById(id string) (*user.User, error) {
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
-	userValue := user.User{}
+func (s *Extension) GetUserByEmail(email string) (*nibbler.User, error) {
+	userValue := nibbler.User{}
 	err := s.SqlExtension.Db.First(&userValue, "email = ?", email).Error
 
 	if gorm.IsRecordNotFoundError(err) {
@@ -39,8 +38,8 @@ func (s *Extension) GetUserByEmail(email string) (*user.User, error) {
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
-	userValue := user.User{}
+func (s *Extension) GetUserByUsername(username string) (*nibbler.User, error) {
+	userValue := nibbler.User{}
 	err := s.SqlExtension.Db.First(&userValue, "username = ?", username).Error
 
 	if gorm.IsRecordNotFoundError(err) {
@@ -51,10 +50,10 @@ func (s *Extension) GetUserByUsername(username string) (*user.User, error) {
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByPasswordResetToken(token string) (*nibbler.User, error) {
 	s.SqlExtension.Db.Error = nil
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err := s.SqlExtension.Db.First(&userValue, "password_reset_token = ?", token).Error
 
 	if gorm.IsRecordNotFoundError(err) {
@@ -64,10 +63,10 @@ func (s *Extension) GetUserByPasswordResetToken(token string) (*user.User, error
 	return &userValue, err
 }
 
-func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, error) {
+func (s *Extension) GetUserByEmailValidationToken(token string) (*nibbler.User, error) {
 	s.SqlExtension.Db.Error = nil
 
-	userValue := user.User{}
+	userValue := nibbler.User{}
 	err := s.SqlExtension.Db.First(&userValue, "email_validation_token = ?", token).Error
 
 	if gorm.IsRecordNotFoundError(err) {
@@ -77,17 +76,17 @@ func (s *Extension) GetUserByEmailValidationToken(token string) (*user.User, err
 	return &userValue, err
 }
 
-func (s *Extension) Create(user *user.User) (*user.User, error) {
+func (s *Extension) Create(user *nibbler.User) (*nibbler.User, error) {
 	err := s.SqlExtension.Db.Create(user).Error
 	// TODO: nil, return code?, db error code?
 	return user, err
 }
 
-func (s *Extension) Update(userValue *user.User) error {
+func (s *Extension) Update(userValue *nibbler.User) error {
 	// TODO: possibly use First(), update fields we care about, then use Save
 	// Update will not save nil values, but Save will, presumably
 
-	return s.SqlExtension.Db.Model(userValue).Updates(user.User{
+	return s.SqlExtension.Db.Model(userValue).Updates(nibbler.User{
 		ID:                      userValue.ID,
 		FirstName:               userValue.FirstName,
 		LastName:                userValue.LastName,
@@ -96,8 +95,8 @@ func (s *Extension) Update(userValue *user.User) error {
 	}).Error
 }
 
-func (s *Extension) UpdatePassword(userValue *user.User) error {
-	if err := s.SqlExtension.Db.Model(userValue).Updates(user.User{
+func (s *Extension) UpdatePassword(userValue *nibbler.User) error {
+	if err := s.SqlExtension.Db.Model(userValue).Updates(nibbler.User{
 		ID:       userValue.ID,
 		Password: userValue.Password,
 	}).Error; err != nil {

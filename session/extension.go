@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type SessionStoreConnector interface {
+type StoreConnector interface {
 	Connect() (error, sessions.Store)
 	MaxAge() int
 }
@@ -17,8 +17,8 @@ type SessionStoreConnector interface {
 type Extension struct {
 	nibbler.NoOpExtension
 	SessionName    string
-	StoreConnector SessionStoreConnector // creates cookie store if not provided
-	store          *sessions.Store       // created by this extension
+	StoreConnector StoreConnector  // creates cookie store if not provided
+	store          *sessions.Store // created by this extension
 }
 
 func (s *Extension) Init(app *nibbler.Application) error {
@@ -61,7 +61,7 @@ func (s *Extension) SetAttribute(w http.ResponseWriter, r *http.Request, key str
 	return session.Save(r, w)
 }
 
-func (s *Extension) GetCaller(r *http.Request) (*user.User, error) {
+func (s *Extension) GetCaller(r *http.Request) (*nibbler.User, error) {
 	sessionUser, err := s.GetAttribute(r, "user")
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Extension) GetCaller(r *http.Request) (*user.User, error) {
 	return user.FromJson(sessionUser.(string))
 }
 
-func (s *Extension) SetCaller(w http.ResponseWriter, r *http.Request, userValue *user.User) error {
+func (s *Extension) SetCaller(w http.ResponseWriter, r *http.Request, userValue *nibbler.User) error {
 
 	if userValue == nil {
 		return s.SetAttribute(w, r, "user", nil)

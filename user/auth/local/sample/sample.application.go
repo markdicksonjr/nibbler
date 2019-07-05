@@ -5,9 +5,9 @@ import (
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/session"
 	"github.com/markdicksonjr/nibbler/session/connectors"
-	NibUser "github.com/markdicksonjr/nibbler/user"
+	"github.com/markdicksonjr/nibbler/user"
 	NibUserLocalAuth "github.com/markdicksonjr/nibbler/user/auth/local"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/persistence/sql"
 	"log"
 	"net/http"
 )
@@ -38,12 +38,12 @@ func main() {
 	// allocate the sql extension, with all models
 	sqlExtension := sql.Extension{
 		Models: []interface{}{
-			NibUser.User{},
+			nibbler.User{},
 		},
 	}
 
 	// allocate user extension, providing sql extension to it
-	userExtension := NibUser.Extension{
+	userExtension := user.Extension{
 		PersistenceExtension: &NibUserSql.Extension{
 			SqlExtension: &sqlExtension,
 		},
@@ -111,7 +111,7 @@ func main() {
 			log.Fatal(err.Error())
 		}
 
-		_, err = userExtension.Create(&NibUser.User{
+		_, err = userExtension.Create(&nibbler.User{
 			Email:    &emailVal,
 			Password: &password,
 		})

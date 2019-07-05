@@ -1,11 +1,12 @@
 package user
 
 import (
+	"github.com/markdicksonjr/nibbler"
 	"testing"
 )
 
 func TestToJson(t *testing.T) {
-	user := User{
+	user := nibbler.User{
 		ID: "654",
 	}
 

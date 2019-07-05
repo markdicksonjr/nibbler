@@ -116,7 +116,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
-func (s *Extension) Login(email string, password string) (*user.User, error) {
+func (s *Extension) Login(email string, password string) (*nibbler.User, error) {
 	u, err := s.UserExtension.GetUserByEmail(email)
 	if err != nil {
 		return u, err

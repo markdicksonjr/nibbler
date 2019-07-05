@@ -5,8 +5,8 @@ import (
 	"github.com/markdicksonjr/nibbler/database/elasticsearch"
 	"github.com/markdicksonjr/nibbler/database/sql"
 	"github.com/markdicksonjr/nibbler/user"
-	NibUserElastic "github.com/markdicksonjr/nibbler/user/database/elastic"
-	NibUserSql "github.com/markdicksonjr/nibbler/user/database/sql"
+	NibUserElastic "github.com/markdicksonjr/nibbler/user/persistence/elastic"
+	NibUserSql "github.com/markdicksonjr/nibbler/user/persistence/sql"
 	"log"
 )
 
@@ -20,7 +20,7 @@ func allocateSqlExtensions() UserAndDbExtensions {
 
 	// allocate an SQL extension, providing the models for auto-migration
 	sqlExtension := sql.Extension{Models: []interface{}{
-		user.User{},
+		nibbler.User{},
 	}}
 
 	sqlUserExtension := NibUserSql.Extension{
@@ -71,7 +71,7 @@ func main() {
 
 	// create a test user
 	emailVal := "test@example.com"
-	_, errCreate := sqlExtensions.UserExtension.Create(&user.User{
+	_, errCreate := sqlExtensions.UserExtension.Create(&nibbler.User{
 		Email: &emailVal,
 	})
 

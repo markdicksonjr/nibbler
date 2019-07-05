@@ -1,9 +1,6 @@
-package user
+package nibbler
 
 import (
-	"encoding/json"
-	"github.com/markdicksonjr/nibbler"
-	"reflect"
 	"time"
 )
 
@@ -52,31 +49,41 @@ type User struct {
 	EmploymentEndDate         *time.Time `json:"employmentEndDate,omitempty"`
 	ContractStartDate         *time.Time `json:"contractStartDate,omitempty"`
 	ContractEndDate           *time.Time `json:"contractEndDate,omitempty"`
-	Context                   *string    `json:"contractEndDate,omitempty"`
+	PrimaryLocation           *string    `json:"primaryLocation,omitempty"` // e.g. lat/long, grid codes, etc
+	Context                   *string    `json:"context,omitempty"`
+	ProtectedContext          *string    `json:"protectedContext,omitempty"`
 }
 
-func FromJson(jsonString string) (*User, error) {
-	userInt, err := nibbler.FromJson(jsonString, reflect.TypeOf(User{}))
-	return userInt.(*User), err
+// basic model for both role-based and group privilege-based auth control
+
+type Group struct {
+	ID        string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	Name      string     `json:"name"`
+	Type      string     `json:"type"`
 }
 
-func ToJson(user *User) (result string, err error) {
-	userJsonBytes, err := json.Marshal(user)
-
-	if err != nil {
-		return
-	}
-
-	result = string(userJsonBytes)
-	return
+type GroupMembership struct {
+	ID        string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	GroupID   string     `json:"groupId"`
+	MemberID  string     `json:"memberId"`
+	Role      GroupRole  `json:"role"`
 }
 
-func GetSafeUser(user User) User {
-	safeUser := user
-	safeUser.Password = nil
-	safeUser.PasswordResetExpiration = nil
-	safeUser.PasswordResetToken = nil
-	safeUser.EmailValidationToken = nil
-	safeUser.EmailValidationExpiration = nil
-	return safeUser
+type GroupPrivilege struct {
+	ID                string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt         time.Time  `json:"createdAt"`
+	UpdatedAt         time.Time  `json:"updatedAt"`
+	DeletedAt         *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	PerformingGroupID string     `json:"performingGroupID"` // e.g. "administrators" ID
+	TargetGroupID     string     `json:"targetGroupID"`     // e.g. "customers" ID
+	Action            int        `json:"action"`            // e.g. read/write/admin/etc
 }
+
+type GroupRole int // make your own roles
+type Action int    // make your own actions
