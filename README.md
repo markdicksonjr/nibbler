@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/markdicksonjr/nibbler.svg?style=svg)](https://circleci.com/gh/markdicksonjr/nibbler)
 
 An extension-oriented framework designed to take a lot of the boilerplate out of making a top-notch Go web server or 
-service worker.  Requires Go v1.12+.  
+service worker.  Requires Go v1.12+.  Go v1.13+ recommended. 
 
 A [sample app](https://github.com/markdicksonjr/nibbler-sample) is available that uses Nibbler.  Hopefully it highlights
 the ease-of-use of the framework.
