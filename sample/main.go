@@ -28,15 +28,17 @@ func main() {
 	}
 
 	// initialize the application, provide config, logger, extensions
-	appContext := nibbler.Application{}
-	if err := appContext.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+	app := nibbler.Application{}
+	if err := app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
 		&SampleExtension{},
 	}); err != nil {
 		log.Fatal(err.Error())
 	}
 
+	// you could directly interact with your extensions here, if you'd like, as they are all initialized
+
 	// run the app
-	if err = appContext.Run(); err != nil {
+	if err = app.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
 }
