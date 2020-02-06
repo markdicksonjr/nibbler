@@ -16,5 +16,5 @@ jobs:
     steps:
       - checkout
 
-      - run: go list -e $(go list -f '{{.Path}}' -m all)
+      #- run: go list -e $(go list -f '{{.Path}}' -m all)
       - run: go test ./...      #- run: go test -v ./...
