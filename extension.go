@@ -1,5 +1,7 @@
 package nibbler
 
+// NoOpExtension implements nibbler.Extension, but all methods do nothing
+// This is provided as a base class that can be used to more tersely define extensions
 type NoOpExtension struct {
 }
 
@@ -11,6 +13,10 @@ func (s *NoOpExtension) Destroy(app *Application) error {
 	return nil
 }
 
-func (s *NoOpExtension) AddRoutes(app *Application) error {
+func (s *NoOpExtension) PostInit(app *Application) error {
 	return nil
+}
+
+func (s *NoOpExtension) GetName() string {
+	return "nameless"
 }

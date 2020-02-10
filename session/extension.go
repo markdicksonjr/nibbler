@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+var requiresConnectorError = "session extension requires connector"
+
 type StoreConnector interface {
 	Connect() (error, sessions.Store)
 	MaxAge() int
@@ -26,7 +28,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 	// if a store connector is provided, use it
 	if s.StoreConnector == nil {
-		return errors.New("session extension requires connector")
+		return errors.New(requiresConnectorError)
 	}
 
 	errConnect, store := s.StoreConnector.Connect()
@@ -34,6 +36,10 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	// save the store to the extension
 	s.store = &store
 	return errConnect
+}
+
+func (s *Extension) GetName() string {
+	return "session"
 }
 
 func (s *Extension) GetAttribute(r *http.Request, attribute string) (interface{}, error) {
@@ -80,7 +86,7 @@ func (s *Extension) SetCaller(w http.ResponseWriter, r *http.Request, userValue 
 		return s.SetAttribute(w, r, "user", nil)
 	}
 
-	// wipe values for stringification
+	// wipe values for stringification TODO: use user.GetSafeString?
 	password := userValue.Password
 	resetToken := userValue.PasswordResetToken
 	resetExpiration := userValue.PasswordResetExpiration

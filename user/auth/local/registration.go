@@ -123,7 +123,7 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 			)
 
 			if err != nil {
-				s.app.GetLogger().Error("while sending email verification, " + err.Error())
+				s.app.Logger.Error("while sending email verification, " + err.Error())
 			}
 		}()
 	}
@@ -155,7 +155,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 
 	// if an error happened during the lookup
 	if err != nil {
-		s.app.GetLogger().Error("while verifying email token: " + err.Error())
+		s.app.Logger.Error("while verifying email token: " + err.Error())
 		nibbler.Write200Json(w, `{"result": false}`)
 		return
 	}

@@ -61,7 +61,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	errUpdate := s.UserExtension.Update(userValue)
 
 	if errUpdate != nil {
-		s.app.GetLogger().Error("failed to update user record: " + errUpdate.Error())
+		s.app.Logger.Error("failed to update user record: " + errUpdate.Error())
 		nibbler.Write500Json(w, "failed to update user record")
 		return
 	}

@@ -3,17 +3,19 @@ package user
 import (
 	"encoding/json"
 	"github.com/markdicksonjr/nibbler"
-	"reflect"
 )
 
 func FromJson(jsonString string) (*nibbler.User, error) {
-	userInt, err := nibbler.FromJson(jsonString, reflect.TypeOf(nibbler.User{}))
-	return userInt.(*nibbler.User), err
+	u := nibbler.User{}
+	if err := json.Unmarshal([]byte(jsonString), &u); err != nil {
+		return nil, err
+	}
+	return &u, nil
 }
 
 func ToJson(user *nibbler.User) (result string, err error) {
-	userJsonBytes, err := json.Marshal(user)
-
+	var userJsonBytes []byte
+	userJsonBytes, err = json.Marshal(user)
 	if err != nil {
 		return
 	}

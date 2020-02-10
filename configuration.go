@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+// GetConfigurationFromSources will handle loading a configuration from a provided list of sources
 func GetConfigurationFromSources(sources []source.Source) (config.Config, error) {
 	conf := config.NewConfig()
 
@@ -21,8 +22,11 @@ func GetConfigurationFromSources(sources []source.Source) (config.Config, error)
 	return conf, nil
 }
 
+// LoadConfiguration will handle loading the configuration from multiple sources, allowing for this module's default
+// source set to be used if none are provided to this function
+//
 // "merging priority is in reverse order"
-// if nil or empty, file and environment sources used (file takes precendence)
+// if nil or empty, file and environment sources used (file takes precedence)
 func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 
 	// if sources are not provided
@@ -56,10 +60,10 @@ func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 
 	// get NIBBLER_PORT and PORT, giving precendence to NIBBLER_PORT
 	// PORT is a common PaaS requirement to even have the app run
-	primaryPort := conf.Get("nibbler", "port").Int(3000)
-	secondaryPort := conf.Get("port").Int(3000)
+	primaryPort := conf.Get("nibbler", "port").Int(0)
+	secondaryPort := conf.Get("port").Int(0)
 
-	if primaryPort == 3000 && secondaryPort != primaryPort {
+	if primaryPort == 0 && secondaryPort != primaryPort {
 		primaryPort = secondaryPort
 	}
 
@@ -67,7 +71,7 @@ func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 		Raw:             conf,
 		Port:            primaryPort,
 		StaticDirectory: conf.Get("nibbler", "directory", "static").String("./public/"),
-		HeaderConfiguration: HeaderConfiguration{
+		Headers: HeaderConfiguration{
 			AccessControlAllowOrigin:  conf.Get("nibbler", "ac", "allow", "origin").String("*"),
 			AccessControlAllowMethods: conf.Get("nibbler", "ac", "allow", "methods").String("GET, POST, OPTIONS, PUT, PATCH, DELETE"),
 			AccessControlAllowHeaders: conf.Get("nibbler", "ac", "allow", "headers").String("Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-MailSendResponse-Time, X-PINGOTHER, X-CSRF-Token, Authorization"),

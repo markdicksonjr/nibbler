@@ -88,18 +88,18 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
-	app.GetRouter().HandleFunc("/api/user", s.GetCurrentUserHandler).Methods("GET")
-	app.GetRouter().HandleFunc("/api/login", s.LoginFormHandler).Methods("POST")
-	app.GetRouter().HandleFunc("/api/logout", s.LogoutHandler).Methods("POST", "GET")
-	app.GetRouter().HandleFunc("/api/password/reset-token", s.ResetPasswordTokenHandler).Methods("POST")
-	app.GetRouter().HandleFunc("/api/password", s.ResetPasswordHandler).Methods("POST")
+func (s *Extension) PostInit(app *nibbler.Application) error {
+	app.Router.HandleFunc("/api/user", s.GetCurrentUserHandler).Methods("GET")
+	app.Router.HandleFunc("/api/login", s.LoginFormHandler).Methods("POST")
+	app.Router.HandleFunc("/api/logout", s.LogoutHandler).Methods("POST", "GET")
+	app.Router.HandleFunc("/api/password/reset-token", s.ResetPasswordTokenHandler).Methods("POST")
+	app.Router.HandleFunc("/api/password", s.ResetPasswordHandler).Methods("POST")
 
 	if s.RegistrationEnabled {
-		app.GetRouter().HandleFunc("/api/register", s.RegisterFormHandler).Methods("POST")
+		app.Router.HandleFunc("/api/register", s.RegisterFormHandler).Methods("POST")
 
 		if s.EmailVerificationEnabled {
-			app.GetRouter().HandleFunc("/api/email/validate", s.EmailTokenVerifyHandler).Methods("POST")
+			app.Router.HandleFunc("/api/email/validate", s.EmailTokenVerifyHandler).Methods("POST")
 		}
 	}
 	return nil
@@ -107,6 +107,10 @@ func (s *Extension) AddRoutes(app *nibbler.Application) error {
 
 func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
+}
+
+func (s *Extension) GetName() string {
+	return "local auth"
 }
 
 func (s *Extension) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {

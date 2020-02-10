@@ -8,7 +8,6 @@ Dependencies:
 - nibble-user
 - nibble-sendgrid
 
-
 Some features:
 
 - login
