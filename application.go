@@ -37,6 +37,7 @@ type Logger interface {
 	Warn(message ...string)
 }
 
+// Configuration is the composite of other configs, including values directly from external sources (Raw)
 type Configuration struct {
 	Headers         HeaderConfiguration
 	Port            int
@@ -72,42 +73,36 @@ func (ac *Application) Init(config *Configuration, logger Logger, extensions []E
 		// if any error occurred, return the error and stop processing
 		if err = LogErrorNonNil(logger, x.Init(ac)); err != nil {
 			return err
+		} else {
+			ac.Logger.Info("ran Init on extension \"" + x.GetName() + "\"")
 		}
 	}
 
-	// if a port is configured, set up our listener and init extensions
+	// if a port is provided, allocate a router for the application
 	if ac.Config.Port != 0 {
-
-		// allocate a router
 		ac.Router = mux.NewRouter()
+	}
 
-		// init extension routes
-		for _, x := range extensions {
+	// call post-init on extensions (if applicable, a router will be available to extensions now)
+	for _, x := range extensions {
 
-			// if any error occurred, return the error and stop processing
-			if err = LogErrorNonNil(logger, x.PostInit(ac), "while running Init on extension \"" + x.GetName() + "\""); err != nil {
-				return err
-			}
+		// if any error occurred, return the error and stop processing
+		if err = LogErrorNonNil(logger, x.PostInit(ac), "while running PostInit on extension \"" + x.GetName() + "\""); err != nil {
+			return err
+		} else {
+			ac.Logger.Info("ran PostInit on extension \"" + x.GetName() + "\"")
 		}
+	}
 
-		// set up the static directory routing
+	// if a port was provided, set up the static directory routing
+	if ac.Config.Port != 0 {
 		ac.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
 		http.Handle("/", ac.Router)
-	} else {
-
-		// init extension routes
-		for _, x := range extensions {
-
-			// if any error occurs, return the error and stop processing
-			if err = LogErrorNonNil(ac.Logger, x.PostInit(ac), "while running PostInit on extension \"" + x.GetName() + "\""); err != nil {
-				return err
-			}
-		}
 	}
-
 	return nil
 }
 
+// Run will put the app into its running state
 func (ac *Application) Run() error {
 	var err error
 
@@ -126,8 +121,10 @@ func (ac *Application) Run() error {
 			// log that we're listening and state the port
 			ac.Logger.Info("listening on " + strconv.Itoa((*ac.Config).Port))
 
-			// listen (this blocks) - log an error if it happened
-			LogFatalNonNil(ac.Logger, h.ListenAndServe(), "failed to initialize server")
+			// listen (this blocks) - log an error if it happened (handle ErrServerClosed error)
+			if err := h.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				LogFatalNonNil(ac.Logger, h.ListenAndServe(), "failed to initialize server")
+			}
 		}()
 
 		// wait for a signal
@@ -144,9 +141,9 @@ func (ac *Application) Run() error {
 
 		// wait for a signal
 		<-ac.stopSignal
-	}
 
-	ac.Logger.Info("shutting down the application")
+		ac.Logger.Info("shutting down")
+	}
 
 	// destroy extensions in reverse order (keep going on error to try to close as much as we can)
 	for i := range ac.extensions {
@@ -154,9 +151,13 @@ func (ac *Application) Run() error {
 		destroyErr := LogErrorNonNil(ac.Logger, x.Destroy(ac), "while destroying extension \"" + x.GetName() + "\"")
 		if destroyErr != nil {
 			err = destroyErr
+		} else {
+			ac.Logger.Info("destroyed extension \"" + x.GetName() + "\"")
 		}
 	}
 
-	// return any (the latest, which could be an improvement we could make) extension destroy error
+	ac.Logger.Info("shutdown complete")
+
+	// return any (the latest) extension destroy error (all are logged)
 	return err
 }
