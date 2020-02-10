@@ -95,7 +95,6 @@ app.GetConfiguration().Raw.Get("some", "property")
 
 The core properties (all optional) are:
 
-- NIBBLER_MODE = nibbler.mode in JSON, etc, defaults to "web", but can also be "worker"
 - NIBBLER_PORT (or just PORT) = nibbler.port in JSON, etc
 - NIBBLER_DIRECTORY_STATIC = nibbler.directory.static in JSON, etc, defaults to "/public" 
 - NIBBLER_AC_ALLOW_ORIGIN = nibbler.ac.allow.origin in JSON, etc, defaults to "*" 
@@ -124,8 +123,8 @@ value (really, the PORT env var) is frequently used by PaaS providers and is oft
 to register as "healthy" or "started".  In any case, nibbler.port is also more explicit, so it takes priority.  To 
 experiment, set the environment variable NIBBLER_PORT to something like 8001 and start the app.  You'll see that 
 environment variables in the sample app take priorityover file-defined values.  If you remove all environment variables 
-and values in the JSON file, you'll see the server start on port 3000.  Your app can define sources its own way, so keep 
-in mind the sample is just one demonstration of how this can be done.
+and values in the JSON file, you'll see the server start without listening on a port.  Your app can define sources its 
+own way, so keep in mind the sample is just one demonstration of how this can be done.
 
 - the environment variables can be directly mapped to JSON values (when provided as a source to LoadConfiguration). 
 Environment variables 

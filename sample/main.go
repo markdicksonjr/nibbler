@@ -6,12 +6,15 @@ import (
 	"net/http"
 )
 
+// SampleExtension shows an extremely simple custom extension for nibbler.  It is initially composed of nibbler.NoOpExtension
+// in order to allow us to only fill in what we want to for the extension (in this case, only "PostInit").
 type SampleExtension struct {
 	nibbler.NoOpExtension
 }
 
-func (s *SampleExtension) AddRoutes(context *nibbler.Application) error {
-	context.GetRouter().HandleFunc("/api/ok", func(w http.ResponseWriter, _ *http.Request) {
+// PostInit just adds a REST endpoint at "/api/ok" to serve up a simple health-check type message
+func (s *SampleExtension) PostInit(context *nibbler.Application) error {
+	context.Router.HandleFunc("/api/ok", func(w http.ResponseWriter, _ *http.Request) {
 		nibbler.Write200Json(w, `{"result": "OK"}`)
 	}).Methods("GET")
 	return nil
@@ -25,6 +28,10 @@ func main() {
 	// any error is fatal at this point
 	if err != nil {
 		log.Fatal(err.Error())
+	}
+
+	if config.Port == 0 {
+		log.Println("WARNING: no port is configured - starting app without http listener")
 	}
 
 	// initialize the application, provide config, logger, extensions

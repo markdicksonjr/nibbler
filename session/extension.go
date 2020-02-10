@@ -80,7 +80,7 @@ func (s *Extension) SetCaller(w http.ResponseWriter, r *http.Request, userValue 
 		return s.SetAttribute(w, r, "user", nil)
 	}
 
-	// wipe values for stringification
+	// wipe values for stringification TODO: use user.GetSafeString?
 	password := userValue.Password
 	resetToken := userValue.PasswordResetToken
 	resetExpiration := userValue.PasswordResetExpiration

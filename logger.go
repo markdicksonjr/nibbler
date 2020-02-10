@@ -19,6 +19,10 @@ func (logger DefaultLogger) Info(message ...string) {
 	log.Println(strings.Join(message, ""))
 }
 
+func (logger DefaultLogger) Trace(message ...string) {
+	log.Println(strings.Join(message, ""))
+}
+
 func (logger DefaultLogger) Debug(message ...string) {
 	log.Println(strings.Join(message, ""))
 }
@@ -35,4 +39,7 @@ func (logger SilentLogger) Info(message ...string) {
 }
 
 func (logger SilentLogger) Debug(message ...string) {
+}
+
+func (logger SilentLogger) Trace(message ...string) {
 }

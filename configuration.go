@@ -56,10 +56,10 @@ func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 
 	// get NIBBLER_PORT and PORT, giving precendence to NIBBLER_PORT
 	// PORT is a common PaaS requirement to even have the app run
-	primaryPort := conf.Get("nibbler", "port").Int(3000)
-	secondaryPort := conf.Get("port").Int(3000)
+	primaryPort := conf.Get("nibbler", "port").Int(0)
+	secondaryPort := conf.Get("port").Int(0)
 
-	if primaryPort == 3000 && secondaryPort != primaryPort {
+	if primaryPort == 0 && secondaryPort != primaryPort {
 		primaryPort = secondaryPort
 	}
 

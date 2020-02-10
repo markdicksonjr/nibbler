@@ -2,7 +2,6 @@ package nibbler
 
 import (
 	"context"
-	"errors"
 	"github.com/gorilla/mux"
 	"github.com/micro/go-micro/config"
 	"net/http"
@@ -13,12 +12,21 @@ import (
 )
 
 type Extension interface {
+
+	// Init should handle the initialization of the extension with the knowledge that the Router and other Extensions
+	// are not likely to be initialized yet
 	Init(app *Application) error
-	AddRoutes(app *Application) error
+
+	// PostInit should handle all initialization that could not be handled in Init.  Specifically, anything requiring
+	// the Router and other Extensions to be initialized
+	PostInit(app *Application) error
+
+	// Destroy handles application shutdown, with the most recently-initialized extensions destroyed first
 	Destroy(app *Application) error
 }
 
 type Logger interface {
+	Trace(message ...string)
 	Debug(message ...string)
 	Error(message ...string)
 	Info(message ...string)
@@ -39,49 +47,58 @@ type HeaderConfiguration struct {
 }
 
 type Application struct {
-	config     *Configuration
+	Config     *Configuration
+	Router     *mux.Router
+	Logger     Logger
 	extensions []Extension
-	logger     Logger
-	router     *mux.Router
 	stopSignal chan os.Signal
-	mode       string
 }
 
 func (ac *Application) Init(config *Configuration, logger Logger, extensions []Extension) error {
-	ac.config = config
-	ac.logger = logger
+	ac.Config = config
+	ac.Logger = logger
 	ac.extensions = extensions
-	ac.mode = ac.config.Raw.Get("nibbler", "mode").String("web")
 
 	// prepare a general-use error variable
 	var err error
 
 	// initialize all extensions
-	// if any error occurred, return the error and stop processing
 	for _, x := range extensions {
+
+		// if any error occurred, return the error and stop processing
 		if err = x.Init(ac); err != nil {
 			return err
 		}
 	}
 
-	// get the configured app mode, accounting for the default value
-	// only add routes if it's a web mode app
-	if ac.mode == "web" {
+	// if a port is configured, set up our listener and init extensions
+	if ac.Config.Port != 0 {
 
 		// allocate a router
-		ac.router = mux.NewRouter()
+		ac.Router = mux.NewRouter()
 
 		// init extension routes
-		// if any error occurred, return the error and stop processing
 		for _, x := range extensions {
-			if err = x.AddRoutes(ac); err != nil {
+
+			// if any error occurred, return the error and stop processing
+			if err = x.PostInit(ac); err != nil {
 				return err
 			}
 		}
 
 		// set up the static directory routing
-		ac.router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
-		http.Handle("/", ac.router)
+		ac.Router.PathPrefix("/").Handler(http.FileServer(http.Dir(config.StaticDirectory)))
+		http.Handle("/", ac.Router)
+	} else {
+
+		// init extension routes
+		for _, x := range extensions {
+
+			// if any error occurs, return the error and stop processing
+			if err = x.PostInit(ac); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -94,14 +111,14 @@ func (ac *Application) Run() error {
 	ac.stopSignal = make(chan os.Signal, 1)
 	signal.Notify(ac.stopSignal, syscall.SIGINT, syscall.SIGTERM)
 
-	if ac.mode == "web" {
+	if ac.Config.Port != 0 {
 
 		// allocate a server
-		h := &http.Server{Addr: ":" + strconv.Itoa(ac.config.Port), Handler: nil}
+		h := &http.Server{Addr: ":" + strconv.Itoa(ac.Config.Port), Handler: nil}
 
 		// run our server listener in a goroutine
 		go func() {
-			ac.logger.Info("starting server")
+			ac.Logger.Info("starting server")
 			err = startServer(h, ac)
 		}()
 
@@ -109,22 +126,20 @@ func (ac *Application) Run() error {
 		<-ac.stopSignal
 
 		// shut down the server
-		ac.logger.Info("shutting down the server")
+		ac.Logger.Info("shutting down the server")
 
 		// log a shutdown error (factor into return value later)
 		if err = h.Shutdown(context.Background()); err != nil {
-			ac.logger.Error(err.Error())
+			ac.Logger.Error(err.Error())
 		}
-	} else if ac.mode == "worker" {
+	} else {
 
 		// wait for a signal
 		<-ac.stopSignal
 
-	} else {
-		return errors.New("unknown nibbler mode detected: " + ac.mode)
 	}
 
-	ac.logger.Info("shutting down the application")
+	ac.Logger.Info("shutting down the application")
 
 	// destroy extensions in reverse order
 	for i := range ac.extensions {
@@ -138,25 +153,13 @@ func (ac *Application) Run() error {
 func startServer(h *http.Server, ac *Application) error {
 
 	// log that we're listening and state the port
-	ac.logger.Info("listening on " + strconv.Itoa((*ac.config).Port))
+	ac.Logger.Info("listening on " + strconv.Itoa((*ac.Config).Port))
 
 	// listen (this blocks) - log an error if it happened
 	if err := h.ListenAndServe(); err != nil {
-		ac.logger.Error("failed to initialize server: " + err.Error())
+		ac.Logger.Error("failed to initialize server: " + err.Error())
 		return err
 	}
 
 	return nil
-}
-
-func (ac *Application) GetLogger() Logger {
-	return ac.logger
-}
-
-func (ac *Application) GetConfiguration() *Configuration {
-	return ac.config
-}
-
-func (ac *Application) GetRouter() *mux.Router {
-	return ac.router
 }

@@ -41,7 +41,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return nil
 }
 
-func (s *Extension) AddRoutes(app *nibbler.Application) error {
+func (s *Extension) PostInit(app *nibbler.Application) error {
 	return nil
 }
 

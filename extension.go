@@ -11,6 +11,6 @@ func (s *NoOpExtension) Destroy(app *Application) error {
 	return nil
 }
 
-func (s *NoOpExtension) AddRoutes(app *Application) error {
+func (s *NoOpExtension) PostInit(app *Application) error {
 	return nil
 }
