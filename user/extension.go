@@ -6,18 +6,18 @@ import (
 	"github.com/markdicksonjr/nibbler"
 )
 
-const noExtensionErrorMessage = "no extension found"
+const noExtensionErrorMessage = "no persistence extension was provided to user extension"
 
 type PersistenceExtension interface {
 	nibbler.Extension
-	GetUserById(id string) (*nibbler.User, error)
-	GetUserByEmail(email string) (*nibbler.User, error)
-	GetUserByUsername(username string) (*nibbler.User, error)
 	Create(user *nibbler.User) (*nibbler.User, error)
+	GetUserByEmail(email string) (*nibbler.User, error)
+	GetUserByEmailValidationToken(token string) (*nibbler.User, error)
+	GetUserById(id string) (*nibbler.User, error)
+	GetUserByPasswordResetToken(token string) (*nibbler.User, error)
+	GetUserByUsername(username string) (*nibbler.User, error)
 	Update(user *nibbler.User) error
 	UpdatePassword(user *nibbler.User) error
-	GetUserByPasswordResetToken(token string) (*nibbler.User, error)
-	GetUserByEmailValidationToken(token string) (*nibbler.User, error)
 }
 
 type Extension struct {
@@ -35,7 +35,7 @@ type Extension struct {
 
 func (s *Extension) Init(app *nibbler.Application) error {
 	if s.PersistenceExtension == nil {
-		return errors.New("no persistence extension was provided to user extension")
+		return errors.New(noExtensionErrorMessage)
 	}
 
 	return nil

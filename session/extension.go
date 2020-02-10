@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+var requiresConnectorError = "session extension requires connector"
+
 type StoreConnector interface {
 	Connect() (error, sessions.Store)
 	MaxAge() int
@@ -26,7 +28,7 @@ func (s *Extension) Init(app *nibbler.Application) error {
 
 	// if a store connector is provided, use it
 	if s.StoreConnector == nil {
-		return errors.New("session extension requires connector")
+		return errors.New(requiresConnectorError)
 	}
 
 	errConnect, store := s.StoreConnector.Connect()

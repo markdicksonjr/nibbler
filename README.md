@@ -31,16 +31,18 @@ Nibbler also provides some extension implementations that perform common tasks f
 Extensions provided with Nibbler are organized by functional category, with the main Nibbler structures at the root
 level.  These are the module categories below the root level:
 
-- Database - connect to databases and expose mechanisms to create, query, etc.
-- Session - session storage and retrieval
+- Session - session storage and retrieval.  See ./session/README.md
 - User - the Nibbler user model, and various integrations that can operate with it.  These will tend to be auth integrations.
+See ./user/README.md
+- Local auth - local auth implementation, expects a user extension and session extension implementation to be provided to it.
+See ./user/auth/local/README.md
 
 ## External Extensions
 
 There are various features provided by external modules:
 
 - Auth - authentication/authorization modules that do not integrate with Nibbler's user model (source of truth is not Nibbler).
-- Database storage
+- Database storage - connect to databases and expose mechanisms to create, query, etc.
 - Mail - outbound email/sms/etc
 - Storage - block/blob storage
 
@@ -90,7 +92,7 @@ The following properties are available by default, but custom properties can be 
 Application passed to it in the Init() method.  For example:
 
 ```
-app.GetConfiguration().Raw.Get("some", "property")
+app.Configuration.Raw.Get("some", "property")
 ```
 
 The core properties (all optional) are:

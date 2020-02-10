@@ -5,8 +5,11 @@ import (
 	"net/http"
 )
 
-// SampleExtension shows an extremely simple custom extension for nibbler.  It is initially composed of nibbler.NoOpExtension
-// in order to allow us to only fill in what we want to for the extension (in this case, only "PostInit").
+// SampleExtension shows an extremely simple custom extension for nibbler.  It is initially composed of
+// nibbler.NoOpExtension in order to allow us to only fill in what we want to for the extension (in this case,
+// only "PostInit").
+//
+// The extension serves up static content at "/" and a simple API endpoint at "/api/ok"
 type SampleExtension struct {
 	nibbler.NoOpExtension
 }

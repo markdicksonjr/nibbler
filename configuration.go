@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+// GetConfigurationFromSources will handle loading a configuration from a provided list of sources
 func GetConfigurationFromSources(sources []source.Source) (config.Config, error) {
 	conf := config.NewConfig()
 
@@ -21,8 +22,11 @@ func GetConfigurationFromSources(sources []source.Source) (config.Config, error)
 	return conf, nil
 }
 
+// LoadConfiguration will handle loading the configuration from multiple sources, allowing for this module's default
+// source set to be used if none are provided to this function
+//
 // "merging priority is in reverse order"
-// if nil or empty, file and environment sources used (file takes precendence)
+// if nil or empty, file and environment sources used (file takes precedence)
 func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 
 	// if sources are not provided
