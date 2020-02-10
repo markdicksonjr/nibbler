@@ -36,6 +36,10 @@ func (s *Extension) Init(app *nibbler.Application) error {
 	return errConnect
 }
 
+func (s *Extension) GetName() string {
+	return "session"
+}
+
 func (s *Extension) GetAttribute(r *http.Request, attribute string) (interface{}, error) {
 	session, err := (*s.store).Get(r, s.SessionName)
 

@@ -45,12 +45,14 @@ type Configuration struct {
 	StaticDirectory string
 }
 
+// HeaderConfiguration controls settings for request/response headers
 type HeaderConfiguration struct {
 	AccessControlAllowHeaders string
 	AccessControlAllowMethods string
 	AccessControlAllowOrigin  string
 }
 
+// Application stores the state of the running application
 type Application struct {
 	Config     *Configuration
 	Logger     Logger

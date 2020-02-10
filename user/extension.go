@@ -49,6 +49,10 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) GetName() string {
+	return "user"
+}
+
 func (s *Extension) GetUserById(id string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserById(id)

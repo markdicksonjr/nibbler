@@ -109,6 +109,10 @@ func (s *Extension) Destroy(app *nibbler.Application) error {
 	return nil
 }
 
+func (s *Extension) GetName() string {
+	return "local auth"
+}
+
 func (s *Extension) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
 	currentUser, err := s.SessionExtension.GetCaller(r)
 	if err != nil {

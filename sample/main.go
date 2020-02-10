@@ -28,7 +28,7 @@ func main() {
 	config, err := nibbler.LoadConfiguration()
 
 	// use a nibbler utility function to handle the error - if it's non-nil, it will log at error level and exit
-	nibbler.LogFatalNonNil(logger, err)
+	nibbler.LogFatalNonNil(logger, err, "while loading configuration")
 
 	// display a notice if the configuration doesn't specify a port - refer to README to learn about configuration
 	// note that nibbler doesn't NEED a port to run, but our example sets up a route, which won't be reachable
