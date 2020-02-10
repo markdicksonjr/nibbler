@@ -13,6 +13,9 @@ import (
 
 type Extension interface {
 
+	// GetName returns a static name for the extension, primarily for logging purposes
+	GetName() string
+
 	// Init should handle the initialization of the extension with the knowledge that the Router and other Extensions
 	// are not likely to be initialized yet
 	Init(app *Application) error
@@ -25,6 +28,7 @@ type Extension interface {
 	Destroy(app *Application) error
 }
 
+// Logger is a generic interface to reflect logging output at various levels
 type Logger interface {
 	Trace(message ...string)
 	Debug(message ...string)
@@ -34,10 +38,10 @@ type Logger interface {
 }
 
 type Configuration struct {
-	HeaderConfiguration HeaderConfiguration
-	Port                int
-	Raw                 config.Config
-	StaticDirectory     string
+	Headers         HeaderConfiguration
+	Port            int
+	Raw             config.Config
+	StaticDirectory string
 }
 
 type HeaderConfiguration struct {
@@ -48,8 +52,8 @@ type HeaderConfiguration struct {
 
 type Application struct {
 	Config     *Configuration
-	Router     *mux.Router
 	Logger     Logger
+	Router     *mux.Router
 	extensions []Extension
 	stopSignal chan os.Signal
 }
@@ -66,7 +70,7 @@ func (ac *Application) Init(config *Configuration, logger Logger, extensions []E
 	for _, x := range extensions {
 
 		// if any error occurred, return the error and stop processing
-		if err = x.Init(ac); err != nil {
+		if err = LogErrorNonNil(logger, x.Init(ac)); err != nil {
 			return err
 		}
 	}
@@ -81,7 +85,7 @@ func (ac *Application) Init(config *Configuration, logger Logger, extensions []E
 		for _, x := range extensions {
 
 			// if any error occurred, return the error and stop processing
-			if err = x.PostInit(ac); err != nil {
+			if err = LogErrorNonNil(logger, x.PostInit(ac), "while running Init on extension \"" + x.GetName() + "\""); err != nil {
 				return err
 			}
 		}
@@ -95,7 +99,7 @@ func (ac *Application) Init(config *Configuration, logger Logger, extensions []E
 		for _, x := range extensions {
 
 			// if any error occurs, return the error and stop processing
-			if err = x.PostInit(ac); err != nil {
+			if err = LogErrorNonNil(ac.Logger, x.PostInit(ac), "while running PostInit on extension \"" + x.GetName() + "\""); err != nil {
 				return err
 			}
 		}
@@ -118,48 +122,41 @@ func (ac *Application) Run() error {
 
 		// run our server listener in a goroutine
 		go func() {
-			ac.Logger.Info("starting server")
-			err = startServer(h, ac)
+
+			// log that we're listening and state the port
+			ac.Logger.Info("listening on " + strconv.Itoa((*ac.Config).Port))
+
+			// listen (this blocks) - log an error if it happened
+			LogFatalNonNil(ac.Logger, h.ListenAndServe(), "failed to initialize server")
 		}()
 
 		// wait for a signal
 		<-ac.stopSignal
 
 		// shut down the server
-		ac.Logger.Info("shutting down the server")
+		ac.Logger.Info("shutting down")
 
 		// log a shutdown error (factor into return value later)
-		if err = h.Shutdown(context.Background()); err != nil {
+		if err = LogErrorNonNil(ac.Logger, h.Shutdown(context.Background()), "while shutting down"); err != nil {
 			ac.Logger.Error(err.Error())
 		}
 	} else {
 
 		// wait for a signal
 		<-ac.stopSignal
-
 	}
 
 	ac.Logger.Info("shutting down the application")
 
-	// destroy extensions in reverse order
+	// destroy extensions in reverse order (keep going on error to try to close as much as we can)
 	for i := range ac.extensions {
-		err = ac.extensions[len(ac.extensions)-i-1].Destroy(ac)
+		x := ac.extensions[len(ac.extensions)-i-1]
+		destroyErr := LogErrorNonNil(ac.Logger, x.Destroy(ac), "while destroying extension \"" + x.GetName() + "\"")
+		if destroyErr != nil {
+			err = destroyErr
+		}
 	}
 
 	// return any (the latest, which could be an improvement we could make) extension destroy error
 	return err
-}
-
-func startServer(h *http.Server, ac *Application) error {
-
-	// log that we're listening and state the port
-	ac.Logger.Info("listening on " + strconv.Itoa((*ac.Config).Port))
-
-	// listen (this blocks) - log an error if it happened
-	if err := h.ListenAndServe(); err != nil {
-		ac.Logger.Error("failed to initialize server: " + err.Error())
-		return err
-	}
-
-	return nil
 }

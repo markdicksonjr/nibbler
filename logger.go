@@ -2,6 +2,7 @@ package nibbler
 
 import (
 	"log"
+	"os"
 	"strings"
 )
 
@@ -42,4 +43,26 @@ func (logger SilentLogger) Debug(message ...string) {
 }
 
 func (logger SilentLogger) Trace(message ...string) {
+}
+
+func LogFatalNonNil(logger Logger, err error, wrap ...string) {
+	if err != nil {
+		if len(wrap) > 0 {
+			logger.Error(wrap[0] + ", " + err.Error())
+		} else {
+			logger.Error(err.Error())
+		}
+		os.Exit(1)
+	}
+}
+
+func LogErrorNonNil(logger Logger, err error, wrap ...string) error {
+	if err != nil {
+		if len(wrap) > 0 {
+			logger.Error(wrap[0] + ", " + err.Error())
+		} else {
+			logger.Error(err.Error())
+		}
+	}
+	return err
 }

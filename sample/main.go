@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/markdicksonjr/nibbler"
-	"log"
 	"net/http"
 )
 
@@ -22,30 +21,32 @@ func (s *SampleExtension) PostInit(context *nibbler.Application) error {
 
 func main() {
 
+	// allocate logger
+	logger := nibbler.DefaultLogger{}
+
 	// allocate configuration
 	config, err := nibbler.LoadConfiguration()
 
-	// any error is fatal at this point
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	// use a nibbler utility function to handle the error - if it's non-nil, it will log at error level and exit
+	nibbler.LogFatalNonNil(logger, err)
 
+	// display a notice if the configuration doesn't specify a port - refer to README to learn about configuration
+	// note that nibbler doesn't NEED a port to run, but our example sets up a route, which won't be reachable
+	// without specifying a port.  As such, this isn't typically something a nibbler app will need to check
 	if config.Port == 0 {
-		log.Println("WARNING: no port is configured - starting app without http listener")
+		logger.Warn("no port is configured - starting app without http listener")
 	}
 
-	// initialize the application, provide config, logger, extensions
+	// allocate the application
 	app := nibbler.Application{}
-	if err := app.Init(config, nibbler.DefaultLogger{}, []nibbler.Extension{
+
+	// initialize the application, provide config, logger, extensions - any error is fatal
+	nibbler.LogFatalNonNil(logger, app.Init(config, logger, []nibbler.Extension{
 		&SampleExtension{},
-	}); err != nil {
-		log.Fatal(err.Error())
-	}
+	}))
 
 	// you could directly interact with your extensions here, if you'd like, as they are all initialized
 
-	// run the app
-	if err = app.Run(); err != nil {
-		log.Fatal(err.Error())
-	}
+	// run the app, any error is fatal - this will block until app destruction
+	nibbler.LogFatalNonNil(logger, app.Run())
 }
