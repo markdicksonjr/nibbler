@@ -139,6 +139,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 
 	// the endpoint is only available if verification is enabled
 	if !s.EmailVerificationEnabled {
+		s.app.Logger.Warn("got email token verification request while feature disabled")
 		nibbler.Write404Json(w)
 		return
 	}
@@ -146,6 +147,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 	// grab and validate input parameters
 	token := r.FormValue("token")
 	if token == "" {
+		s.app.Logger.Warn("got email token verification request with no token")
 		nibbler.Write500Json(w, "a token form parameter is required")
 		return
 	}
@@ -155,13 +157,14 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 
 	// if an error happened during the lookup
 	if err != nil {
-		s.app.Logger.Error("while verifying email token: " + err.Error())
+		s.app.Logger.Error("while verifying email token, error = " + err.Error())
 		nibbler.Write200Json(w, `{"result": false}`)
 		return
 	}
 
 	// if no user has that email token
 	if userValue == nil {
+		s.app.Logger.Error("while verifying email token, user not found for validation token")
 		nibbler.Write200Json(w, `{"result": false}`)
 		return
 	}
@@ -172,6 +175,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 	userValue.EmailValidationToken = nil
 	userValue.EmailValidationExpiration = nil
 	if err = s.UserExtension.Update(userValue); err != nil {
+		s.app.Logger.Error("failed to update user to mark success during email verification")
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
@@ -181,6 +185,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 	// more likely happen while not logged in
 	sessionUser, err := s.SessionExtension.GetCaller(r)
 	if err != nil {
+		s.app.Logger.Error("failed to get caller from session during email verification")
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
@@ -190,6 +195,7 @@ func (s *Extension) EmailTokenVerifyHandler(w http.ResponseWriter, r *http.Reque
 		sessionUser.IsEmailValidated = &isTrue
 
 		if err := s.SessionExtension.SetCaller(w, r, sessionUser); err != nil {
+			s.app.Logger.Error("failed to set caller in session to update flag during email verification")
 			nibbler.Write500Json(w, err.Error())
 			return
 		}

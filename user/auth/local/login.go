@@ -119,6 +119,7 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Extension) Login(email string, password string) (*nibbler.User, error) {
 	u, err := s.UserExtension.GetUserByEmail(email)
 	if err != nil {
+		s.app.Logger.Error("while looking up user by email, error = " + err.Error())
 		return u, err
 	}
 
@@ -128,15 +129,18 @@ func (s *Extension) Login(email string, password string) (*nibbler.User, error) 
 
 	validPassword, err := ValidatePassword(password, *u.Password)
 	if err != nil {
+		s.app.Logger.Error("while validating password in login flow, error = " + err.Error())
 		return nil, err
 	}
 
 	if !validPassword {
+		s.app.Logger.Trace("invalid password for email " + email)
 		return nil, errors.New("invalid password")
 	}
 
 	// if we need email verification but it hasn't been done yet, fail
 	if s.EmailVerificationEnabled && s.EmailVerificationRequired && (u.IsEmailValidated == nil || !*u.IsEmailValidated) {
+		s.app.Logger.Debug("login blocked for email " + email + " because it was not verified")
 		return nil, errors.New("email not verified")
 	}
 

@@ -116,6 +116,7 @@ func (s *Extension) GetName() string {
 func (s *Extension) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request) {
 	currentUser, err := s.SessionExtension.GetCaller(r)
 	if err != nil {
+		s.app.Logger.Error("while getting user from session, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
@@ -129,6 +130,7 @@ func (s *Extension) GetCurrentUserHandler(w http.ResponseWriter, r *http.Request
 	jsonString, err := user.ToJson(&safeUser)
 
 	if err != nil {
+		s.app.Logger.Error("while converting user to JSON from session, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
