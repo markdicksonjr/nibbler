@@ -10,6 +10,7 @@ import (
 
 func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.PasswordResetEnabled {
+		s.app.Logger.Warn("password reset token requested while feature disabled")
 		nibbler.Write404Json(w)
 		return
 	}
@@ -23,25 +24,33 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	if email != "" {
 		userValue, err = s.UserExtension.GetUserByEmail(email)
 	} else if username != "" {
-		userValue, err = s.UserExtension.GetUserByUsername(email)
+		userValue, err = s.UserExtension.GetUserByUsername(username)
 	} else {
+		s.app.Logger.Error("while requesting password reset token, received invalid parameters, request url = " + r.URL.String())
 		nibbler.Write500Json(w, "incorrect parameters")
 		return
 	}
 
 	if err != nil {
+		s.app.Logger.Error("while requesting password reset token, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
 
 	// user not found, but we want to respond with OK to not give away too much info (i.e. our user list could be brute-forced)
 	if userValue == nil {
+		if email != "" {
+			s.app.Logger.Warn("user not found in password reset token flow for email " + email)
+		} else if username != "" {
+			s.app.Logger.Warn("user not found in password reset token flow for username " + username)
+		}
 		nibbler.Write200Json(w, `{"result": "ok"}`)
 		return
 	}
 
 	// in the event we looked up the user by anything but email, check that there is an email
 	if userValue.Email == nil {
+		s.app.Logger.Warn("user had no for email on record during password reset token request for username " + email)
 		nibbler.Write500Json(w, "no email on record")
 		return
 	}
@@ -61,7 +70,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 	errUpdate := s.UserExtension.Update(userValue)
 
 	if errUpdate != nil {
-		s.app.Logger.Error("failed to update user record: " + errUpdate.Error())
+		s.app.Logger.Error("in request password reset token flow, failed to update user record: " + errUpdate.Error())
 		nibbler.Write500Json(w, "failed to update user record")
 		return
 	}
@@ -98,6 +107,10 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 			"Please go to "+link+" to reset your password",
 			"Please go to <a href=\""+link+"\">"+link+"</a> to reset your password",
 		)
+
+		if err != nil {
+			s.app.Logger.Error("while sending email in password reset flow, error = " + err.Error())
+		}
 	}()
 
 	nibbler.Write200Json(w, `{"result": "ok"}`)
@@ -105,6 +118,7 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 
 func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.PasswordResetEnabled {
+		s.app.Logger.Warn("password reset requested while feature disabled")
 		nibbler.Write404Json(w)
 		return
 	}
@@ -115,11 +129,13 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 	userValue, err := s.getUserByPasswordResetTokenAndValidate(token)
 
 	if err != nil {
+		s.app.Logger.Error("while password reset requested, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
 
 	if userValue == nil {
+		s.app.Logger.Error("while password reset requested, user not found")
 		nibbler.Write500Json(w, "please try again")
 		return
 	}
@@ -130,6 +146,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 
 	*userValue.Password, err = GeneratePasswordHash(password)
 	if err != nil {
+		s.app.Logger.Error("while generating password reset hash, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
@@ -139,6 +156,7 @@ func (s *Extension) ResetPasswordHandler(w http.ResponseWriter, r *http.Request)
 
 	// TODO: ensure extension sets above props to null, as well
 	if err = s.UserExtension.UpdatePassword(userValue); err != nil {
+		s.app.Logger.Error("while updating user record in password reset, error = " + err.Error())
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
