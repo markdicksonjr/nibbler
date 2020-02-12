@@ -1,6 +1,6 @@
 # Nibbler User
 
-Provides a basic user model, and some means to persist and query it.
+Provides a basic user model, and some means to persist and query it.  No API endpoints are added by this extension
 
 ## Utilities
 

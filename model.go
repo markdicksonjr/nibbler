@@ -39,6 +39,7 @@ type User struct {
 	AddressStateOrProvince    *string    `json:"addressStateOrProvince,omitempty"`
 	AddressPostalCode         *string    `gorm:"size:16" json:"postalCode,omitempty"`
 	CountryCode               *string    `gorm:"size:3" json:"countryCode,omitempty"`
+	CompanyId                 *string    `json:"companyId,omitempty"`
 	EmployeeId                *string    `json:"employeeId,omitempty"`
 	ReferenceId               *string    `json:"referenceId,omitempty"`
 	PasswordResetToken        *string    `json:"passwordResetToken,omitempty"`
@@ -52,7 +53,6 @@ type User struct {
 	PrimaryLocation           *string    `json:"primaryLocation,omitempty"` // e.g. lat/long, grid codes, etc
 	Context                   *string    `json:"context,omitempty"`
 	ProtectedContext          *string    `json:"protectedContext,omitempty"`
-	CurrentGroupID            *string    `json:"currentGroupId,omitempty"`
 }
 
 // basic model for both role-based and group privilege-based auth control
@@ -82,7 +82,7 @@ type GroupPrivilege struct {
 	CreatedAt     time.Time  `json:"createdAt"`
 	UpdatedAt     time.Time  `json:"updatedAt"`
 	DeletedAt     *time.Time `json:"deletedAt,omitempty" sql:"index"`
-	GroupID       string     `json:"groupID" gorm:"foreignkey:groupId"` // "performing group id" e.g. "administrators" ID
+	GroupID       string     `json:"groupID" gorm:"foreignkey:GroupID"` // "performing group id" e.g. "administrators" ID
 	TargetGroupID string     `json:"targetGroupID"`                     // e.g. "customers" ID
 	Action        string     `json:"action"`                            // e.g. read/write/admin/etc
 }
