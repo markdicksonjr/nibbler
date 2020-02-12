@@ -74,7 +74,7 @@ type GroupMembership struct {
 	DeletedAt *time.Time `json:"deletedAt,omitempty" sql:"index"`
 	GroupID   string     `json:"groupId"`
 	MemberID  string     `json:"memberId"`
-	Role      GroupRole  `json:"role"`
+	Role      string     `json:"role"`
 }
 
 type GroupPrivilege struct {
@@ -83,9 +83,6 @@ type GroupPrivilege struct {
 	UpdatedAt     time.Time  `json:"updatedAt"`
 	DeletedAt     *time.Time `json:"deletedAt,omitempty" sql:"index"`
 	GroupID       string     `json:"groupID" gorm:"foreignkey:groupId"` // "performing group id" e.g. "administrators" ID
-	TargetGroupID string     `json:"targetGroupID"`     // e.g. "customers" ID
-	Action        int        `json:"action"`            // e.g. read/write/admin/etc
+	TargetGroupID string     `json:"targetGroupID"`                     // e.g. "customers" ID
+	Action        string     `json:"action"`                            // e.g. read/write/admin/etc
 }
-
-type GroupRole int // make your own roles
-type Action int    // make your own actions
