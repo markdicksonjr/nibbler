@@ -50,12 +50,14 @@ type User struct {
 	EmploymentEndDate         *time.Time `json:"employmentEndDate,omitempty"`
 	ContractStartDate         *time.Time `json:"contractStartDate,omitempty"`
 	ContractEndDate           *time.Time `json:"contractEndDate,omitempty"`
-	PrimaryLocation           *string    `json:"primaryLocation,omitempty"` // e.g. lat/long, grid codes, etc
-	Context                   *string    `json:"context,omitempty"`
-	ProtectedContext          *string    `json:"protectedContext,omitempty"`
+	PrimaryLocation           *string    `json:"primaryLocation,omitempty"`  // e.g. lat/long, grid codes, etc
+	Context                   *string    `json:"context,omitempty"`          // to store extra data we don't have modeled
+	ProtectedContext          *string    `json:"protectedContext,omitempty"` // to store extra data not modeled that users shouldn't see
 }
 
 // basic model for both role-based and group privilege-based auth control
+// to implement "Group A has X action privilege on Group B", for example,
+// you can make the GroupPrivilege have GroupID = A.ID, ResourceID = B.ID, Action = X
 
 type Group struct {
 	ID         string     `json:"id" bson:"_id" gorm:"primary_key"`
@@ -64,6 +66,7 @@ type Group struct {
 	DeletedAt  *time.Time `json:"deletedAt,omitempty" sql:"index"`
 	Name       string     `json:"name"`
 	Type       string     `json:"type"`
+	Context    *string    `json:"data,omitempty"`
 	Privileges []GroupPrivilege
 }
 
@@ -78,11 +81,11 @@ type GroupMembership struct {
 }
 
 type GroupPrivilege struct {
-	ID            string     `json:"id" bson:"_id" gorm:"primary_key"`
-	CreatedAt     time.Time  `json:"createdAt"`
-	UpdatedAt     time.Time  `json:"updatedAt"`
-	DeletedAt     *time.Time `json:"deletedAt,omitempty" sql:"index"`
-	GroupID       string     `json:"groupID" gorm:"foreignkey:GroupID"` // "performing group id" e.g. "administrators" ID
-	TargetGroupID string     `json:"targetGroupID"`                     // e.g. "customers" ID
-	Action        string     `json:"action"`                            // e.g. read/write/admin/etc
+	ID         string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	UpdatedAt  time.Time  `json:"updatedAt"`
+	DeletedAt  *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	GroupID    string     `json:"groupID" gorm:"foreignkey:GroupID"` // "performing group id" e.g. "administrators" ID
+	ResourceID string     `json:"resourceID"`                        // e.g. "customers" ID
+	Action     string     `json:"action"`                            // e.g. read/write/admin/etc
 }
