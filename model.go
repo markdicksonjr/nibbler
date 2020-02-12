@@ -52,17 +52,19 @@ type User struct {
 	PrimaryLocation           *string    `json:"primaryLocation,omitempty"` // e.g. lat/long, grid codes, etc
 	Context                   *string    `json:"context,omitempty"`
 	ProtectedContext          *string    `json:"protectedContext,omitempty"`
+	CurrentGroupID            *string    `json:"currentGroupId,omitempty"`
 }
 
 // basic model for both role-based and group privilege-based auth control
 
 type Group struct {
-	ID        string     `json:"id" bson:"_id" gorm:"primary_key"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt,omitempty" sql:"index"`
-	Name      string     `json:"name"`
-	Type      string     `json:"type"`
+	ID         string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt  time.Time  `json:"createdAt"`
+	UpdatedAt  time.Time  `json:"updatedAt"`
+	DeletedAt  *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	Name       string     `json:"name"`
+	Type       string     `json:"type"`
+	Privileges []GroupPrivilege
 }
 
 type GroupMembership struct {
@@ -76,13 +78,13 @@ type GroupMembership struct {
 }
 
 type GroupPrivilege struct {
-	ID                string     `json:"id" bson:"_id" gorm:"primary_key"`
-	CreatedAt         time.Time  `json:"createdAt"`
-	UpdatedAt         time.Time  `json:"updatedAt"`
-	DeletedAt         *time.Time `json:"deletedAt,omitempty" sql:"index"`
-	PerformingGroupID string     `json:"performingGroupID"` // e.g. "administrators" ID
-	TargetGroupID     string     `json:"targetGroupID"`     // e.g. "customers" ID
-	Action            int        `json:"action"`            // e.g. read/write/admin/etc
+	ID            string     `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt     time.Time  `json:"createdAt"`
+	UpdatedAt     time.Time  `json:"updatedAt"`
+	DeletedAt     *time.Time `json:"deletedAt,omitempty" sql:"index"`
+	GroupID       string     `json:"groupID" gorm:"foreignkey:groupId"` // "performing group id" e.g. "administrators" ID
+	TargetGroupID string     `json:"targetGroupID"`     // e.g. "customers" ID
+	Action        int        `json:"action"`            // e.g. read/write/admin/etc
 }
 
 type GroupRole int // make your own roles
