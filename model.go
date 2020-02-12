@@ -12,7 +12,9 @@ type User struct {
 	Email                     *string    `json:"email,omitempty" gorm:"unique"`
 	Username                  *string    `json:"username,omitempty" gorm:"unique"`
 	FirstName                 *string    `json:"firstName,omitempty"`
+	MiddleName                *string    `json:"middleName,omitempty"`
 	LastName                  *string    `json:"lastName,omitempty"`
+	MaidenName                *string    `json:"maidenName,omitempty"`
 	Title                     *string    `json:"title,omitempty"`
 	Password                  *string    `json:"password,omitempty"`
 	PortraitUri               *string    `json:"portraitUri,omitempty"`
@@ -41,6 +43,8 @@ type User struct {
 	CountryCode               *string    `gorm:"size:3" json:"countryCode,omitempty"`
 	CompanyId                 *string    `json:"companyId,omitempty"`
 	EmployeeId                *string    `json:"employeeId,omitempty"`
+	SupervisorId              *string    `json:"supervisorId,omitempty"`
+	CreatedByUserId           *string    `json:"createdByUserId,omitempty"`
 	ReferenceId               *string    `json:"referenceId,omitempty"`
 	PasswordResetToken        *string    `json:"passwordResetToken,omitempty"`
 	PasswordResetExpiration   *time.Time `json:"passwordResetExpiration,omitempty"`
@@ -50,7 +54,8 @@ type User struct {
 	EmploymentEndDate         *time.Time `json:"employmentEndDate,omitempty"`
 	ContractStartDate         *time.Time `json:"contractStartDate,omitempty"`
 	ContractEndDate           *time.Time `json:"contractEndDate,omitempty"`
-	PrimaryLocation           *string    `json:"primaryLocation,omitempty"`  // e.g. lat/long, grid codes, etc
+	PrimaryLocation           *string    `json:"primaryLocation,omitempty"` // e.g. lat/long, grid codes, etc
+	CurrentGroupID            *string    `json:"currentGroupId,omitempty"`
 	Context                   *string    `json:"context,omitempty"`          // to store extra data we don't have modeled
 	ProtectedContext          *string    `json:"protectedContext,omitempty"` // to store extra data not modeled that users shouldn't see
 }
