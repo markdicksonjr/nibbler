@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	ID                        string     `json:"id" bson:"_id" gorm:"primary_key"` // ID
+	ID                        string     `json:"id" bson:"_id" gorm:"primary_key"`
 	CreatedAt                 time.Time  `json:"createdAt"`
 	UpdatedAt                 time.Time  `json:"updatedAt"`
 	DeletedAt                 *time.Time `json:"deletedAt,omitempty" sql:"index"`
@@ -41,11 +41,11 @@ type User struct {
 	AddressStateOrProvince    *string    `json:"addressStateOrProvince,omitempty"`
 	AddressPostalCode         *string    `gorm:"size:16" json:"postalCode,omitempty"`
 	CountryCode               *string    `gorm:"size:3" json:"countryCode,omitempty"`
-	CompanyId                 *string    `json:"companyId,omitempty"`
-	EmployeeId                *string    `json:"employeeId,omitempty"`
-	SupervisorId              *string    `json:"supervisorId,omitempty"`
-	CreatedByUserId           *string    `json:"createdByUserId,omitempty"`
-	ReferenceId               *string    `json:"referenceId,omitempty"`
+	CompanyID                 *string    `json:"companyId,omitempty"`
+	EmployeeID                *string    `json:"employeeId,omitempty"`
+	SupervisorID              *string    `json:"supervisorId,omitempty"`
+	CreatedByUserID           *string    `json:"createdByUserId,omitempty"`
+	ReferenceID               *string    `json:"referenceId,omitempty"`
 	PasswordResetToken        *string    `json:"passwordResetToken,omitempty"`
 	PasswordResetExpiration   *time.Time `json:"passwordResetExpiration,omitempty"`
 	EmailValidationToken      *string    `json:"emailValidationToken,omitempty"`

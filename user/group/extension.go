@@ -21,7 +21,6 @@ type PersistenceExtension interface {
 
 type Extension struct {
 	nibbler.NoOpExtension
-	Logger               nibbler.Logger
 	PersistenceExtension PersistenceExtension
 	SessionExtension     *session.Extension
 	UserExtension        *user.Extension
