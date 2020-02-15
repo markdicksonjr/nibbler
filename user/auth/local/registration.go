@@ -12,7 +12,17 @@ import (
 // TODO: allow username
 func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) {
 	email := strings.TrimSpace(r.FormValue("email"))
+	if s.RegistrationRequiresEmail && email == "" {
+		nibbler.Write500Json(w, "email is a required field")
+		return
+	}
+
 	username := strings.TrimSpace(r.FormValue("username"))
+	if s.RegistrationRequiresUsername && username == "" {
+		nibbler.Write500Json(w, "username is a required field")
+		return
+	}
+
 	password := r.FormValue("password")
 
 	// enforce that a password is provided
@@ -23,26 +33,26 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 
 	// TODO: password meets requirements
 
-	if s.IsUsernameRequired && username == "" {
-		nibbler.Write500Json(w, "username is a required field")
-		return
-	}
+	var u *nibbler.User
+	var err error
 
 	// look up the user with that email
-	u, err := s.UserExtension.GetUserByEmail(email)
-	if err != nil {
-		nibbler.Write500Json(w, err.Error())
-		return
+	if email != "" {
+		u, err = s.UserExtension.GetUserByEmail(email)
+		if err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		// if the user is found
+		// TODO: improve error message, but don't let the user know the email is in the system, if possible
+		if u != nil {
+			nibbler.Write500Json(w, "please try again")
+			return
+		}
 	}
 
-	// if the user is found
-	// TODO: improve error message, but don't let the user know the email is in the system, if possible
-	if u != nil {
-		nibbler.Write500Json(w, "please try again")
-		return
-	}
-
-	if s.IsUsernameRequired {
+	if username != "" {
 		u, err = s.UserExtension.GetUserByUsername(username)
 		if err != nil {
 			nibbler.Write500Json(w, err.Error())

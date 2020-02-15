@@ -17,9 +17,6 @@ type Extension struct {
 	// for emailing
 	Sender nibbler.MailSender
 
-	// general options
-	IsUsernameRequired bool
-
 	// for password reset
 	PasswordResetEnabled             bool
 	PasswordResetFromName            string
@@ -29,6 +26,8 @@ type Extension struct {
 
 	// for email verification
 	RegistrationEnabled                  bool
+	RegistrationRequiresEmail            bool
+	RegistrationRequiresUsername         bool
 	EmailVerificationEnabled             bool // whether email verification is available (doesn't mean it's required)
 	EmailVerificationRequired            bool // whether email verification is required before logging in
 	EmailVerificationTokenExpirationDays *int
