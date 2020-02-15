@@ -63,6 +63,7 @@ func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if email == "" && username == "" && password == "" && r.Body != nil {
+		defer r.Body.Close()
 		bodyBytes, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			nibbler.Write500Json(w, err.Error())

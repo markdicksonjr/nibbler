@@ -1,9 +1,11 @@
 package local
 
 import (
+	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/user"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -24,6 +26,35 @@ func (s *Extension) RegisterFormHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	password := r.FormValue("password")
+
+	if email == "" && username == "" && password == "" && r.Body != nil {
+		defer r.Body.Close()
+		bodyBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		if bodyBytes == nil {
+			nibbler.Write500Json(w, "{\"message\": \"body was not json\"")
+			return
+		}
+
+		var asMap map[string]interface{}
+		if err := json.Unmarshal(bodyBytes, &asMap); err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		email, _ = asMap["email"].(string)
+		email = strings.TrimSpace(email)
+
+		username, _ = asMap["username"].(string)
+		username = strings.TrimSpace(username)
+
+		password, _ = asMap["password"].(string)
+		password = strings.TrimSpace(password)
+	}
 
 	// enforce that a password is provided
 	if password == "" {
