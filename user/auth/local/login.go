@@ -1,9 +1,11 @@
 package local
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/markdicksonjr/nibbler"
 	"github.com/markdicksonjr/nibbler/user"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -56,10 +58,39 @@ func (s *Extension) EnforceEmailValidated(routerFunc func(http.ResponseWriter, *
 }
 
 func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
-	userValue, err := s.Login(
-		strings.TrimSpace(r.FormValue("email")),
-		strings.TrimSpace(r.FormValue("username")),
-		r.FormValue("password"))
+	email := strings.TrimSpace(r.FormValue("email"))
+	username := strings.TrimSpace(r.FormValue("username"))
+	password := r.FormValue("password")
+
+	if email == "" && username == "" && password == "" && r.Body != nil {
+		bodyBytes, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		if bodyBytes == nil {
+			nibbler.Write500Json(w, "{\"message\": \"body was not json\"")
+			return
+		}
+
+		var asMap map[string]interface{}
+		if err := json.Unmarshal(bodyBytes, &asMap); err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		email, _ = asMap["email"].(string)
+		email = strings.TrimSpace(email)
+
+		username, _ = asMap["username"].(string)
+		username = strings.TrimSpace(username)
+
+		password, _ = asMap["password"].(string)
+		password = strings.TrimSpace(password)
+	}
+
+	userValue, err := s.Login(email, username, password)
 
 	// if an error happened during login
 	if err != nil {
