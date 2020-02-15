@@ -17,6 +17,9 @@ type Extension struct {
 	// for emailing
 	Sender nibbler.MailSender
 
+	// general options
+	IsUsernameRequired bool
+
 	// for password reset
 	PasswordResetEnabled             bool
 	PasswordResetFromName            string

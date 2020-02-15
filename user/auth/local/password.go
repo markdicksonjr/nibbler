@@ -15,8 +15,8 @@ func (s *Extension) ResetPasswordTokenHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	email := r.FormValue("email")
-	username := r.FormValue("username")
+	email := strings.TrimSpace(r.FormValue("email"))
+	username := strings.TrimSpace(r.FormValue("username"))
 
 	var userValue *nibbler.User
 	var err error

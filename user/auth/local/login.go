@@ -6,6 +6,7 @@ import (
 	"github.com/markdicksonjr/nibbler/user"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
@@ -55,10 +56,10 @@ func (s *Extension) EnforceEmailValidated(routerFunc func(http.ResponseWriter, *
 }
 
 func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	userValue, err := s.Login(email, password)
+	userValue, err := s.Login(
+		strings.TrimSpace(r.FormValue("email")),
+		strings.TrimSpace(r.FormValue("username")),
+		r.FormValue("password"))
 
 	// if an error happened during login
 	if err != nil {
@@ -116,11 +117,22 @@ func (s *Extension) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	nibbler.Write200Json(w, `{"result": "ok"}`)
 }
 
-func (s *Extension) Login(email string, password string) (*nibbler.User, error) {
-	u, err := s.UserExtension.GetUserByEmail(email)
-	if err != nil {
-		s.app.Logger.Error("while looking up user by email, error = " + err.Error())
-		return u, err
+func (s *Extension) Login(email string, username string, password string) (*nibbler.User, error) {
+	var u *nibbler.User
+	var err error
+
+	if email != "" {
+		u, err = s.UserExtension.GetUserByEmail(email)
+		if err != nil {
+			s.app.Logger.Error("while looking up user by email, error = " + err.Error())
+			return u, err
+		}
+	} else if username != "" {
+		u, err = s.UserExtension.GetUserByUsername(username)
+		if err != nil {
+			s.app.Logger.Error("while looking up user by usernae, error = " + err.Error())
+			return u, err
+		}
 	}
 
 	if u == nil || u.Password == nil {
@@ -134,7 +146,7 @@ func (s *Extension) Login(email string, password string) (*nibbler.User, error) 
 	}
 
 	if !validPassword {
-		s.app.Logger.Trace("invalid password for email " + email)
+		s.app.Logger.Trace("invalid password for email \"" + email + "\", username \"" + username + "\"")
 		return nil, errors.New("invalid password")
 	}
 
