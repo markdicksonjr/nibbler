@@ -72,10 +72,10 @@ func (s *Extension) PostInit(app *nibbler.Application) error {
 
 	s.Logger = app.Logger
 
-	app.Router.HandleFunc("/api/message", s.GetMessagesHandler).Queries("userId", "{userId}", "count", "{count}", "offset", "{offset}").Methods("GET")
-	app.Router.HandleFunc("/api/message", s.SendMessageToUserHandler).Methods("POST")
-	app.Router.HandleFunc("/api/message", s.DeleteUserMessageStateHandler).Queries("userId", "{userId}").Methods("DELETE")
-	app.Router.HandleFunc("/api/message/read", s.MarkUserMessageStateAsReadHandler).Methods("POST")
+	app.Router.HandleFunc(app.Config.ApiPrefix + "/message", s.GetMessagesHandler).Queries("userId", "{userId}", "count", "{count}", "offset", "{offset}").Methods("GET")
+	app.Router.HandleFunc(app.Config.ApiPrefix + "/message", s.SendMessageToUserHandler).Methods("POST")
+	app.Router.HandleFunc(app.Config.ApiPrefix + "/message", s.DeleteUserMessageStateHandler).Queries("userId", "{userId}").Methods("DELETE")
+	app.Router.HandleFunc(app.Config.ApiPrefix + "/message/read", s.MarkUserMessageStateAsReadHandler).Methods("POST")
 
 	return nil
 }

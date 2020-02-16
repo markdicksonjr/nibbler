@@ -14,6 +14,17 @@ func Write200Json(w http.ResponseWriter, content string) {
 	WriteJson(w, content, http.StatusOK)
 }
 
+// Write201Json is some syntactic sugar to allow for a quick way to write JSON responses with an OK code
+func Write201Json(w http.ResponseWriter, content string) {
+	WriteJson(w, content, http.StatusCreated)
+}
+
+// Write204 is some syntactic sugar to allow for a quick way to write JSON responses with a no-content code
+func Write204(w http.ResponseWriter, content string) {
+	w.WriteHeader(http.StatusNoContent)
+	w.Write(nil)
+}
+
 // Write401Json
 func Write401Json(w http.ResponseWriter) {
 	WriteJson(w, `{"result": "not authorized"}`, http.StatusUnauthorized)

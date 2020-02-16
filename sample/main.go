@@ -16,7 +16,7 @@ type SampleExtension struct {
 
 // PostInit just adds a REST endpoint at "/api/ok" to serve up a simple health-check type message
 func (s *SampleExtension) PostInit(context *nibbler.Application) error {
-	context.Router.HandleFunc("/api/ok", func(w http.ResponseWriter, _ *http.Request) {
+	context.Router.HandleFunc(context.Config.ApiPrefix + "/ok", func(w http.ResponseWriter, _ *http.Request) {
 		nibbler.Write200Json(w, `{"result": "OK"}`)
 	}).Methods("GET")
 	return nil

@@ -71,6 +71,7 @@ func LoadConfiguration(sources ...source.Source) (*Configuration, error) {
 		Raw:             conf,
 		Port:            primaryPort,
 		StaticDirectory: conf.Get("nibbler", "directory", "static").String("./public/"),
+		ApiPrefix:       conf.Get("nibbler", "api", "prefix").String("/api"),
 		Headers: HeaderConfiguration{
 			AccessControlAllowOrigin:  conf.Get("nibbler", "ac", "allow", "origin").String("*"),
 			AccessControlAllowMethods: conf.Get("nibbler", "ac", "allow", "methods").String("GET, POST, OPTIONS, PUT, PATCH, DELETE"),

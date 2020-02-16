@@ -94,3 +94,18 @@ type GroupPrivilege struct {
 	ResourceID string     `json:"resourceID"`                        // e.g. "customers" ID
 	Action     string     `json:"action"`                            // e.g. read/write/admin/etc
 }
+
+// common interfaces extensions can use if needed
+
+type SearchParameters struct {
+	Query        interface{} `json:"query,omitempty"`
+	Offset       *int        `json:"offset,omitempty"`
+	Size         *int        `json:"size,omitempty"`
+	IncludeTotal bool        `json:"includeTotal"`
+}
+
+type SearchResults struct {
+	Hits   interface{} `json:"hits"`
+	Offset *int        `json:"offset,omitempty"`
+	Total  *int        `json:"total,omitempty"`
+}

@@ -149,7 +149,7 @@ To use, make something like build/main.go in your app, which contains:
 ```go
 import "github.com/markdicksonjr/nibbler/build"
 ...
-build.ProcessDefaultTargets("BigCommerceSync", "main/main.go")
+build.ProcessDefaultTargets("BinaryName", "main/main.go")
 ```
 
 This will build your app for a few platforms (currently, Windows, darwin, linux).

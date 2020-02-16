@@ -42,6 +42,7 @@ type Configuration struct {
 	Headers         HeaderConfiguration
 	Port            int
 	Raw             config.Config
+	ApiPrefix       string
 	StaticDirectory string
 }
 

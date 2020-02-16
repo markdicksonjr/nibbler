@@ -7,16 +7,17 @@ import (
 	"net/http"
 )
 
+// UserComposite is a summary of group memberships and the state of the "current" group and role for the user
 type UserComposite struct {
-	CurrentGroup       *nibbler.Group      `json:"currentGroup"`
-	Groups             []nibbler.Group     `json:"groups"`
-	RoleInCurrentGroup string              `json:"roleInCurrentGroup"`
+	CurrentGroup       *nibbler.Group  `json:"currentGroup"`
+	Groups             []nibbler.Group `json:"groups"`
+	RoleInCurrentGroup string          `json:"roleInCurrentGroup"`
 }
 
-// LoadUserCompositeRequestHandler gets the composite for the given user - you can either allow them to specify the ID
+// GetUserCompositeRequestHandler gets the composite for the given user - you can either allow them to specify the ID
 // as a path param, or just always make it return the composite for the caller.  If you allow the ID to be specified,
 // protect this route with a check to see if the caller can ask for that user's composite info.
-func (s *Extension) LoadUserCompositeRequestHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Extension) GetUserCompositeRequestHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
@@ -31,7 +32,7 @@ func (s *Extension) LoadUserCompositeRequestHandler(w http.ResponseWriter, r *ht
 		id = caller.ID
 	}
 
-	composite, err := s.LoadUserComposite(id)
+	composite, err := s.GetUserComposite(id)
 
 	// fail on any error
 	if err != nil {
@@ -50,12 +51,13 @@ func (s *Extension) LoadUserCompositeRequestHandler(w http.ResponseWriter, r *ht
 	nibbler.Write200Json(w, string(compositeJson))
 }
 
-func (s *Extension) LoadUserComposite(userId string) (*UserComposite, error) {
+// GetUserComposite returns the composite for the user with the given id
+func (s *Extension) GetUserComposite(userId string) (*UserComposite, error) {
 
 	// prepare a composite instance to return
 	composite := UserComposite{
-		Groups:             make([]nibbler.Group, 0),
-		CurrentGroup:       nil,
+		Groups:       make([]nibbler.Group, 0),
+		CurrentGroup: nil,
 	}
 
 	// load the user configuration
@@ -96,7 +98,7 @@ func (s *Extension) LoadUserComposite(userId string) (*UserComposite, error) {
 		// set the current group in the composite model we're returning
 		// TODO: check results of GetGroups above to avoid doing this load
 		if u.CurrentGroupID != nil {
-			g, err := s.GetGroups([]string{ *u.CurrentGroupID }, true)
+			g, err := s.GetGroups([]string{*u.CurrentGroupID}, true)
 			if err != nil {
 				return nil, err
 			}
