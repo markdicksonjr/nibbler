@@ -11,52 +11,6 @@ import (
 	"strings"
 )
 
-func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		caller, err := s.SessionExtension.GetCaller(r)
-
-		if err != nil {
-			s.app.Logger.Error("while enforcing login, an error occurred: " + err.Error())
-			nibbler.Write404Json(w)
-			return
-		}
-
-		if caller == nil {
-			nibbler.Write401Json(w)
-			s.app.Logger.Trace("received unauthorized request")
-			return
-		}
-
-		routerFunc(w, r)
-	}
-}
-
-// also validates the user is logged in
-func (s *Extension) EnforceEmailValidated(routerFunc func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		caller, err := s.SessionExtension.GetCaller(r)
-
-		if err != nil {
-			s.app.Logger.Error("while enforcing email validated, an error occurred: " + err.Error())
-			nibbler.Write404Json(w)
-			return
-		}
-
-		if caller == nil {
-			nibbler.Write404Json(w)
-			// TODO: log
-			return
-		}
-
-		if caller.IsEmailValidated == nil || !*caller.IsEmailValidated {
-			nibbler.Write404Json(w)
-			return
-		}
-
-		routerFunc(w, r)
-	}
-}
-
 func (s *Extension) LoginFormHandler(w http.ResponseWriter, r *http.Request) {
 	email := strings.TrimSpace(r.FormValue("email"))
 	username := strings.TrimSpace(r.FormValue("username"))

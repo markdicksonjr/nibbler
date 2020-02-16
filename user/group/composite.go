@@ -13,9 +13,23 @@ type UserComposite struct {
 	RoleInCurrentGroup string              `json:"roleInCurrentGroup"`
 }
 
+// LoadUserCompositeRequestHandler gets the composite for the given user - you can either allow them to specify the ID
+// as a path param, or just always make it return the composite for the caller.  If you allow the ID to be specified,
+// protect this route with a check to see if the caller can ask for that user's composite info.
 func (s *Extension) LoadUserCompositeRequestHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
+
+	// if no ID was provided, assume the route did not have ID in the path, and the user wants to ask about the caller
+	if id == "" {
+		caller, err := s.SessionExtension.GetCaller(r)
+		if err != nil {
+			nibbler.Write500Json(w, err.Error())
+			return
+		}
+
+		id = caller.ID
+	}
 
 	composite, err := s.LoadUserComposite(id)
 
