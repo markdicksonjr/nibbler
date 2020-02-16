@@ -139,6 +139,29 @@ A simple logger must be passed to most Nibbler methods.  Some simple logger impl
 - DefaultLogger - logs to the console
 - SilentLogger - logs nothing 
 
+## Build utilities
+
+A few optional build utilities are included.  Specifically, ./build contains a simplistic way to cross-compile as well
+as embed the git tag into your app.
+
+To use, make something like build/main.go in your app, which contains:
+
+```go
+import "github.com/markdicksonjr/nibbler/build"
+...
+build.ProcessDefaultTargets("BigCommerceSync", "main/main.go")
+```
+
+This will build your app for a few platforms (currently, Windows, darwin, linux).
+
+To access the git tag in your app, use:
+
+```go
+import "github.com/markdicksonjr/nibbler/build"
+...
+build.GitTag
+```
+
 ## Auto-wiring
 
 To prepare for very complex apps, an auto-wiring mechanism has been added.  This mechanism will take a given slice of 
