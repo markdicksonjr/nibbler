@@ -16,11 +16,11 @@ type PersistenceExtension interface {
 	SetGroupMembership(groupId string, userId string, role string) (nibbler.GroupMembership, error)
 	CreateGroup(group nibbler.Group) error
 	DeleteGroup(groupId string, hardDelete bool) error
-	SearchGroups(query nibbler.SearchParameters, includePrivileges bool) (nibbler.SearchResults, error)
+	SearchGroups(query nibbler.SearchParameters, includePrivileges bool) (*nibbler.SearchResults, error)
 	GetGroupsById(ids []string, includePrivileges bool) ([]nibbler.Group, error)
 	AddPrivilegeToGroups(groupIdList []string, resourceId string, action string) error
 	GetPrivilegesForAction(groupId string, resourceId *string, action string) ([]nibbler.GroupPrivilege, error)
-	DeletePrivilege(id string) error
+	DeletePrivilege(id string, hardDelete bool) error
 }
 
 type Extension struct {

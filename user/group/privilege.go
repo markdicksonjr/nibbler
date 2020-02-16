@@ -120,7 +120,9 @@ func (s *Extension) DeleteGroupPrivilegeRequestHandler(w http.ResponseWriter, r 
 	}
 
 	for _, p := range privileges {
-		if err := s.PersistenceExtension.DeletePrivilege(p.ID); err != nil {
+
+		// TODO: hard del query param
+		if err := s.PersistenceExtension.DeletePrivilege(p.ID, false); err != nil {
 			nibbler.Write500Json(w, err.Error())
 			return
 		}
