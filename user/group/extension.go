@@ -14,7 +14,7 @@ type PersistenceExtension interface {
 	GetGroupMembershipsForUser(id string) ([]nibbler.GroupMembership, error)
 	SetGroupMembership(groupId string, userId string, role string) (nibbler.GroupMembership, error)
 	CreateGroup(group nibbler.Group) error
-	GetGroupsById(ids []string) ([]nibbler.Group, error)
+	GetGroupsById(ids []string, includePrivileges bool) ([]nibbler.Group, error)
 	AddPrivilegeToGroups(groupIdList []string, targetGroupId string, action string) error
 	GetPrivilegesForAction(groupId string, resourceId *string, action string) ([]nibbler.GroupPrivilege, error)
 }
