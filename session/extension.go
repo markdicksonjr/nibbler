@@ -13,7 +13,7 @@ import (
 var requiresConnectorError = "session extension requires connector"
 
 type StoreConnector interface {
-	Connect() (error, sessions.Store)
+	Connect() (error, sessions.Store) // TODO: reverse param order
 	MaxAge() int
 }
 
@@ -26,6 +26,11 @@ type Extension struct {
 
 func (s *Extension) Init(app *nibbler.Application) error {
 	gob.Register(map[string]interface{}{})
+
+	// if the extension hasn't had its logger set, take it from the app
+	if s.Logger == nil {
+		s.Logger = app.Logger
+	}
 
 	// if a store connector is provided, use it
 	if s.StoreConnector == nil {

@@ -7,6 +7,11 @@ type NoOpExtension struct {
 }
 
 func (s *NoOpExtension) Init(app *Application) error {
+
+	// if the extension hasn't had its logger set, take it from the app
+	if s.Logger == nil {
+		s.Logger = app.Logger
+	}
 	return nil
 }
 
