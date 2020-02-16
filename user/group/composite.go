@@ -85,7 +85,7 @@ func (s *Extension) LoadUserComposite(userId string) (*UserComposite, error) {
 		for _, m := range memberships {
 			groupIds = append(groupIds, m.GroupID)
 		}
-		groups, err := s.GetGroups(groupIds)
+		groups, err := s.GetGroups(groupIds, true)
 
 		if err != nil {
 			return nil, err
@@ -94,8 +94,9 @@ func (s *Extension) LoadUserComposite(userId string) (*UserComposite, error) {
 		composite.Groups = groups
 
 		// set the current group in the composite model we're returning
+		// TODO: check results of GetGroups above to avoid doing this load
 		if u.CurrentGroupID != nil {
-			g, err := s.GetGroups([]string{ *u.CurrentGroupID })
+			g, err := s.GetGroups([]string{ *u.CurrentGroupID }, true)
 			if err != nil {
 				return nil, err
 			}

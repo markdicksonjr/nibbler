@@ -77,12 +77,12 @@ func (s *Extension) CreateGroup(name string) (nibbler.Group, error) {
 	return group, err
 }
 
-func (s *Extension) GetGroups(groupIds []string) ([]nibbler.Group, error) {
+func (s *Extension) GetGroups(groupIds []string, includePrivileges bool) ([]nibbler.Group, error) {
 
 	// load the groups for the set of memberships
 	if len(groupIds) == 0 {
 		return []nibbler.Group{}, nil
 	}
 
-	return s.PersistenceExtension.GetGroupsById(groupIds)
+	return s.PersistenceExtension.GetGroupsById(groupIds, includePrivileges)
 }
