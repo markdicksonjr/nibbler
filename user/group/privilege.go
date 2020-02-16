@@ -48,7 +48,7 @@ func (s *Extension) HasPrivilege(userId, action string) (bool, error) {
 		return false, err
 	}
 
-	return len(privileges) == 0, nil
+	return len(privileges) > 0, nil
 }
 
 // HasPrivilegeOnResource will state whether the caller can perform an action on a specific resource.  If there is no
@@ -70,7 +70,7 @@ func (s *Extension) HasPrivilegeOnResource(userId, resourceId, action string) (b
 		return false, err
 	}
 
-	return len(privileges) == 0, nil
+	return len(privileges) > 0, nil
 }
 
 // DeleteGroupPrivilegeRequestHandler handles an http request with a privilege in its body and "groupId" in the path params
