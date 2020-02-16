@@ -35,12 +35,14 @@ func (s *Extension) GetName() string {
 	return "user-group"
 }
 
+// GetParamValueFromRequest is a convenience function to extract the value of a named param for a request
 func GetParamValueFromRequest(paramName string) func(r *http.Request) (s string, err error) {
 	return func(r *http.Request) (s string, err error) {
 		return mux.Vars(r)[paramName], nil
 	}
 }
 
+// PostInit adds the default roues, if DisableDefaultRoutes is false
 func (s *Extension) PostInit(app *nibbler.Application) error {
 	if !s.DisableDefaultRoutes {
 		app.Router.HandleFunc(app.Config.ApiPrefix+"/group/composite", s.SessionExtension.EnforceLoggedIn(s.GetUserCompositeRequestHandler)).Methods("GET")
@@ -55,6 +57,7 @@ func (s *Extension) PostInit(app *nibbler.Application) error {
 	return nil
 }
 
+// GetModels provides all relevant models for stuff like SQLExtension initialization
 func GetModels() []interface{} {
 	var models []interface{}
 	models = append(models, nibbler.Group{})

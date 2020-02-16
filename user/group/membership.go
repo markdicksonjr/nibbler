@@ -19,6 +19,7 @@ func (s *Extension) GetGroupMembershipsForUser(userId string) ([]nibbler.GroupMe
 	return s.PersistenceExtension.GetGroupMembershipsForUser(userId)
 }
 
+// CreateGroupMembershipRequestHandler will handle an http request with path param "groupId", and a membership request body
 func (s *Extension) CreateGroupMembershipRequestHandler(w http.ResponseWriter, r *http.Request) {
 	membership, err := getMembershipFromBody(r)
 	if err != nil {
@@ -50,6 +51,7 @@ func (s *Extension) CreateGroupMembershipRequestHandler(w http.ResponseWriter, r
 	nibbler.Write200Json(w, string(resultJson))
 }
 
+// getMembershipFromBody parses the request body into a GroupMembership struct
 func getMembershipFromBody(r *http.Request) (*nibbler.GroupMembership, error) {
 	if r.Body == nil {
 		return nil, errors.New("no body provided")

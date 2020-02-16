@@ -20,8 +20,9 @@ const DeleteGroupPrivilegeAction = "delete-group-privilege"
 const ListGroupsAction = "list-groups"
 const RemoveMemberFromGroupAction = "remove-member-from-group"
 
-// allows all groups in the groupIdList to perform the provided action on the targetGroupId.  If targetGroupId is blank,
-// it means "all resources/groups"
+// AddPrivilegeToGroups adds a specific privilege definition to save to multiple groups.  It allows all groups in the
+// groupIdList to perform the provided action on the targetGroupId.  If targetGroupId is blank, it means
+// "all resources/groups"
 func (s *Extension) AddPrivilegeToGroups(
 	groupIdList []string,
 	targetGroupId string,
@@ -72,6 +73,7 @@ func (s *Extension) HasPrivilegeOnResource(userId, resourceId, action string) (b
 	return len(privileges) == 0, nil
 }
 
+// DeleteGroupPrivilegeRequestHandler handles an http request with a privilege in its body and "groupId" in the path params
 func (s *Extension) DeleteGroupPrivilegeRequestHandler(w http.ResponseWriter, r *http.Request) {
 	priv, err := getPrivilegeFromBody(r)
 	if err != nil {
@@ -127,6 +129,7 @@ func (s *Extension) DeleteGroupPrivilegeRequestHandler(w http.ResponseWriter, r 
 	nibbler.Write200Json(w, "{\"result\":\"ok\"")
 }
 
+// CreateGroupPrivilegeRequestHandler handles an http request with a path param of groupId and body that is a Privilege
 func (s *Extension) CreateGroupPrivilegeRequestHandler(w http.ResponseWriter, r *http.Request) {
 	priv, err := getPrivilegeFromBody(r)
 	if err != nil {
@@ -161,7 +164,7 @@ func (s *Extension) CreateGroupPrivilegeRequestHandler(w http.ResponseWriter, r 
 		}
 	}
 
-	if err := s.PersistenceExtension.AddPrivilegeToGroups([]string{ priv.GroupID }, priv.ResourceID, priv.Action); err != nil {
+	if err := s.PersistenceExtension.AddPrivilegeToGroups([]string{priv.GroupID}, priv.ResourceID, priv.Action); err != nil {
 		nibbler.Write500Json(w, err.Error())
 		return
 	}
@@ -169,6 +172,7 @@ func (s *Extension) CreateGroupPrivilegeRequestHandler(w http.ResponseWriter, r 
 	nibbler.Write200Json(w, "{\"result\":\"ok\"")
 }
 
+// getPrivilegeFromBody parses the request body into a GroupPrivilege struct
 func getPrivilegeFromBody(r *http.Request) (*nibbler.GroupPrivilege, error) {
 	if r.Body == nil {
 		return nil, errors.New("no body provided")
