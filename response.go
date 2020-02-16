@@ -14,6 +14,11 @@ func Write200Json(w http.ResponseWriter, content string) {
 	WriteJson(w, content, http.StatusOK)
 }
 
+// Write401Json
+func Write401Json(w http.ResponseWriter) {
+	WriteJson(w, `{"result": "not authorized"}`, http.StatusUnauthorized)
+}
+
 // Write404Json is some syntactic sugar to allow for a quick way to write JSON responses with a StatusNotFound code
 func Write404Json(w http.ResponseWriter) {
 	WriteJson(w, `{"result": "not found"}`, http.StatusNotFound)
