@@ -9,6 +9,7 @@ func (s *Extension) SetGroupMembership(groupId, userId string, role string) (nib
 	return s.PersistenceExtension.SetGroupMembership(groupId, userId, role)
 }
 
+// GetGroupMembershipsForUser lists the groups to which the user (with the provided ID) belongs
 func (s *Extension) GetGroupMembershipsForUser(userId string) ([]nibbler.GroupMembership, error) {
 	return s.PersistenceExtension.GetGroupMembershipsForUser(userId)
 }

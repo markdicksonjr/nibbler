@@ -65,14 +65,14 @@ type User struct {
 // you can make the GroupPrivilege have GroupID = A.ID, ResourceID = B.ID, Action = X
 
 type Group struct {
-	ID         string     `json:"id" bson:"_id" gorm:"primary_key"`
-	CreatedAt  time.Time  `json:"createdAt"`
-	UpdatedAt  time.Time  `json:"updatedAt"`
-	DeletedAt  *time.Time `json:"deletedAt,omitempty" sql:"index"`
-	Name       string     `json:"name"`
-	Type       string     `json:"type"`
-	Context    *string    `json:"data,omitempty"`
-	Privileges []GroupPrivilege
+	ID         string           `json:"id" bson:"_id" gorm:"primary_key"`
+	CreatedAt  time.Time        `json:"createdAt"`
+	UpdatedAt  time.Time        `json:"updatedAt"`
+	DeletedAt  *time.Time       `json:"deletedAt,omitempty" sql:"index"`
+	Name       string           `json:"name"`
+	Type       string           `json:"type"`
+	Context    *string          `json:"data,omitempty"`
+	Privileges []GroupPrivilege `json:"privileges"`
 }
 
 type GroupMembership struct {
