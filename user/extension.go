@@ -16,6 +16,7 @@ type PersistenceExtension interface {
 	GetUserById(id string) (*nibbler.User, error)
 	GetUserByPasswordResetToken(token string) (*nibbler.User, error)
 	GetUserByUsername(username string) (*nibbler.User, error)
+	SearchUsers(query nibbler.SearchParameters) (*nibbler.SearchResults, error)
 	Update(user *nibbler.User) error
 	UpdatePassword(user *nibbler.User) error
 }
@@ -84,6 +85,13 @@ func (s *Extension) GetUserByEmailVerificationToken(token string) (*nibbler.User
 func (s *Extension) GetUserByUsername(username string) (*nibbler.User, error) {
 	if s.PersistenceExtension != nil {
 		return s.PersistenceExtension.GetUserByUsername(username)
+	}
+	return nil, errors.New(noExtensionErrorMessage)
+}
+
+func (s *Extension) SearchUsers(query nibbler.SearchParameters) (*nibbler.SearchResults, error) {
+	if s.PersistenceExtension != nil {
+		return s.PersistenceExtension.SearchUsers(query)
 	}
 	return nil, errors.New(noExtensionErrorMessage)
 }
