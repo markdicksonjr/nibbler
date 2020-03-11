@@ -98,14 +98,20 @@ type GroupPrivilege struct {
 // common interfaces extensions can use if needed
 
 type SearchParameters struct {
-	Query        interface{} `json:"query,omitempty"`
-	Offset       *int        `json:"offset,omitempty"`
-	Size         *int        `json:"size,omitempty"`
-	IncludeTotal bool        `json:"includeTotal"`
+	Query        interface{}             `json:"query,omitempty"`
+	Offset       *int                    `json:"offset,omitempty"`
+	Size         *int                    `json:"size,omitempty"`
+	IncludeTotal bool                    `json:"includeTotal"`
+	SortBy       []SortByFieldParameters `json:"sortBy"`
 }
 
 type SearchResults struct {
 	Hits   interface{} `json:"hits"`
 	Offset *int        `json:"offset,omitempty"`
 	Total  *int        `json:"total,omitempty"`
+}
+
+type SortByFieldParameters struct {
+	Field       string
+	IsAscending bool
 }

@@ -1,12 +1,27 @@
 package nibbler
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // WriteJson is some syntactic sugar to allow for a quick way to write JSON responses with a status code
 func WriteJson(w http.ResponseWriter, content string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write([]byte(content))
+}
+
+// WriteJson is some syntactic sugar to allow for a quick way to write JSON responses from structs with a status code
+func WriteStructToJson(w http.ResponseWriter, content interface{}, code int) {
+	r, err := json.Marshal(content)
+	if err != nil {
+		Write500Json(w, err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(r)
 }
 
 // Write200Json is some syntactic sugar to allow for a quick way to write JSON responses with an OK code
