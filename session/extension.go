@@ -127,6 +127,8 @@ func (s *Extension) EnforceLoggedIn(routerFunc func(http.ResponseWriter, *http.R
 
 		if caller == nil {
 			nibbler.Write401Json(w)
+
+			// TODO: allow optional callback for this
 			s.Logger.Trace("received unauthorized request")
 			return
 		}
